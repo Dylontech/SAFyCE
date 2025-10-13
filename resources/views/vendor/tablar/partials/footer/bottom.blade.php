@@ -1,0 +1,5 @@
+<footer class="footer footer-transparent d-print-none">
+    <div class="container-xl text-center">
+        
+    </div>
+</footer>

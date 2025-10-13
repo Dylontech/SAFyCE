@@ -1,0 +1,136 @@
+/* Mejoras de responsividad para paginación */
+
+/* Tamaños responsivos para la paginación */
+@media (max-width: 576px) {
+    .pagination {
+        font-size: 0.875rem;
+    }
+    
+    .pagination .page-link {
+        padding: 0.375rem 0.5rem;
+        min-width: 2.5rem;
+        text-align: center;
+    }
+    
+    /* Ocultar números de página intermedios en móviles muy pequeños */
+    .pagination .page-item:not(:first-child):not(:last-child):not(.active):not(.disabled) {
+        display: none;
+    }
+    
+    /* Mostrar solo la página actual y adyacentes */
+    .pagination .page-item.active,
+    .pagination .page-item.active + .page-item,
+    .pagination .page-item.active ~ .page-item {
+        display: block !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .pagination-sm .page-link {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.8rem;
+        min-width: 2rem;
+    }
+    
+    /* En pantallas muy pequeñas, usar paginación simplificada */
+    .pagination {
+        display: none !important;
+    }
+    
+    .pagination-mobile-simple {
+        display: block !important;
+    }
+}
+
+@media (min-width: 401px) {
+    .pagination-mobile-simple {
+        display: none !important;
+    }
+}
+
+/* Mejoras para el footer de la tarjeta */
+.card-footer {
+    padding: 0.75rem 1rem;
+}
+
+@media (max-width: 768px) {
+    .card-footer {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .card-footer .d-flex {
+        gap: 0.5rem !important;
+    }
+}
+
+/* Estilos para información de registros */
+.pagination-info {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+@media (max-width: 576px) {
+    .pagination-info {
+        font-size: 0.8rem;
+        text-align: center;
+    }
+}
+
+/* Mejoras para botones de paginación móvil */
+.pagination-mobile-controls {
+    max-width: 100%;
+}
+
+.pagination-mobile-controls .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.5rem;
+}
+
+.pagination-page-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #6c757d;
+    height: 100%;
+}
+
+/* Espaciado mejorado para elementos de paginación */
+.pagination .page-item + .page-item .page-link {
+    margin-left: 1px;
+}
+
+/* Hover effects mejorados */
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Prevenir overflow en contenedores pequeños */
+.pagination {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.pagination::-webkit-scrollbar {
+    height: 4px;
+}
+
+.pagination::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.pagination::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 2px;
+}
+
+.pagination::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+}
