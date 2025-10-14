@@ -184,35 +184,9 @@
     @auth('alumno')
     <div class="container-xl mb-4">
         <div class="row g-3 fade-in-up" style="animation-delay: 0.2s;">
-            <div class="col-6 col-md-3">
-                <div class="quick-access">
+            <div class="col-6 col-md-2">
+                <a href="{{ route('estudiantes.horarios') }}" class="quick-access text-decoration-none">
                     <div class="h2 mb-2 text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <rect x="4" y="4" width="16" height="12" rx="1"/>
-                            <path d="m16 8l-8 5l8 5v-10z"/>
-                        </svg>
-                    </div>
-                    <div class="small fw-medium text-dark">Mis Materias</div>
-                    <div class="small text-muted">Consultar</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="quick-access">
-                    <div class="h2 mb-2 text-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M9 11l3 3l8 -8"/>
-                            <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"/>
-                        </svg>
-                    </div>
-                    <div class="small fw-medium text-dark">Calificaciones</div>
-                    <div class="small text-muted">Revisar</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="quick-access">
-                    <div class="h2 mb-2 text-info">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <rect x="4" y="5" width="16" height="16" rx="2"/>
@@ -221,22 +195,87 @@
                             <line x1="4" y1="11" x2="20" y2="11"/>
                         </svg>
                     </div>
-                    <div class="small fw-medium text-dark">Horarios</div>
-                    <div class="small text-muted">Ver</div>
-                </div>
+                    <div class="small fw-medium text-dark">Mis Horarios</div>
+                    <div class="small text-muted">Consultar</div>
+                </a>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
+                <a href="{{ route('estudiantes.salas') }}" class="quick-access text-decoration-none">
+                    <div class="h2 mb-2 text-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M3 21h18"/>
+                            <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+                            <path d="M9 9h6"/>
+                            <path d="M9 12h6"/>
+                            <path d="M9 15h6"/>
+                        </svg>
+                    </div>
+                    <div class="small fw-medium text-dark">Aulas</div>
+                    <div class="small text-muted">Explorar</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('estudiantes.horarios.semanal') }}" class="quick-access text-decoration-none">
+                    <div class="h2 mb-2 text-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                            <path d="M8 14h.01"/>
+                            <path d="M12 14h.01"/>
+                            <path d="M16 14h.01"/>
+                            <path d="M8 18h.01"/>
+                            <path d="M12 18h.01"/>
+                            <path d="M16 18h.01"/>
+                        </svg>
+                    </div>
+                    <div class="small fw-medium text-dark">Horario Semanal</div>
+                    <div class="small text-muted">Ver</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('tareas.mis-tareas') }}" class="quick-access text-decoration-none">
+                    <div class="h2 mb-2 text-purple">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+                            <line x1="9" y1="9" x2="10" y2="9"/>
+                            <line x1="9" y1="13" x2="15" y2="13"/>
+                            <line x1="9" y1="17" x2="15" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="small fw-medium text-dark">Mis Tareas</div>
+                    <div class="small text-muted">Pendientes</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('calificaciones.mis-calificaciones') }}" class="quick-access text-decoration-none">
+                    <div class="h2 mb-2 text-orange">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M9 11l3 3l8 -8"/>
+                            <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"/>
+                        </svg>
+                    </div>
+                    <div class="small fw-medium text-dark">Calificaciones</div>
+                    <div class="small text-muted">Revisar</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-2">
                 <div class="quick-access">
                     <div class="h2 mb-2 text-warning">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <circle cx="12" cy="12" r="9"/>
-                            <line x1="12" y1="8" x2="12.01" y2="8"/>
-                            <polyline points="11,12 12,12 12,16 13,16"/>
+                            <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+                            <line x1="9" y1="13" x2="15" y2="13"/>
                         </svg>
                     </div>
-                    <div class="small fw-medium text-dark">Avisos</div>
-                    <div class="small text-muted">Importantes</div>
+                    <div class="small fw-medium text-dark">Solicitudes</div>
+                    <div class="small text-muted">Gestionar</div>
                 </div>
             </div>
         </div>

@@ -231,31 +231,77 @@
         <h3 class="mb-3">Accesos Rápidos para Maestros</h3>
     </div>
     
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-calendar-week"></i> Mi Horario</h5>
-                <p class="card-text">Ver tu horario de clases</p>
-                <a href="{{ route('horarios.mi-horario') }}" class="btn btn-primary btn-sm">Ver Horario</a>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-primary" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <rect x="4" y="5" width="16" height="16" rx="2"/>
+                        <line x1="16" y1="3" x2="16" y2="7"/>
+                        <line x1="8" y1="3" x2="8" y2="7"/>
+                        <line x1="4" y1="11" x2="20" y2="11"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Mis Horarios</h5>
+                <p class="card-text text-muted">Ver y gestionar horarios de clases</p>
+                <a href="{{ route('horarios.index') }}" class="btn btn-primary btn-sm">Ver Horarios</a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-plus-circle"></i> Nueva Tarea</h5>
-                <p class="card-text">Asignar tarea a tus grupos</p>
-                <a href="{{ route('tareas.create') }}" class="btn btn-success btn-sm">Crear Tarea</a>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 21h18"/>
+                        <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+                        <path d="M9 9h6"/>
+                        <path d="M9 12h6"/>
+                        <path d="M9 15h6"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Salas</h5>
+                <p class="card-text text-muted">Consultar información de aulas</p>
+                <a href="{{ route('salas.index') }}" class="btn btn-success btn-sm">Ver Salas</a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-chart-bar"></i> Mis Calificaciones</h5>
-                <p class="card-text">Gestionar calificaciones</p>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-info" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+                        <line x1="9" y1="9" x2="10" y2="9"/>
+                        <line x1="9" y1="13" x2="15" y2="13"/>
+                        <line x1="9" y1="17" x2="15" y2="17"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Tareas</h5>
+                <p class="card-text text-muted">Gestionar tareas y actividades</p>
+                <a href="{{ route('tareas.index') }}" class="btn btn-info btn-sm">Ver Tareas</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M9 11l3 3l8 -8"/>
+                        <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Calificaciones</h5>
+                <p class="card-text text-muted">Registrar y consultar calificaciones</p>
                 <a href="{{ route('calificaciones.index') }}" class="btn btn-warning btn-sm">Ver Calificaciones</a>
             </div>
         </div>
@@ -270,36 +316,83 @@
         <h3 class="mb-3">Mi Panel de Estudiante</h3>
     </div>
     
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-tasks"></i> Mis Tareas</h5>
-                <p class="card-text">Ver tareas pendientes</p>
-                <a href="{{ route('tareas.mis-tareas') }}" class="btn btn-primary btn-sm">Ver Tareas</a>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-primary" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <rect x="4" y="5" width="16" height="16" rx="2"/>
+                        <line x1="16" y1="3" x2="16" y2="7"/>
+                        <line x1="8" y1="3" x2="8" y2="7"/>
+                        <line x1="4" y1="11" x2="20" y2="11"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Mis Horarios</h5>
+                <p class="card-text text-muted">Consultar horarios académicos</p>
+                <a href="{{ route('estudiantes.horarios') }}" class="btn btn-primary btn-sm">Ver Horarios</a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-chart-line"></i> Mis Calificaciones</h5>
-                <p class="card-text">Consultar calificaciones</p>
-                <a href="{{ route('calificaciones.mis-calificaciones') }}" class="btn btn-success btn-sm">Ver Calificaciones</a>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 21h18"/>
+                        <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16"/>
+                        <path d="M9 9h6"/>
+                        <path d="M9 12h6"/>
+                        <path d="M9 15h6"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Aulas</h5>
+                <p class="card-text text-muted">Explorar salas y aulas</p>
+                <a href="{{ route('estudiantes.salas') }}" class="btn btn-success btn-sm">Ver Aulas</a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-3">
+    <div class="col-md-3 mb-3">
         <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-file-invoice"></i> Solicitudes</h5>
-                <p class="card-text">Gestionar solicitudes</p>
-                <a href="{{ route('alumnos_user.index') }}" class="btn btn-warning btn-sm">Ver Solicitudes</a>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-info" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+                        <line x1="9" y1="9" x2="10" y2="9"/>
+                        <line x1="9" y1="13" x2="15" y2="13"/>
+                        <line x1="9" y1="17" x2="15" y2="17"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Mis Tareas</h5>
+                <p class="card-text text-muted">Ver tareas asignadas</p>
+                <a href="{{ route('tareas.mis-tareas') }}" class="btn btn-info btn-sm">Ver Tareas</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M9 11l3 3l8 -8"/>
+                        <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Mis Calificaciones</h5>
+                <p class="card-text text-muted">Consultar calificaciones</p>
+                <a href="{{ route('calificaciones.mis-calificaciones') }}" class="btn btn-warning btn-sm">Ver Calificaciones</a>
             </div>
         </div>
     </div>
 </div>
 @endif
+
 
 @endsection

@@ -22,6 +22,7 @@ use App\Http\Controllers\SalaController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\CalificacionController;
+use App\Http\Controllers\EstudianteController;
 
 
 
@@ -263,3 +264,15 @@ Route::get('/debug-sessions', [LoginController::class, 'debugSessions']);
 
 
 Route::resource('/especialidades', App\Http\Controllers\EspecialidadeController::class);
+
+// Rutas para estudiantes (portal estudiantil)
+Route::prefix('estudiantes')->name('estudiantes.')->middleware(['auth:alumno'])->group(function () {
+    // Rutas de horarios para estudiantes
+    Route::get('/horarios', [App\Http\Controllers\EstudianteController::class, 'horarios'])->name('horarios');
+    Route::get('/horarios/{horario}', [App\Http\Controllers\EstudianteController::class, 'showHorario'])->name('horarios.show');
+    Route::get('/horarios-semanal', [App\Http\Controllers\EstudianteController::class, 'horarioSemanal'])->name('horarios.semanal');
+    
+    // Rutas de salas para estudiantes
+    Route::get('/salas', [App\Http\Controllers\EstudianteController::class, 'salas'])->name('salas');
+    Route::get('/salas/{sala}', [App\Http\Controllers\EstudianteController::class, 'showSala'])->name('salas.show');
+});
