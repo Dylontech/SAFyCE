@@ -16,12 +16,31 @@ class SalaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('ver salas');
 
-        $salas = Sala::orderBy('nombre')
-                    ->paginate(15);
+        $query = Sala::query();
+
+        // Aplicar filtros
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->where(function($q) use ($buscar) {
+                $q->where('nombre', 'like', "%{$buscar}%")
+                  ->orWhere('codigo', 'like', "%{$buscar}%")
+                  ->orWhere('ubicacion', 'like', "%{$buscar}%");
+            });
+        }
+
+        $salas = $query->orderBy('nombre')->paginate(15);
 
         return view('salas.index', compact('salas'));
     }
@@ -61,7 +80,7 @@ class SalaController extends Controller
         // Obtener horarios de la sala para mostrar disponibilidad
         $horarios = $sala->horarios()
                          ->with(['materia', 'maestro'])
-                         ->where('estado', 'activo')
+                         ->activos()
                          ->orderBy('dia_semana')
                          ->orderBy('hora_inicio')
                          ->get();
@@ -106,7 +125,7 @@ class SalaController extends Controller
         Gate::authorize('gestionar salas');
 
         // Verificar si la sala tiene horarios activos
-        if ($sala->horarios()->where('estado', 'activo')->exists()) {
+        if ($sala->horarios()->activos()->exists()) {
             return redirect()->route('salas.index')
                            ->with('error', 'No se puede eliminar la sala porque tiene horarios activos asignados.');
         }

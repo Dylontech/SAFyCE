@@ -31,35 +31,35 @@ class Horario extends Model
 
     static $rules = [
         'materia_id' => 'required|exists:materias,id',
-        'maestro_id' => 'required|exists:users,id',
+        'user_id' => 'required|exists:users,id',
         'sala_id' => 'required|exists:salas,id',
-        'grupo' => 'required|string|max:10',
         'dia_semana' => 'required|in:lunes,martes,miercoles,jueves,viernes,sabado',
         'hora_inicio' => 'required|date_format:H:i',
         'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
-        'semestre' => 'required|in:1,2,3,4,5,6,7,8',
-        'periodo_escolar' => 'required|string|max:20',
-        'estado' => 'in:activo,suspendido,finalizado',
+        'fecha_inicio' => 'required|date',
+        'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+        'observaciones' => 'nullable|string|max:1000',
     ];
 
     protected $perPage = 20;
 
     protected $fillable = [
         'materia_id',
-        'maestro_id',
+        'user_id',
         'sala_id',
-        'grupo',
         'dia_semana',
         'hora_inicio',
         'hora_fin',
-        'semestre',
-        'periodo_escolar',
-        'estado'
+        'fecha_inicio',
+        'fecha_fin',
+        'observaciones'
     ];
 
     protected $casts = [
         'hora_inicio' => 'datetime:H:i',
         'hora_fin' => 'datetime:H:i',
+        'fecha_inicio' => 'date',
+        'fecha_fin' => 'date',
     ];
 
     /**
@@ -75,7 +75,7 @@ class Horario extends Model
      */
     public function maestro()
     {
-        return $this->belongsTo(User::class, 'maestro_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -87,27 +87,13 @@ class Horario extends Model
     }
 
     /**
-     * Scope para horarios activos
+     * Scope para horarios activos (basado en fechas)
      */
     public function scopeActivos($query)
     {
-        return $query->where('estado', 'activo');
-    }
-
-    /**
-     * Scope para filtrar por periodo escolar
-     */
-    public function scopePeriodo($query, $periodo)
-    {
-        return $query->where('periodo_escolar', $periodo);
-    }
-
-    /**
-     * Scope para filtrar por grupo
-     */
-    public function scopeGrupo($query, $grupo)
-    {
-        return $query->where('grupo', $grupo);
+        $hoy = now()->toDateString();
+        return $query->where('fecha_inicio', '<=', $hoy)
+                    ->where('fecha_fin', '>=', $hoy);
     }
 
     /**
@@ -116,5 +102,39 @@ class Horario extends Model
     public function scopeDia($query, $dia)
     {
         return $query->where('dia_semana', $dia);
+    }
+
+    /**
+     * Verifica si el horario está activo basado en las fechas
+     */
+    public function estaActivo()
+    {
+        $hoy = now()->toDateString();
+        return $hoy >= $this->fecha_inicio && $hoy <= $this->fecha_fin;
+    }
+
+    /**
+     * Verifica si hay conflicto con otro horario
+     */
+    public function tieneConflicto($diaSemana, $horaInicio, $horaFin, $fechaInicio, $fechaFin, $excludeId = null)
+    {
+        $query = static::where('user_id', $this->user_id)
+                      ->where('dia_semana', $diaSemana)
+                      ->where('fecha_inicio', '<=', $fechaFin)
+                      ->where('fecha_fin', '>=', $fechaInicio)
+                      ->where(function ($q) use ($horaInicio, $horaFin) {
+                          $q->whereBetween('hora_inicio', [$horaInicio, $horaFin])
+                            ->orWhereBetween('hora_fin', [$horaInicio, $horaFin])
+                            ->orWhere(function ($subQ) use ($horaInicio, $horaFin) {
+                                $subQ->where('hora_inicio', '<', $horaInicio)
+                                     ->where('hora_fin', '>', $horaFin);
+                            });
+                      });
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        return $query->exists();
     }
 }

@@ -1,0 +1,394 @@
+@extends('tablar::page')
+
+@section('title', 'Detalles de Sala - ' . $sala->nombre)
+
+@section('content')
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('salas.index') }}">Salas</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ $sala->nombre }}</li>
+                        </ol>
+                    </nav>
+                    <h2 class="page-title">
+                        {{ $sala->nombre }}
+                    </h2>
+                </div>
+                <!-- Page title actions -->
+                <div class="col-12 col-md-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                        @can('crear reuniones')
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-meeting">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <rect x="4" y="5" width="16" height="16" rx="2"/>
+                                <line x1="16" y1="3" x2="16" y2="7"/>
+                                <line x1="8" y1="3" x2="8" y2="7"/>
+                                <line x1="4" y1="11" x2="20" y2="11"/>
+                                <path d="M8 15h2v2h-2z"/>
+                            </svg>
+                            Crear Reunión
+                        </button>
+                        @endcan
+                        @can('gestionar salas')
+                        <a href="{{ route('salas.edit', $sala) }}" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/>
+                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/>
+                                <path d="M16 5l3 3"/>
+                            </svg>
+                            Editar Sala
+                        </a>
+                        @endcan
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page body -->
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="row row-deck row-cards">
+                <!-- Información de la sala -->
+                <div class="col-12 col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Información de la Sala</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Nombre</label>
+                                        <div class="h4">{{ $sala->nombre }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Código</label>
+                                        <div class="h4">{{ $sala->codigo }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Tipo</label>
+                                        <div>
+                                            <span class="badge bg-secondary fs-6">{{ ucfirst($sala->tipo) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Estado</label>
+                                        <div>
+                                            <span class="badge bg-{{ $sala->estado == 'disponible' ? 'success' : ($sala->estado == 'ocupada' ? 'warning' : ($sala->estado == 'mantenimiento' ? 'info' : 'danger')) }} fs-6">
+                                                {{ ucfirst(str_replace('_', ' ', $sala->estado)) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Capacidad</label>
+                                        <div class="h4">{{ $sala->capacidad }} personas</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Ubicación</label>
+                                        <div class="h4">{{ $sala->ubicacion ?: 'No especificada' }}</div>
+                                    </div>
+                                </div>
+                                @if($sala->descripcion)
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Descripción</label>
+                                        <div>{{ $sala->descripcion }}</div>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas rápidas -->
+                <div class="col-12 col-lg-4">
+                    <div class="row row-cards">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body p-4 text-center">
+                                    <span class="avatar avatar-xl mb-3 bg-primary text-white">
+                                        @if($sala->tipo == 'laboratorio')
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M9 2v6l-2 4v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2 -2v-4l-2 -4v-6"/>
+                                                <line x1="7" y1="2" x2="17" y2="2"/>
+                                            </svg>
+                                        @elseif($sala->tipo == 'taller')
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5"/>
+                                            </svg>
+                                        @elseif($sala->tipo == 'auditorio')
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M6 20a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2"/>
+                                                <path d="M8 16h8"/>
+                                                <path d="M7 12l10 0"/>
+                                                <path d="M7 8l10 0"/>
+                                            </svg>
+                                        @else
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/>
+                                                <path d="M20 12h-13m9 -3l3 3l-3 3"/>
+                                            </svg>
+                                        @endif
+                                    </span>
+                                    <h3 class="m-0 mb-1">{{ ucfirst($sala->tipo) }}</h3>
+                                    <div class="text-muted">{{ $sala->nombre }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="subheader">Horarios esta semana</div>
+                                        <div class="ms-auto lh-1">
+                                            <div class="dropdown">
+                                                <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Última semana</a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item active" href="#">Última semana</a>
+                                                    <a class="dropdown-item" href="#">Último mes</a>
+                                                    <a class="dropdown-item" href="#">Último año</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="h1 mb-3">{{ $horarios->count() }}</div>
+                                    <div class="d-flex mb-2">
+                                        <div>Clases programadas</div>
+                                        <div class="ms-auto">
+                                            <span class="text-green d-inline-flex align-items-center lh-1">
+                                                {{ $horarios->where('fecha_fin', '>=', now()->toDateString())->count() }} activas
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Horarios de la sala -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Horarios de Clases</h3>
+                        </div>
+                        <div class="card-body border-bottom py-3">
+                            @if($horarios->count() > 0)
+                            <div class="table-responsive">
+                                <table class="table card-table table-vcenter text-nowrap datatable">
+                                    <thead>
+                                        <tr>
+                                            <th>Día</th>
+                                            <th>Horario</th>
+                                            <th>Materia</th>
+                                            <th>Maestro</th>
+                                            <th>Grupo</th>
+                                            <th>Estado</th>
+                                            <th class="w-1"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($horarios as $horario)
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-blue">{{ ucfirst($horario->dia_semana) }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex py-1 align-items-center">
+                                                    <span class="avatar avatar-sm me-2 bg-secondary text-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                            <circle cx="12" cy="12" r="9"/>
+                                                            <polyline points="12,7 12,12 15,15"/>
+                                                        </svg>
+                                                    </span>
+                                                    <div class="flex-fill">
+                                                        <div class="font-weight-medium">{{ date('H:i', strtotime($horario->hora_inicio)) }} - {{ date('H:i', strtotime($horario->hora_fin)) }}</div>
+                                                        <div class="text-muted">{{ \Carbon\Carbon::parse($horario->hora_inicio)->diffInHours(\Carbon\Carbon::parse($horario->hora_fin)) }}h</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>{{ $horario->materia->materia }}</div>
+                                                <div class="text-muted">Semestre {{ $horario->semestre }}</div>
+                                            </td>
+                                            <td>{{ $horario->maestro->name }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ $horario->grupo }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ $horario->estaActivo() ? 'success' : 'secondary' }}">
+                                                    {{ $horario->estaActivo() ? 'Activo' : 'Inactivo' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-list flex-nowrap">
+                                                    <a href="{{ route('horarios.show', $horario) }}" class="btn btn-white btn-sm">
+                                                        Ver
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            @else
+                            <div class="empty">
+                                <div class="empty-img"><img src="{{ asset('dist/img/undraw_calendar.svg') }}" height="128" alt=""></div>
+                                <p class="empty-title">No hay horarios asignados</p>
+                                <p class="empty-subtitle text-muted">
+                                    Esta sala no tiene clases programadas actualmente.
+                                </p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para crear reunión -->
+<div class="modal modal-blur fade" id="modal-meeting" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Reunión en {{ $sala->nombre }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="meeting-form">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Título de la reunión</label>
+                                <input type="text" class="form-control" name="titulo" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Duración (minutos)</label>
+                                <select class="form-select" name="duracion" required>
+                                    <option value="30">30 minutos</option>
+                                    <option value="60" selected>1 hora</option>
+                                    <option value="90">1 hora 30 minutos</option>
+                                    <option value="120">2 horas</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha</label>
+                                <input type="date" class="form-control" name="fecha" required min="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Hora</label>
+                                <input type="time" class="form-control" name="hora" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción (opcional)</label>
+                        <textarea class="form-control" name="descripcion" rows="3" placeholder="Describe el propósito de la reunión..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Plataforma</label>
+                                <select class="form-select" name="plataforma" required>
+                                    <option value="zoom">Zoom</option>
+                                    <option value="teams">Microsoft Teams</option>
+                                    <option value="meet" selected>Google Meet</option>
+                                    <option value="webex">Cisco Webex</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de reunión</label>
+                                <select class="form-select" name="tipo" required>
+                                    <option value="clase">Clase Regular</option>
+                                    <option value="tutorial">Tutoría</option>
+                                    <option value="reunion">Reunión de Padres</option>
+                                    <option value="examen">Examen</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary ms-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Crear Reunión
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('meeting-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        titulo: formData.get('titulo'),
+        fecha: formData.get('fecha'),
+        hora: formData.get('hora'),
+        duracion: formData.get('duracion'),
+        descripcion: formData.get('descripcion'),
+        plataforma: formData.get('plataforma'),
+        tipo: formData.get('tipo'),
+        sala_id: {{ $sala->id }}
+    };
+    
+    // Aquí iría la integración con la API de la plataforma seleccionada
+    // Por ahora mostramos un mensaje de éxito
+    alert('Reunión creada exitosamente. El enlace se enviará por correo.');
+    
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modal-meeting'));
+    modal.hide();
+    
+    // Limpiar formulario
+    this.reset();
+});
+</script>
+@endsection

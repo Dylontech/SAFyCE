@@ -61,7 +61,7 @@ class Sala extends Model
     {
         $query = $this->horarios()
             ->where('dia_semana', $dia_semana)
-            ->where('estado', 'activo')
+            ->activos()
             ->where(function ($q) use ($hora_inicio, $hora_fin) {
                 $q->whereBetween('hora_inicio', [$hora_inicio, $hora_fin])
                   ->orWhereBetween('hora_fin', [$hora_inicio, $hora_fin])

@@ -94,7 +94,7 @@
             <div class="d-flex justify-content-between">
                 <div>
                     <h6 class="text-muted mb-1">Horarios Activos</h6>
-                    <h3 class="mb-0">{{ \App\Models\Horario::where('estado', 'activo')->count() }}</h3>
+                    <h3 class="mb-0">{{ \App\Models\Horario::activos()->count() }}</h3>
                 </div>
                 <div class="text-info">
                     <i class="fas fa-calendar-alt fa-2x"></i>

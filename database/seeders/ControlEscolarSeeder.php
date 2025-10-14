@@ -107,17 +107,25 @@ class ControlEscolarSeeder extends Seeder
                     'periodo_escolar' => '2024-2025-1',
                     'estado' => 'activo'
                 ],
+                'user_id' => $maestros->first()->id,
+                    'sala_id' => $salasDisponibles->where('codigo', 'LAB001')->first()->id ?? $salasDisponibles->first()->id,
+                    'dia_semana' => 'lunes',
+                    'hora_inicio' => '08:00',
+                    'hora_fin' => '10:00',
+                    'fecha_inicio' => '2025-01-15',
+                    'fecha_fin' => '2025-12-15',
+                    'observaciones' => 'Horario de programación básica'
+                ],
                 [
                     'materia_id' => $materiasDisponibles->where('materia', 'Matemáticas I')->first()->id ?? $materiasDisponibles->skip(1)->first()->id,
-                    'maestro_id' => $maestros->count() > 1 ? $maestros->skip(1)->first()->id : $maestros->first()->id,
+                    'user_id' => $maestros->count() > 1 ? $maestros->skip(1)->first()->id : $maestros->first()->id,
                     'sala_id' => $salasDisponibles->where('codigo', 'A101')->first()->id ?? $salasDisponibles->skip(1)->first()->id,
-                    'grupo' => '1A',
                     'dia_semana' => 'martes',
                     'hora_inicio' => '10:00',
                     'hora_fin' => '12:00',
-                    'semestre' => '1',
-                    'periodo_escolar' => '2024-2025-1',
-                    'estado' => 'activo'
+                    'fecha_inicio' => '2025-01-15',
+                    'fecha_fin' => '2025-12-15',
+                    'observaciones' => 'Horario de matemáticas nivel 1'
                 ]
             ];
 

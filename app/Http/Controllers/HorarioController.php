@@ -27,25 +27,17 @@ class HorarioController extends Controller
         $query = Horario::with(['materia', 'maestro', 'sala']);
 
         // Filtros
-        if ($request->filled('grupo')) {
-            $query->where('grupo', $request->grupo);
-        }
-
-        if ($request->filled('semestre')) {
-            $query->where('semestre', $request->semestre);
-        }
-
         if ($request->filled('dia_semana')) {
             $query->where('dia_semana', $request->dia_semana);
         }
 
-        if ($request->filled('maestro_id')) {
-            $query->where('maestro_id', $request->maestro_id);
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
         }
 
         // Si es maestro, solo mostrar sus horarios
         if (Auth::user()->esMaestro() && !Auth::user()->esAdmin()) {
-            $query->where('maestro_id', Auth::id());
+            $query->where('user_id', Auth::id());
         }
 
         $horarios = $query->orderBy('dia_semana')
@@ -54,11 +46,9 @@ class HorarioController extends Controller
 
         // Datos para filtros
         $maestros = User::role('maestro')->get();
-        $grupos = Horario::distinct()->pluck('grupo');
-        $semestres = ['1', '2', '3', '4', '5', '6', '7', '8'];
         $dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
-        return view('horarios.index', compact('horarios', 'maestros', 'grupos', 'semestres', 'dias'));
+        return view('horarios.index', compact('horarios', 'maestros', 'dias'));
     }
 
     /**
@@ -93,9 +83,10 @@ class HorarioController extends Controller
         }
 
         // Verificar que el maestro no tenga otro horario al mismo tiempo
-        $conflictoMaestro = Horario::where('maestro_id', $request->maestro_id)
+        $conflictoMaestro = Horario::where('user_id', $request->user_id)
                                   ->where('dia_semana', $request->dia_semana)
-                                  ->where('estado', 'activo')
+                                  ->where('fecha_inicio', '<=', $request->fecha_fin)
+                                  ->where('fecha_fin', '>=', $request->fecha_inicio)
                                   ->where(function ($query) use ($request) {
                                       $query->whereBetween('hora_inicio', [$request->hora_inicio, $request->hora_fin])
                                             ->orWhereBetween('hora_fin', [$request->hora_inicio, $request->hora_fin])
@@ -160,6 +151,27 @@ class HorarioController extends Controller
                            ->with('error', 'La sala no está disponible en el horario seleccionado.');
         }
 
+        // Verificar que el maestro no tenga otro horario al mismo tiempo (excluyendo el actual)
+        $conflictoMaestro = Horario::where('user_id', $request->user_id)
+                                  ->where('id', '!=', $horario->id)
+                                  ->where('dia_semana', $request->dia_semana)
+                                  ->where('fecha_inicio', '<=', $request->fecha_fin)
+                                  ->where('fecha_fin', '>=', $request->fecha_inicio)
+                                  ->where(function ($query) use ($request) {
+                                      $query->whereBetween('hora_inicio', [$request->hora_inicio, $request->hora_fin])
+                                            ->orWhereBetween('hora_fin', [$request->hora_inicio, $request->hora_fin])
+                                            ->orWhere(function ($q) use ($request) {
+                                                $q->where('hora_inicio', '<', $request->hora_inicio)
+                                                  ->where('hora_fin', '>', $request->hora_fin);
+                                            });
+                                  })->exists();
+
+        if ($conflictoMaestro) {
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'El maestro ya tiene una clase asignada en ese horario.');
+        }
+
         $horario->update($request->all());
 
         return redirect()->route('horarios.index')
@@ -187,8 +199,7 @@ class HorarioController extends Controller
         Gate::authorize('ver horarios');
 
         $horarios = Horario::with(['materia', 'maestro', 'sala'])
-                          ->where('grupo', $grupo)
-                          ->where('estado', 'activo')
+                          ->activos()
                           ->orderBy('dia_semana')
                           ->orderBy('hora_inicio')
                           ->get();
@@ -206,8 +217,8 @@ class HorarioController extends Controller
         }
 
         $horarios = Horario::with(['materia', 'sala'])
-                          ->where('maestro_id', Auth::id())
-                          ->where('estado', 'activo')
+                          ->where('user_id', Auth::id())
+                          ->activos()
                           ->orderBy('dia_semana')
                           ->orderBy('hora_inicio')
                           ->get();

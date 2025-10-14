@@ -275,6 +275,30 @@ return [
             'icon' => 'ti ti-tag',
             'roles' => ['control_escolar', 'admin', ]
         ],
+        [
+            'text' => 'Salas',
+            'url' => 'salas',
+            'icon' => 'ti ti-door',
+            'roles' => ['control_escolar', 'admin']
+        ],
+        [
+            'text' => 'Horarios',
+            'url' => 'horarios',
+            'icon' => 'ti ti-calendar-time',
+            'roles' => ['control_escolar', 'admin']
+        ],
+        [
+            'text' => 'Tareas',
+            'url' => 'tareas',
+            'icon' => 'ti ti-clipboard-list',
+            'roles' => ['control_escolar', 'admin']
+        ],
+        [
+            'text' => 'Calificaciones',
+            'url' => 'calificaciones',
+            'icon' => 'ti ti-certificate',
+            'roles' => ['control_escolar', 'admin']
+        ],
 
         // SECCIÓN: SERVICIO FINANCIERO (SIN TESTER)
         [
@@ -305,7 +329,31 @@ return [
             'icon' => 'ti ti-photo',
             'roles' => ['control_escolar', 'admin', 'servicio_financiero']
         ],
+        // SECCION MAESTROS
+        [
+            'header' => 'MAESTROS',
+            'roles' => ['maestro']
+        ],
+        [
+            'text' => 'Mis Horarios',
+            'url' => 'horarios_maestro',
+            'icon' => 'ti ti-calendar-time',
+            'roles' => ['maestro']
+        ],
+        [
+            'text' => 'Mis Tareas',
+            'url' => 'tareas_maestro',
+            'icon' => 'ti ti-clipboard-list',
+            'roles' => ['maestro']
+        ],
+        [
+            'text' => 'Mis Calificaciones',
+            'url' => 'calificaciones_maestro',
+            'icon' => 'ti ti-certificate',
+            'roles' => ['maestro']
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
