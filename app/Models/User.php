@@ -36,4 +36,52 @@ class User extends Authenticatable
     {
         return $this->hasOne(Alumno::class);
     }
+
+    /**
+     * Relación con horarios (para maestros)
+     */
+    public function horarios()
+    {
+        return $this->hasMany(Horario::class, 'maestro_id');
+    }
+
+    /**
+     * Relación con tareas asignadas (para maestros)
+     */
+    public function tareas()
+    {
+        return $this->hasMany(Tarea::class, 'maestro_id');
+    }
+
+    /**
+     * Relación con calificaciones otorgadas (para maestros)
+     */
+    public function calificaciones()
+    {
+        return $this->hasMany(Calificacion::class, 'maestro_id');
+    }
+
+    /**
+     * Verificar si el usuario es maestro
+     */
+    public function esMaestro()
+    {
+        return $this->hasRole('maestro');
+    }
+
+    /**
+     * Verificar si el usuario es alumno
+     */
+    public function esAlumno()
+    {
+        return $this->hasRole('alumno');
+    }
+
+    /**
+     * Verificar si el usuario es admin
+     */
+    public function esAdmin()
+    {
+        return $this->hasRole('admin');
+    }
 }

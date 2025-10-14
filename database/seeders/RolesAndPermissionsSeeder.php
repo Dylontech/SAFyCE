@@ -28,7 +28,27 @@ class RolesAndPermissionsSeeder extends Seeder
             'crear usuarios',
             'editar usuarios',
             'eliminar usuarios',
-            'ver usuarios'
+            'ver usuarios',
+            // Permisos para control escolar
+            'gestionar horarios',
+            'crear horarios',
+            'editar horarios',
+            'eliminar horarios',
+            'ver horarios',
+            'gestionar tareas',
+            'crear tareas',
+            'editar tareas',
+            'eliminar tareas',
+            'ver tareas',
+            'calificar tareas',
+            'gestionar calificaciones',
+            'ver calificaciones',
+            'editar calificaciones',
+            'gestionar salas',
+            'crear salas',
+            'editar salas',
+            'eliminar salas',
+            'ver salas'
         ];
 
         foreach ($permissions as $permission) {
@@ -68,6 +88,16 @@ class RolesAndPermissionsSeeder extends Seeder
             $servicioFinancieroRole = Role::create(['name' => 'servicio_financiero', 'guard_name' => 'web']);
             $servicioFinancieroRole->givePermissionTo([
                 'ver pagos', 'procesar pagos', 'generar liga de pago'
+            ]);
+        }
+
+        if (!Role::where('name', 'maestro')->exists()) {
+            $maestroRole = Role::create(['name' => 'maestro', 'guard_name' => 'web']);
+            $maestroRole->givePermissionTo([
+                'gestionar horarios', 'crear horarios', 'editar horarios', 'ver horarios',
+                'gestionar tareas', 'crear tareas', 'editar tareas', 'ver tareas', 'calificar tareas',
+                'gestionar calificaciones', 'ver calificaciones', 'editar calificaciones',
+                'ver salas'
             ]);
         }
 

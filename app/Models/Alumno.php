@@ -74,4 +74,52 @@ class Alumno extends Model implements AuthenticatableContract
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Relación con calificaciones
+     */
+    public function calificaciones()
+    {
+        return $this->hasMany(Calificacion::class);
+    }
+
+    /**
+     * Relación con la especialidad
+     */
+    public function especialidadModel()
+    {
+        return $this->belongsTo(Especialidade::class, 'especialidad', 'id');
+    }
+
+    /**
+     * Obtener calificaciones por período escolar
+     */
+    public function calificacionesPorPeriodo($periodo)
+    {
+        return $this->calificaciones()->where('periodo_escolar', $periodo);
+    }
+
+    /**
+     * Obtener promedio general del alumno
+     */
+    public function promedioGeneral($periodo = null)
+    {
+        $query = $this->calificaciones();
+        
+        if ($periodo) {
+            $query->where('periodo_escolar', $periodo);
+        }
+        
+        return $query->avg('calificacion') ?? 0;
+    }
+
+    /**
+     * Obtener materias del alumno según su especialidad y semestre
+     */
+    public function materias()
+    {
+        return Materia::where('especialidad', $this->especialidad)
+                     ->where('semestre', $this->semestre)
+                     ->get();
+    }
 }

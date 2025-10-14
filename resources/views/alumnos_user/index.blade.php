@@ -181,7 +181,7 @@
     </div>
 
     <!-- Accesos rápidos para estudiantes -->
-    <!-- @auth('alumno')
+    @auth('alumno')
     <div class="container-xl mb-4">
         <div class="row g-3 fade-in-up" style="animation-delay: 0.2s;">
             <div class="col-6 col-md-3">
@@ -240,7 +240,7 @@
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
     @endauth
     <div class="page-body">
         <div class="container-xl">

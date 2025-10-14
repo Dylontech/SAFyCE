@@ -18,6 +18,10 @@ use App\Http\Controllers\GestionEController;
 use App\Http\Controllers\CarruselController;
 use App\Http\Controllers\PaginaInicioController;
 use App\Http\Controllers\AdminPaginaInicioController;
+use App\Http\Controllers\SalaController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\TareaController;
+use App\Http\Controllers\CalificacionController;
 
 
 
@@ -48,6 +52,44 @@ Route::post('/password/reset', [\App\Http\Controllers\Auth\ResetPasswordControll
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('/alumnos', AlumnoController::class);
+    
+    // === MÓDULOS DE CONTROL ESCOLAR ===
+    
+    // Rutas para Salas
+    Route::resource('salas', \App\Http\Controllers\SalaController::class);
+    Route::post('salas/verificar-disponibilidad', [\App\Http\Controllers\SalaController::class, 'verificarDisponibilidad'])
+        ->name('salas.verificar-disponibilidad');
+    
+    // Rutas para Horarios
+    Route::resource('horarios', \App\Http\Controllers\HorarioController::class);
+    Route::get('horarios/grupo/{grupo}', [\App\Http\Controllers\HorarioController::class, 'porGrupo'])
+        ->name('horarios.grupo');
+    Route::get('mi-horario', [\App\Http\Controllers\HorarioController::class, 'miHorario'])
+        ->name('horarios.mi-horario');
+    
+    // Rutas para Tareas
+    Route::resource('tareas', \App\Http\Controllers\TareaController::class);
+    Route::get('tareas/{tarea}/descargar', [\App\Http\Controllers\TareaController::class, 'descargarArchivo'])
+        ->name('tareas.descargar');
+    Route::post('tareas/marcar-vencidas', [\App\Http\Controllers\TareaController::class, 'marcarVencidas'])
+        ->name('tareas.marcar-vencidas');
+    Route::get('mis-tareas', [\App\Http\Controllers\TareaController::class, 'misTareas'])
+        ->name('tareas.mis-tareas');
+    
+    // Rutas para Calificaciones
+    Route::resource('calificaciones', \App\Http\Controllers\CalificacionController::class);
+    Route::get('tareas/{tarea}/calificar', [\App\Http\Controllers\CalificacionController::class, 'calificarTarea'])
+        ->name('calificaciones.calificar-tarea');
+    Route::post('tareas/{tarea}/calificar', [\App\Http\Controllers\CalificacionController::class, 'guardarCalificacionesTarea'])
+        ->name('calificaciones.guardar-tarea');
+    Route::get('alumnos/{alumno}/boleta/{periodo?}', [\App\Http\Controllers\CalificacionController::class, 'boleta'])
+        ->name('calificaciones.boleta');
+    Route::get('mis-calificaciones', [\App\Http\Controllers\CalificacionController::class, 'misCalificaciones'])
+        ->name('calificaciones.mis-calificaciones');
+    Route::get('api/tareas-por-materia', [\App\Http\Controllers\CalificacionController::class, 'obtenerTareasPorMateria'])
+        ->name('api.tareas-por-materia');
+    
+    // === FIN MÓDULOS DE CONTROL ESCOLAR ===
     
     Route::get('/configuracion', [RoleController::class, 'index'])->name('roles.index');
     Route::post('/configuracion/asignar', [RoleController::class, 'assignRoles'])->name('roles.assign');
