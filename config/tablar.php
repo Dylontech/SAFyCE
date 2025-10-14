@@ -155,6 +155,12 @@ return [
             'icon' => 'ti ti-home',
             'roles' => ['alumno']
         ],
+        [
+            'text' => 'Inicio Maestro',
+            'url' => 'dashboard',
+            'icon' => 'ti ti-home',
+            'roles' => ['maestro']
+        ],
 
         // SECCIÓN: ACCESOS EXCLUSIVOS TESTER
         [
@@ -183,6 +189,12 @@ return [
             'text' => '🧪 Control Escolar - Materias',
             'url' => 'materias',
             'icon' => 'ti ti-book',
+            'roles' => ['tester']
+        ],
+        [
+            'text' => '🧪 Control Escolar - Grupos',
+            'url' => 'grupos',
+            'icon' => 'ti ti-users-group',
             'roles' => ['tester']
         ],
         [
@@ -270,6 +282,12 @@ return [
             'roles' => ['control_escolar', 'admin']
         ],
         [
+            'text' => 'Grupos',
+            'url' => 'grupos',
+            'icon' => 'ti ti-users-group',
+            'roles' => ['control_escolar', 'admin']
+        ],
+        [
             'text' => 'Especialidades',
             'url' => 'especialidades',
             'icon' => 'ti ti-tag',
@@ -336,22 +354,28 @@ return [
         ],
         [
             'text' => 'Mis Horarios',
-            'url' => 'horarios_maestro',
+            'url' => 'horarios',
             'icon' => 'ti ti-calendar-time',
             'roles' => ['maestro']
         ],
         [
             'text' => 'Mis Tareas',
-            'url' => 'tareas_maestro',
+            'url' => 'maestros/tareas',
             'icon' => 'ti ti-clipboard-list',
             'roles' => ['maestro']
         ],
         [
             'text' => 'Mis Calificaciones',
-            'url' => 'calificaciones_maestro',
+            'url' => 'maestros/calificaciones',
             'icon' => 'ti ti-certificate',
             'roles' => ['maestro']
         ],
+        [
+            'text' => 'salas',
+            'url' => 'salas',
+            'icon' => 'ti ti-door',
+            'roles' => ['maestro']
+        ]
     ],
 
 

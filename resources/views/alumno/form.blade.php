@@ -106,6 +106,12 @@
                             <option value="4" {{ $alumno->semestre == '4' ? 'selected' : '' }}>Cuarto Semestre</option>
                             <option value="5" {{ $alumno->semestre == '5' ? 'selected' : '' }}>Quinto Semestre</option>
                             <option value="6" {{ $alumno->semestre == '6' ? 'selected' : '' }}>Sexto Semestre</option>
+                            <option value="7" {{ $alumno->semestre == '7' ? 'selected' : '' }}>Séptimo Semestre</option>
+                            <option value="8" {{ $alumno->semestre == '8' ? 'selected' : '' }}>Octavo Semestre</option>
+                            <option value="9" {{ $alumno->semestre == '9' ? 'selected' : '' }}>Noveno Semestre</option>
+                            <option value="10" {{ $alumno->semestre == '10' ? 'selected' : '' }}>Décimo Semestre</option>
+                            <option value="11" {{ $alumno->semestre == '11' ? 'selected' : '' }}>Onceavo Semestre</option>
+                            <option value="12" {{ $alumno->semestre == '12' ? 'selected' : '' }}>Doceavo Semestre</option>
                         </select>
                         {!! $errors->first('semestre', '<div class="invalid-feedback">:message</div>') !!}
                         <small class="form-hint">Semestre actual del alumno.</small>
@@ -167,35 +173,102 @@
 </div>
 
 <script>
-// Lógica para actualizar grupos según semestre seleccionado
+// Lógica para actualizar grupos según semestre seleccionado (dinámico desde la base de datos)
 document.getElementById('semestre-select').addEventListener('change', function() {
     const semestre = this.value;
     const grupoSelect = document.getElementById('grupo-select');
-    grupoSelect.innerHTML = '<option value="" disabled selected>Selecciona un grupo</option>';
+    const grupoActual = '{{ $alumno->Grupo ?? "" }}';
+    
+    // Limpiar opciones
+    grupoSelect.innerHTML = '<option value="" disabled selected>Cargando grupos...</option>';
+    grupoSelect.disabled = true;
 
-    const grupos = {
-        1: ['124', '128', '129a', '129b', '129c'],
-        2: ['224', '228', '229a', '229b', '229c'],
-        3: ['324', '328', '329a', '329b', '329c'],
-        4: ['424', '428', '429a', '429b', '429c'],
-        5: ['524', '528', '529a', '529b', '529c'],
-        6: ['624', '628', '629a', '629b']
-    };
-
-    if (grupos[semestre]) {
-        grupos[semestre].forEach(function(grupo) {
-            const option = document.createElement('option');
-            option.value = grupo;
-            option.textContent = grupo;
-            // Mantener selección si coincide con valor actual
-            if (grupo === '{{ $alumno->Grupo }}') {
-                option.selected = true;
+    if (semestre) {
+        // Hacer petición AJAX para obtener grupos del semestre
+        fetch(`/api/grupos/semestre/${semestre}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
-            grupoSelect.appendChild(option);
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(grupos => {
+            console.log('Grupos recibidos:', grupos);
+            // Limpiar opciones
+            grupoSelect.innerHTML = '<option value="" disabled selected>Selecciona un grupo</option>';
+            
+            if (grupos && grupos.length > 0) {
+                // Agregar grupos obtenidos de la base de datos
+                grupos.forEach(function(grupo) {
+                    const option = document.createElement('option');
+                    option.value = grupo.nombre_completo;
+                    option.textContent = grupo.nombre_completo.toUpperCase();
+                    
+                    // Mantener selección si coincide con valor actual
+                    if (grupo.nombre_completo === grupoActual) {
+                        option.selected = true;
+                    }
+                    
+                    grupoSelect.appendChild(option);
+                });
+                grupoSelect.disabled = false;
+            } else {
+                grupoSelect.innerHTML = '<option value="" disabled selected>No hay grupos disponibles para este semestre</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error completo:', error);
+            grupoSelect.innerHTML = '<option value="" disabled selected>Error al cargar grupos</option>';
+            
+            // Fallback a grupos hardcodeados si falla la petición
+            const gruposFallback = {
+                1: ['1a', '1b', '1c', '124', '128', '129a', '129b', '129c'],
+                2: ['2a', '2b', '2c', '224', '228', '229a', '229b', '229c'],
+                3: ['3a', '3b', '3c', '324', '328', '329a', '329b', '329c'],
+                4: ['4a', '4b', '4c', '424', '428', '429a', '429b', '429c'],
+                5: ['5a', '5b', '5c', '524', '528', '529a', '529b', '529c'],
+                6: ['6a', '6b', '6c', '624', '628', '629a', '629b'],
+                7: ['7a', '7b'],
+                8: ['8a', '8b'],
+                9: ['9a', '9b'],
+                10: ['10a', '10b'],
+                11: ['11a', '11b'],
+                12: ['12a', '12b']
+            };
+            
+            if (gruposFallback[semestre]) {
+                console.log('Usando grupos fallback para semestre:', semestre);
+                grupoSelect.innerHTML = '<option value="" disabled selected>Selecciona un grupo</option>';
+                gruposFallback[semestre].forEach(function(grupo) {
+                    const option = document.createElement('option');
+                    option.value = grupo;
+                    option.textContent = grupo.toUpperCase();
+                    if (grupo === grupoActual) {
+                        option.selected = true;
+                    }
+                    grupoSelect.appendChild(option);
+                });
+                grupoSelect.disabled = false;
+            }
         });
-        grupoSelect.disabled = false;
     } else {
-        grupoSelect.disabled = true;
+        grupoSelect.innerHTML = '<option value="" disabled selected>Primero selecciona un semestre</option>';
+    }
+});
+
+// Cargar grupos al inicializar la página si ya hay un semestre seleccionado
+document.addEventListener('DOMContentLoaded', function() {
+    const semestreSelect = document.getElementById('semestre-select');
+    if (semestreSelect.value) {
+        semestreSelect.dispatchEvent(new Event('change'));
     }
 });
 

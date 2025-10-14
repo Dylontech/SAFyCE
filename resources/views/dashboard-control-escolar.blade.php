@@ -4,13 +4,20 @@
 
 @section('content')
 <style>
+    /* Fondo oscuro general */
+    body, .page-wrapper, .page-body {
+        
+        color: #ecf0f1 !important;
+    }
+    
     .module-card {
-        background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        background: linear-gradient(145deg, #2c3e50, #34495e);
         border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         transition: all 0.3s ease;
         border: none;
         height: 100%;
+        color: #ecf0f1;
     }
     
     .module-card:hover {
@@ -27,10 +34,11 @@
     }
     
     .stats-card {
-        background: white;
+        background: linear-gradient(135deg, #34495e, #2c3e50);
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        border-left: 4px solid #667eea;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        border-left: 4px solid #3498db;
+        color: #ecf0f1;
     }
     
     .welcome-header {
@@ -39,6 +47,23 @@
         border-radius: 15px;
         padding: 2rem;
         margin-bottom: 2rem;
+    }
+    
+    /* Tema oscuro general */
+    
+    
+    .card {
+        background-color: #2c3e50;
+        border: 1px solid #34495e;
+        color: #ecf0f1;
+    }
+    
+    .text-muted {
+        color: #95a5a6 !important;
+    }
+    
+    h2, h3, h4, h5 {
+        color: #ecf0f1;
     }
 </style>
 
@@ -176,7 +201,11 @@
             </div>
             <h5 class="card-title">Tareas y Proyectos</h5>
             <p class="card-text text-muted">Asignar y gestionar tareas</p>
-            <a href="{{ route('tareas.index') }}" class="btn btn-warning">Acceder</a>
+            @if(Auth::user()->hasRole('maestro'))
+                <a href="{{ route('maestros.tareas.index') }}" class="btn btn-warning">Acceder</a>
+            @else
+                <a href="{{ route('tareas.index') }}" class="btn btn-warning">Acceder</a>
+            @endif
         </div>
     </div>
     @endcan
@@ -190,7 +219,11 @@
             </div>
             <h5 class="card-title">Calificaciones</h5>
             <p class="card-text text-muted">Evaluar y calificar</p>
-            <a href="{{ route('calificaciones.index') }}" class="btn btn-danger">Acceder</a>
+            @if(Auth::user()->hasRole('maestro'))
+                <a href="{{ route('maestros.calificaciones.index') }}" class="btn btn-danger">Acceder</a>
+            @else
+                <a href="{{ route('calificaciones.index') }}" class="btn btn-danger">Acceder</a>
+            @endif
         </div>
     </div>
     @endcan
@@ -225,14 +258,98 @@
 </div>
 
 <!-- Accesos rápidos para maestros -->
-@if(Auth::user()->esMaestro())
+@if(Auth::user()->hasRole('maestro'))
 <div class="row mt-5">
     <div class="col-12">
-        <h3 class="mb-3">Accesos Rápidos para Maestros</h3>
+        <h3 class="mb-3 text-light">Panel de Maestros - Accesos Rápidos</h3>
+    </div>
+    
+    <!-- Dashboard de Maestros -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark text-light border-primary">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-primary" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <rect x="4" y="4" width="6" height="5" rx="1"/>
+                        <rect x="4" y="13" width="6" height="7" rx="1"/>
+                        <rect x="14" y="4" width="6" height="16" rx="1"/>
+                    </svg>
+                </div>
+                <h5 class="card-title text-primary">Dashboard Maestros</h5>
+                <p class="card-text text-muted">Panel principal con estadísticas</p>
+                <a href="{{ route('maestros.dashboard') }}" class="btn btn-primary btn-sm">Acceder</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gestión de Tareas -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark text-light border-success">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+                        <path d="M9 9l1 0"/>
+                        <path d="M9 13l6 0"/>
+                        <path d="M9 17l6 0"/>
+                    </svg>
+                </div>
+                <h5 class="card-title text-success">Mis Tareas</h5>
+                <p class="card-text text-muted">Crear y gestionar tareas</p>
+                <a href="{{ route('maestros.tareas.index') }}" class="btn btn-success btn-sm">Gestionar</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gestión de Calificaciones -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark text-light border-warning">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
+                    </svg>
+                </div>
+                <h5 class="card-title text-warning">Calificaciones</h5>
+                <p class="card-text text-muted">Evaluar y calificar estudiantes</p>
+                <a href="{{ route('maestros.calificaciones.index') }}" class="btn btn-warning btn-sm">Calificar</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reportes -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-dark text-light border-info">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-info" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"/>
+                        <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"/>
+                        <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"/>
+                        <path d="M4 20l14 0"/>
+                    </svg>
+                </div>
+                <h5 class="card-title text-info">Reportes</h5>
+                <p class="card-text text-muted">Estadísticas y reportes</p>
+                <a href="{{ route('maestros.calificaciones.reportes') }}" class="btn btn-info btn-sm">Ver Reportes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Accesos adicionales para maestros -->
+<div class="row mt-3">
+    <div class="col-12">
+        <h4 class="mb-3 text-light">Recursos Adicionales</h4>
     </div>
     
     <div class="col-md-3 mb-3">
-        <div class="card">
+        <div class="card bg-secondary text-light">
             <div class="card-body text-center">
                 <div class="mb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-primary" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -243,15 +360,15 @@
                         <line x1="4" y1="11" x2="20" y2="11"/>
                     </svg>
                 </div>
-                <h5 class="card-title">Mis Horarios</h5>
-                <p class="card-text text-muted">Ver y gestionar horarios de clases</p>
-                <a href="{{ route('horarios.index') }}" class="btn btn-primary btn-sm">Ver Horarios</a>
+                <h5 class="card-title">Horarios</h5>
+                <p class="card-text text-muted">Consultar horarios de clases</p>
+                <a href="{{ route('horarios.index') }}" class="btn btn-outline-light btn-sm">Ver Horarios</a>
             </div>
         </div>
     </div>
     
     <div class="col-md-3 mb-3">
-        <div class="card">
+        <div class="card bg-secondary text-light">
             <div class="card-body text-center">
                 <div class="mb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-success" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -264,45 +381,41 @@
                     </svg>
                 </div>
                 <h5 class="card-title">Salas</h5>
-                <p class="card-text text-muted">Consultar información de aulas</p>
-                <a href="{{ route('salas.index') }}" class="btn btn-success btn-sm">Ver Salas</a>
+                <p class="card-text text-muted">Información de aulas disponibles</p>
+                <a href="{{ route('salas.index') }}" class="btn btn-outline-light btn-sm">Ver Salas</a>
             </div>
         </div>
     </div>
     
     <div class="col-md-3 mb-3">
-        <div class="card">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-info" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
-                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
-                        <line x1="9" y1="9" x2="10" y2="9"/>
-                        <line x1="9" y1="13" x2="15" y2="13"/>
-                        <line x1="9" y1="17" x2="15" y2="17"/>
-                    </svg>
-                </div>
-                <h5 class="card-title">Tareas</h5>
-                <p class="card-text text-muted">Gestionar tareas y actividades</p>
-                <a href="{{ route('tareas.index') }}" class="btn btn-info btn-sm">Ver Tareas</a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-3">
-        <div class="card">
+        <div class="card bg-secondary text-light">
             <div class="card-body text-center">
                 <div class="mb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-warning" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 2l3.09 6.26l6.91 1.01l-5 4.87l1.18 6.88l-6.18 -3.25l-6.18 3.25l1.18 -6.88l-5 -4.87l6.91 -1.01z"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Nueva Tarea</h5>
+                <p class="card-text text-muted">Crear tarea rápidamente</p>
+                <a href="{{ route('maestros.tareas.create') }}" class="btn btn-outline-warning btn-sm">Crear Tarea</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-secondary text-light">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg text-info" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M9 11l3 3l8 -8"/>
                         <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"/>
                     </svg>
                 </div>
-                <h5 class="card-title">Calificaciones</h5>
-                <p class="card-text text-muted">Registrar y consultar calificaciones</p>
-                <a href="{{ route('calificaciones.index') }}" class="btn btn-warning btn-sm">Ver Calificaciones</a>
+                <h5 class="card-title">Nueva Calificación</h5>
+                <p class="card-text text-muted">Registrar calificación</p>
+                <a href="{{ route('maestros.calificaciones.create') }}" class="btn btn-outline-info btn-sm">Calificar</a>
             </div>
         </div>
     </div>

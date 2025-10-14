@@ -38,7 +38,9 @@
                             </div>
                             <div class="col-12 col-sm-6 col-lg-4">
                                 <label for="grupo" class="form-label">Grupo</label>
-                                <input type="text" id="grupo" name="grupo" class="form-control" value="{{ old('grupo', Auth::guard('alumno')->user()->Grupo ?? '') }}" placeholder="Ej: 6AM">
+                                <select id="grupo" name="grupo" class="form-select">
+                                    <option value="">Primero selecciona un semestre</option>
+                                </select>
                             </div>
                             <div class="col-12 col-sm-6 col-lg-4">
                                 <label for="semestre" class="form-label">Semestre que Cursa</label>
@@ -50,6 +52,12 @@
                                     <option value="4" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '4' ? 'selected' : '' }}>Cuarto Semestre</option>
                                     <option value="5" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '5' ? 'selected' : '' }}>Quinto Semestre</option>
                                     <option value="6" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '6' ? 'selected' : '' }}>Sexto Semestre</option>
+                                    <option value="7" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '7' ? 'selected' : '' }}>Séptimo Semestre</option>
+                                    <option value="8" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '8' ? 'selected' : '' }}>Octavo Semestre</option>
+                                    <option value="9" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '9' ? 'selected' : '' }}>Noveno Semestre</option>
+                                    <option value="10" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '10' ? 'selected' : '' }}>Décimo Semestre</option>
+                                    <option value="11" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '11' ? 'selected' : '' }}>Onceavo Semestre</option>
+                                    <option value="12" {{ old('semestre', Auth::guard('alumno')->user()->semestre ?? '') == '12' ? 'selected' : '' }}>Doceavo Semestre</option>
                                 </select>
                             </div>
                             <div class="col-12 col-sm-6 col-lg-4">
@@ -271,8 +279,77 @@
                 this.classList.add('is-invalid');
             }
         });
+        
+        // Cargar grupos dinámicamente según semestre seleccionado
+        const semestreSelect = document.getElementById('semestre');
+        const grupoSelect = document.getElementById('grupo');
+        const grupoActual = '{{ old("grupo", Auth::guard("alumno")->user()->Grupo ?? "") }}';
+        
+        semestreSelect.addEventListener('change', function() {
+            const semestre = this.value;
+            
+            // Limpiar opciones
+            grupoSelect.innerHTML = '<option value="" disabled selected>Cargando grupos...</option>';
+            grupoSelect.disabled = true;
+
+            if (semestre) {
+                // Hacer petición AJAX para obtener grupos del semestre
+                fetch(`/api/grupos/semestre/${semestre}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al cargar los grupos');
+                    }
+                    return response.json();
+                })
+                .then(grupos => {
+                    // Limpiar opciones
+                    grupoSelect.innerHTML = '<option value="" disabled selected>Selecciona un grupo</option>';
+                    
+                    if (grupos.length > 0) {
+                        // Agregar grupos obtenidos de la base de datos
+                        grupos.forEach(function(grupo) {
+                            const option = document.createElement('option');
+                            option.value = grupo.nombre_completo;
+                            option.textContent = grupo.nombre_completo.toUpperCase();
+                            
+                            // Mantener selección si coincide con valor actual
+                            if (grupo.nombre_completo === grupoActual) {
+                                option.selected = true;
+                            }
+                            
+                            grupoSelect.appendChild(option);
+                        });
+                        grupoSelect.disabled = false;
+                    } else {
+                        grupoSelect.innerHTML = '<option value="" disabled selected>No hay grupos disponibles</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    grupoSelect.innerHTML = '<option value="" disabled selected>Error al cargar grupos</option>';
+                });
+            } else {
+                grupoSelect.innerHTML = '<option value="" disabled selected>Primero selecciona un semestre</option>';
+            }
+        });
+        
+        // Cargar grupos al inicializar la página si ya hay un semestre seleccionado
+        if (semestreSelect.value) {
+            semestreSelect.dispatchEvent(new Event('change'));
+        }
     });
 </script>
+
+<!-- Agregar meta tag para CSRF token -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 @endpush
 @endsection
 

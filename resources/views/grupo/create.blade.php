@@ -1,10 +1,6 @@
 @extends('tablar::page')
 
-@section('title', 'Registrar Alumno')
-
-@section('head')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-@endsection
+@section('title', 'Crear Grupo')
 
 @section('content')
     <!-- Page header -->
@@ -14,18 +10,16 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <div class="page-pretitle">
-                        Registrar
+                        Crear
                     </div>
                     <h2 class="page-title">
-                        {{ __('Nuevo alumno') }}
+                        {{ __('Grupo ') }}
                     </h2>
                 </div>
                 <!-- Page title actions -->
                 <div class="col-12 col-md-auto ms-auto d-print-none">
                     <div class="btn-list">
-                        <!-- Botón completo para escritorio -->
-                        <a href="{{ route('alumnos.index') }}" class="btn btn-primary d-none d-sm-inline-block">
-                            <!-- Icono de flecha hacia la izquierda -->
+                        <a href="{{ route('grupos.index') }}" class="btn btn-secondary d-none d-sm-inline-block">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                  stroke-linecap="round" stroke-linejoin="round">
@@ -33,10 +27,9 @@
                                 <line x1="19" y1="12" x2="5" y2="12"/>
                                 <polyline points="12,19 5,12 12,5"/>
                             </svg>
-                            Lista de alumnos
+                            Volver a la lista
                         </a>
-                        <!-- Botón compacto para móviles -->
-                        <a href="{{ route('alumnos.index') }}" class="btn btn-primary d-sm-none">
+                        <a href="{{ route('grupos.index') }}" class="btn btn-secondary d-sm-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                  stroke-linecap="round" stroke-linejoin="round">
@@ -44,7 +37,6 @@
                                 <line x1="19" y1="12" x2="5" y2="12"/>
                                 <polyline points="12,19 5,12 12,5"/>
                             </svg>
-                            <span class="d-none d-xs-inline-block">Volver</span>
                         </a>
                     </div>
                 </div>
@@ -54,20 +46,16 @@
     <!-- Page body -->
     <div class="page-body">
         <div class="container-xl">
-            @if(config('tablar','display_alert'))
-                @include('tablar::common.alert')
-            @endif
             <div class="row row-deck row-cards">
-                <div class="col-12 col-xl-10 mx-auto">
+                <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Información del alumno</h3>
+                            <h3 class="card-title">Datos del Grupo</h3>
                         </div>
                         <div class="card-body">
-                            <form method="POST" action="{{ route('alumnos.store') }}" id="ajaxForm" role="form"
-                                  enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('grupos.store') }}" role="form" enctype="multipart/form-data">
                                 @csrf
-                                @include('alumno.form')
+                                @include('grupo.form')
                             </form>
                         </div>
                     </div>

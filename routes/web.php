@@ -99,6 +99,9 @@ Route::middleware(['auth:web'])->group(function () {
     // Ruta para búsqueda de alumnos
     Route::get('/search/alumnos', [AlumnoController::class, 'search'])->name('search.alumnos');
     
+    // Ruta AJAX para obtener grupos por semestre
+    Route::get('/api/grupos/semestre/{semestre}', [App\Http\Controllers\GrupoController::class, 'getGruposPorSemestre'])->name('grupos.por-semestre');
+    
     // Configuración de página de inicio (protegida por auth)
     // Ruta para mostrar el formulario (GET)
 Route::get('/admin/pagina-inicio', [AdminPaginaInicioController::class, 'edit'])
@@ -208,6 +211,9 @@ Route::get('gestions/downloadComprobante/{id}', [App\Http\Controllers\GestionSCo
 
 Route::resource('/materias', App\Http\Controllers\MateriaController::class);
 
+// Rutas para el CRUD de Grupos
+Route::resource('/grupos', App\Http\Controllers\GrupoController::class);
+
 // Rutas para el controlador FormularioEController
 Route::get('/formulario/{id}/edit', [FormularioEController::class, 'edit'])->name('formulario.edit');
 Route::put('/formulario/{id}', [FormularioEController::class, 'update'])->name('formulario.update');
@@ -261,7 +267,31 @@ Route::get('carrusel/image/{id}', [CarruselController::class, 'getImage'])->name
 
 Route::get('/debug-sessions', [LoginController::class, 'debugSessions']);
 
-
+// Rutas para maestros
+Route::prefix('maestros')->name('maestros.')->middleware(['auth', 'role:maestro'])->group(function () {
+    // Dashboard de maestros
+    Route::get('/dashboard', [App\Http\Controllers\MaestroController::class, 'dashboard'])->name('dashboard');
+    
+    // Rutas de tareas para maestros
+    Route::get('/tareas', [App\Http\Controllers\Maestros\TareaController::class, 'index'])->name('tareas.index');
+    Route::get('/tareas/crear', [App\Http\Controllers\Maestros\TareaController::class, 'create'])->name('tareas.create');
+    Route::post('/tareas', [App\Http\Controllers\Maestros\TareaController::class, 'store'])->name('tareas.store');
+    Route::get('/tareas/{tarea}', [App\Http\Controllers\Maestros\TareaController::class, 'show'])->name('tareas.show');
+    Route::get('/tareas/{tarea}/editar', [App\Http\Controllers\Maestros\TareaController::class, 'edit'])->name('tareas.edit');
+    Route::put('/tareas/{tarea}', [App\Http\Controllers\Maestros\TareaController::class, 'update'])->name('tareas.update');
+    Route::delete('/tareas/{tarea}', [App\Http\Controllers\Maestros\TareaController::class, 'destroy'])->name('tareas.destroy');
+    Route::patch('/tareas/{tarea}/toggle-estado', [App\Http\Controllers\Maestros\TareaController::class, 'toggleEstado'])->name('tareas.toggle-estado');
+    
+    // Rutas de calificaciones para maestros
+    Route::get('/calificaciones', [App\Http\Controllers\Maestros\CalificacionController::class, 'index'])->name('calificaciones.index');
+    Route::get('/calificaciones/crear', [App\Http\Controllers\Maestros\CalificacionController::class, 'create'])->name('calificaciones.create');
+    Route::post('/calificaciones', [App\Http\Controllers\Maestros\CalificacionController::class, 'store'])->name('calificaciones.store');
+    Route::get('/calificaciones/{calificacion}/editar', [App\Http\Controllers\Maestros\CalificacionController::class, 'edit'])->name('calificaciones.edit');
+    Route::put('/calificaciones/{calificacion}', [App\Http\Controllers\Maestros\CalificacionController::class, 'update'])->name('calificaciones.update');
+    Route::delete('/calificaciones/{calificacion}', [App\Http\Controllers\Maestros\CalificacionController::class, 'destroy'])->name('calificaciones.destroy');
+    Route::get('/calificaciones/reportes', [App\Http\Controllers\Maestros\CalificacionController::class, 'reportes'])->name('calificaciones.reportes');
+    Route::get('/ajax/tareas-by-materia', [App\Http\Controllers\Maestros\CalificacionController::class, 'getTareasByMateria'])->name('ajax.tareas-by-materia');
+});
 
 Route::resource('/especialidades', App\Http\Controllers\EspecialidadeController::class);
 
