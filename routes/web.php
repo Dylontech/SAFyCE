@@ -97,8 +97,6 @@ Route::middleware(['auth:web'])->group(function () {
         ->name('calificaciones.guardar-tarea');
     Route::get('alumnos/{alumno}/boleta/{periodo?}', [\App\Http\Controllers\CalificacionController::class, 'boleta'])
         ->name('calificaciones.boleta');
-    Route::get('mis-calificaciones', [\App\Http\Controllers\CalificacionController::class, 'misCalificaciones'])
-        ->name('calificaciones.mis-calificaciones');
     Route::get('api/tareas-por-materia', [\App\Http\Controllers\CalificacionController::class, 'obtenerTareasPorMateria'])
         ->name('api.tareas-por-materia');
     
@@ -123,6 +121,12 @@ Route::get('/admin/pagina-inicio', [AdminPaginaInicioController::class, 'edit'])
 Route::put('/admin/pagina-inicio', [AdminPaginaInicioController::class, 'update'])
     ->name('admin.pagina-inicio.update');
 });
+
+// Rutas de calificaciones (accesibles para múltiples tipos de usuarios)
+Route::get('kardex', [\App\Http\Controllers\CalificacionController::class, 'kardex'])
+    ->name('calificaciones.kardex');
+Route::get('mis-calificaciones', [\App\Http\Controllers\CalificacionController::class, 'misCalificaciones'])
+    ->name('calificaciones.mis-calificaciones');
 
 // Rutas para alumnos autenticados
 Route::middleware(['auth:alumno'])->group(function () {

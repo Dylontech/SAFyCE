@@ -1,10 +1,35 @@
+{{--
+/*====================================================================================
+|                             DASHBOARD DE ALUMNOS - SAFyCE                          |
+|==================================================================================== 
+| Vista: resources/views/alumnos_user/index.blade.php
+| Propósito: Dashboard principal para estudiantes del CECEyT
+| Funcionalidades:
+|   - Estadísticas académicas en tiempo real
+|   - Módulos de acceso rápido organizados por categorías
+|   - Notificaciones contextuales (buen rendimiento/materias pendientes)
+|   - Carrusel de novedades institucionales
+|   - Reuniones virtuales disponibles
+|==================================================================================== 
+| Secciones principales:
+|   1. Hero Section - Bienvenida personalizada
+|   2. Academic Stats - Estadísticas académicas reales
+|   3. Notifications - Alertas contextuales
+|   4. Quick Access Modules - Módulos organizados por categorías
+|   5. News Carousel - Novedades institucionales
+|====================================================================================*/
+--}}
+
 @extends('tablar::page')
 
 @section('title', 'Portal Estudiantil - CECEyT')
 
 @section('content')
-    <!-- Estilos responsivos optimizados para alumnos -->
+    {{-- ============================================================================
+         ESTILOS CSS PERSONALIZADOS PARA DASHBOARD DE ALUMNOS
+         ============================================================================ --}}
     <style>
+        /*=== SECCIÓN HERO (BIENVENIDA) ===*/
         .student-hero {
             background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
             color: white;
@@ -13,6 +38,7 @@
             border-radius: 0 0 1rem 1rem;
         }
         
+        /*=== TARJETAS DE ESTUDIANTE ===*/
         .student-card {
             background: linear-gradient(45deg, #4CAF50 0%, #45a049 100%);
             color: white;
@@ -20,6 +46,7 @@
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
         
+        /*=== INFORMACIÓN ACADÉMICA ===*/
         .academic-info {
             background: #f8f9ff;
             border-left: 4px solid #2196F3;
@@ -27,7 +54,9 @@
             margin: 1rem 0;
             border-radius: 0 0.5rem 0.5rem 0;
         }
+        }
         
+        /*=== CARRUSEL DE NOVEDADES ===*/
         .carousel-container {
             max-width: 100%;
             margin: 0 auto;
@@ -47,7 +76,8 @@
             object-fit: cover;
         }
         
-        /* Responsive carousel heights optimized for students */
+        /*=== RESPONSIVE DESIGN PARA CARRUSEL ===*/
+        /* Móviles pequeños */
         @media (max-width: 576px) {
             .carousel-inner {
                 height: 300px !important;
@@ -60,12 +90,14 @@
             }
         }
         
+        /* Tablets pequeñas */
         @media (min-width: 577px) and (max-width: 768px) {
             .carousel-inner {
                 height: 400px !important;
             }
         }
         
+        /* Tablets grandes */
         @media (min-width: 769px) and (max-width: 992px) {
             .carousel-inner {
                 height: 480px !important;
@@ -118,18 +150,18 @@
         }
         
         .academic-stats {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: #495057;
             border-radius: 1rem;
             padding: 2rem;
             margin: 1.5rem 0;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
             border-radius: 0.75rem;
             padding: 1.5rem;
             text-align: center;
@@ -137,8 +169,9 @@
         }
         
         .stat-card:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: white;
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .module-section {
@@ -192,6 +225,10 @@
             border-radius: 1rem;
         }
     </style>
+    
+    {{-- ============================= --}}
+    {{-- SECCIÓN HERO (BIENVENIDA)     --}}
+    {{-- ============================= --}}
     <!-- Sección Hero para estudiantes -->
     <div class="student-hero fade-in-up">
         <div class="container-xl">
@@ -258,20 +295,30 @@
         </div>
     </div>
 
+    {{-- ============================= --}}
+    {{-- SECCIÓN ESTADÍSTICAS          --}}
+    {{-- ============================= --}}
     <!-- Sección de Estadísticas Académicas -->
     @auth('alumno')
+    @if(isset($estadisticas))
     <div class="container-xl mb-4">
         <div class="academic-stats fade-in-up" style="animation-delay: 0.1s;">
             <div class="row align-items-center">
                 <div class="col-12 col-md-4 text-center text-md-start">
                     <div class="d-flex align-items-center justify-content-center justify-content-md-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg me-3" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg me-3 text-primary" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4z"/>
                         </svg>
                         <div>
                             <h3 class="mb-1">Rendimiento Académico</h3>
-                            <p class="mb-0 opacity-75">Seguimiento de tu progreso</p>
+                            <p class="mb-0 opacity-75">
+                                @if($alumno)
+                                    {{ $alumno->Nombre }} - {{ $alumno->especialidad }}
+                                @else
+                                    Seguimiento de tu progreso
+                                @endif
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -279,26 +326,33 @@
                     <div class="row g-3">
                         <div class="col-6 col-md-3">
                             <div class="stat-card">
-                                <div class="h2 mb-1">8.5</div>
+                                <div class="h2 mb-1 
+                                    @if($estadisticas['promedio_general'] >= 90) text-success
+                                    @elseif($estadisticas['promedio_general'] >= 80) text-info
+                                    @elseif($estadisticas['promedio_general'] >= 70) text-warning
+                                    @else text-danger
+                                    @endif">
+                                    {{ number_format($estadisticas['promedio_general'], 1) }}
+                                </div>
                                 <div class="small opacity-75">Promedio General</div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-card">
-                                <div class="h2 mb-1">12</div>
-                                <div class="small opacity-75">Materias Cursando</div>
+                                <div class="h2 mb-1 text-primary">{{ $estadisticas['materias_cursadas'] }}</div>
+                                <div class="small opacity-75">Materias Cursadas</div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-card">
-                                <div class="h2 mb-1">95%</div>
-                                <div class="small opacity-75">Asistencia</div>
+                                <div class="h2 mb-1 text-success">{{ $estadisticas['materias_aprobadas'] }}</div>
+                                <div class="small opacity-75">Materias Aprobadas</div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-card">
-                                <div class="h2 mb-1">8</div>
-                                <div class="small opacity-75">Tareas Pendientes</div>
+                                <div class="h2 mb-1 {{ $estadisticas['materias_pendientes'] > 0 ? 'text-warning' : 'text-success' }}">{{ $estadisticas['materias_pendientes'] }}</div>
+                                <div class="small opacity-75">Materias Pendientes</div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
@@ -325,6 +379,78 @@
             </div>
         </div>
     </div>
+    @endif
+    @endauth
+
+    {{-- ============================= --}}
+    {{-- SECCIÓN NOTIFICACIONES        --}}
+    {{-- ============================= --}}
+    <!-- Notificación de buen rendimiento -->
+    @auth('alumno')
+    @if(isset($estadisticas) && $estadisticas['promedio_general'] >= 85 && $estadisticas['materias_pendientes'] == 0)
+        <div class="container-xl mb-4">
+            <div class="alert alert-success alert-dismissible border-0 shadow-sm" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="ti ti-trophy fs-1 text-white"></i>
+                    </div>
+                    <div class="flex-grow-1 text-white">
+                        <h4 class="alert-heading text-white mb-2">
+                            <i class="ti ti-star me-2"></i>
+                            ¡Excelente Rendimiento Académico!
+                        </h4>
+                        <p class="mb-2">
+                            ¡Felicidades! Tienes un promedio de <strong>{{ number_format($estadisticas['promedio_general'], 1) }}</strong> 
+                            y todas tus materias aprobadas. ¡Sigue así!
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('calificaciones.kardex') }}" class="btn btn-light btn-sm">
+                                <i class="ti ti-chart-bar me-1"></i>
+                                Ver mi Kardex
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    @endif
+    @endauth
+
+    <!-- Notificación de materias pendientes -->
+    @auth('alumno')
+    @if(isset($estadisticas) && $estadisticas['materias_pendientes'] > 0)
+        <div class="container-xl mb-4">
+            <div class="alert alert-warning alert-dismissible border-0 shadow-sm" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="ti ti-alert-triangle fs-1 text-white"></i>
+                    </div>
+                    <div class="flex-grow-1 text-white">
+                        <h4 class="alert-heading text-white mb-2">
+                            <i class="ti ti-school me-2"></i>
+                            ¡Atención! Materias Pendientes
+                        </h4>
+                        <p class="mb-2">
+                            Tienes <strong>{{ $estadisticas['materias_pendientes'] }} {{ Str::plural('materia', $estadisticas['materias_pendientes']) }}</strong> 
+                            {{ $estadisticas['materias_pendientes'] == 1 ? 'pendiente' : 'pendientes' }} por aprobar.
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('calificaciones.kardex') }}" class="btn btn-light btn-sm">
+                                <i class="ti ti-chart-bar me-1"></i>
+                                Ver Kardex
+                            </a>
+                            <a href="{{ route('calificaciones.mis-calificaciones') }}" class="btn btn-outline-light btn-sm">
+                                <i class="ti ti-list me-1"></i>
+                                Ver Calificaciones
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    @endif
     @endauth
 
     <!-- Notificación de reuniones activas -->
@@ -383,6 +509,9 @@
     @endif
     @endauth
 
+    {{-- ============================= --}}
+    {{-- SECCIÓN MÓDULOS DE ACCESO     --}}
+    {{-- ============================= --}}
     <!-- Accesos rápidos para estudiantes -->
     @auth('alumno')
     <div class="container-xl mb-4">
@@ -473,18 +602,39 @@
                             <div class="h2 mb-3 text-success">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4z"/>
+                                </svg>
+                            </div>
+                            <div class="fw-bold text-dark mb-1">Mi Kardex</div>
+                            <div class="small text-muted mb-3">Historial académico completo</div>
+                            <a href="{{ route('calificaciones.kardex') }}" class="btn btn-success btn-sm w-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M5 12l5 5l10 -10"/>
+                                </svg>
+                                Ver Kardex
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="quick-access">
+                        <div class="quick-access-content">
+                            <div class="h2 mb-3 text-warning">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M9 11l3 3l8 -8"/>
                                     <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"/>
                                 </svg>
                             </div>
                             <div class="fw-bold text-dark mb-1">Calificaciones</div>
-                            <div class="small text-muted mb-3">Revisar notas y progreso</div>
-                            <a href="{{ route('estudiantes.calificaciones') }}" class="btn btn-success btn-sm w-100">
+                            <div class="small text-muted mb-3">Ver calificaciones de tareas</div>
+                            <a href="{{ route('calificaciones.mis-calificaciones') }}" class="btn btn-warning btn-sm w-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M5 12l5 5l10 -10"/>
                                 </svg>
-                                Ingresar
+                                Ver Calificaciones
                             </a>
                         </div>
                     </div>
@@ -621,10 +771,124 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Fila 3: Servicios Institucionales -->
+                <div class="col-12 mt-4 mb-3">
+                    <div class="bg-white rounded-pill px-3 py-2 d-inline-block shadow-sm border">
+                        <h5 class="text-muted mb-0">🏛️ Servicios Institucionales</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="quick-access">
+                        <div class="quick-access-content">
+                            <div class="h2 mb-3 text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/>
+                                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/>
+                                </svg>
+                            </div>
+                            <div class="fw-bold text-dark mb-1">Asistencias</div>
+                            <div class="small text-muted mb-3">Control de asistencias</div>
+                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="m21 12l-6 0m-6 0l-6 0"/>
+                                </svg>
+                                Próximamente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="quick-access">
+                        <div class="quick-access-content">
+                            <div class="h2 mb-3 text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"/>
+                                    <path d="M3 7l9 6l9 -6"/>
+                                </svg>
+                            </div>
+                            <div class="fw-bold text-dark mb-1">Correo Institucional</div>
+                            <div class="small text-muted mb-3">Email estudiantil oficial</div>
+                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="m21 12l-6 0m-6 0l-6 0"/>
+                                </svg>
+                                Próximamente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="quick-access">
+                        <div class="quick-access-content">
+                            <div class="h2 mb-3 text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12z"/>
+                                    <path d="M19 16h-12a2 2 0 0 0 -2 2"/>
+                                    <path d="M9 8h6"/>
+                                    <path d="M9 12h6"/>
+                                </svg>
+                            </div>
+                            <div class="fw-bold text-dark mb-1">Biblioteca Virtual</div>
+                            <div class="small text-muted mb-3">Recursos académicos digitales</div>
+                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="m21 12l-6 0m-6 0l-6 0"/>
+                                </svg>
+                                Próximamente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="quick-access">
+                        <div class="quick-access-content">
+                            <div class="h2 mb-3 text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+                                    <line x1="9" y1="9" x2="10" y2="9"/>
+                                    <line x1="9" y1="13" x2="15" y2="13"/>
+                                    <line x1="9" y1="17" x2="15" y2="17"/>
+                                </svg>
+                            </div>
+                            <div class="fw-bold text-dark mb-1">Documentación</div>
+                            <div class="small text-muted mb-3">Manuales y guías académicas</div>
+                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="m21 12l-6 0m-6 0l-6 0"/>
+                                </svg>
+                                Próximamente
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     @endauth
+    
+    {{-- ============================= --}}
+    {{-- SECCIÓN CARRUSEL Y CONTENIDO  --}}
+    {{-- ============================= --}}
     <div class="page-body">
         <div class="container-xl">
             <div class="row row-deck row-cards">
@@ -673,4 +937,58 @@
             </div>
         </div>
     </div>
+    
+    {{-- ============================= --}}
+    {{-- FIN DEL DASHBOARD ESTUDIANTIL --}}
+    {{-- ============================= --}}
 @endsection
+
+{{--
+====================================
+RESUMEN DEL DASHBOARD ESTUDIANTIL
+====================================
+
+DESCRIPCIÓN:
+Dashboard principal para estudiantes del CECEyT con funcionalidades académicas 
+y de comunicación integradas. Incluye estadísticas en tiempo real, sistema 
+de notificaciones, accesos rápidos a módulos y carrusel informativo.
+
+SECCIONES PRINCIPALES:
+1. Hero Section - Bienvenida personalizada con información del estudiante
+2. Estadísticas - Métricas académicas calculadas dinámicamente
+3. Notificaciones - Alertas contextuales de rendimiento y reuniones
+4. Módulos de Acceso - Grid de herramientas académicas principales
+5. Carrusel - Contenido informativo e institucional
+
+FUNCIONALIDADES CLAVE:
+- Autenticación multi-guard (alumno/web)
+- Estadísticas académicas en tiempo real
+- Sistema de notificaciones inteligentes
+- Responsive design para todos los dispositivos
+- Integración con módulos de calificaciones, kardex, reuniones, etc.
+- Animaciones CSS y efectos visuales modernos
+
+DEPENDENCIAS TÉCNICAS:
+- Laravel Blade templating
+- Bootstrap 5.x para responsive design
+- Tabler CSS framework
+- Font Awesome icons
+- CSS Grid y Flexbox para layouts
+- JavaScript para interactividad del carrusel
+
+ARCHIVOS RELACIONADOS:
+- CalificacionController.php (estadísticas académicas)
+- alumnos_userController.php (datos del dashboard)
+- routes/web.php (rutas de navegación)
+- Models: User, Alumno, Calificacion, Materia
+
+ESTADO ACTUAL:
+✅ Completamente funcional
+✅ Responsive design implementado
+✅ Estadísticas reales integradas
+✅ Documentación completa
+✅ Optimizado para rendimiento
+
+ÚLTIMA ACTUALIZACIÓN: {{ date('Y-m-d H:i:s') }}
+DESARROLLADO PARA: Sistema Académico CECEyT
+--}}

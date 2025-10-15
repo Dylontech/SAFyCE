@@ -264,6 +264,12 @@ return [
             'roles' => ['alumno']
         ],
         [
+            'text' => 'Mi Kardex Académico',
+            'url' => 'kardex',
+            'icon' => 'ti ti-school',
+            'roles' => ['alumno']
+        ],
+        [
             'text' => 'Salas Disponibles',
             'url' => 'estudiantes/salas',
             'icon' => 'ti ti-building',

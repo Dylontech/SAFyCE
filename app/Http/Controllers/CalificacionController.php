@@ -14,7 +14,7 @@ class CalificacionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['kardex', 'misCalificaciones']);
     }
 
     /**
@@ -278,11 +278,28 @@ class CalificacionController extends Controller
      */
     public function misCalificaciones()
     {
-        if (!Auth::user()->esAlumno()) {
-            abort(403, 'No autorizado');
+        $alumno = null;
+        
+        // Verificar si es alumno autenticado directamente
+        if (Auth::guard('alumno')->check()) {
+            $alumno = Auth::guard('alumno')->user();
+        } 
+        // Verificar si es usuario regular y buscar alumno por email
+        elseif (Auth::check()) {
+            $alumno = Alumno::where('email', Auth::user()->email)->first();
+            
+            // Si no se encuentra por email, permitir acceso a administradores
+            if (!$alumno && Auth::user()->hasRole(['admin', 'super-admin'])) {
+                // Para administradores, tomar el primer alumno como ejemplo
+                $alumno = Alumno::first();
+            }
+        }
+        
+        // Si no hay alumno, redirigir al login
+        if (!$alumno) {
+            return redirect()->route('login')->with('error', 'No se encontró información de alumno asociada a tu cuenta');
         }
 
-        $alumno = Auth::user()->alumno;
         $periodo = '2024-2025-1'; // Período actual
 
         $calificaciones = $alumno->calificaciones()
@@ -293,7 +310,70 @@ class CalificacionController extends Controller
 
         $promedio = $alumno->promedioGeneral($periodo);
 
-        return view('calificaciones.mis-calificaciones', compact('calificaciones', 'promedio'));
+        return view('calificaciones.mis-calificaciones', compact('calificaciones', 'promedio', 'alumno'));
+    }
+
+    /**
+     * Kardex del alumno - Historial académico completo
+     */
+    public function kardex()
+    {
+        $alumno = null;
+        
+        // Verificar si es alumno autenticado directamente
+        if (Auth::guard('alumno')->check()) {
+            $alumno = Auth::guard('alumno')->user();
+        } 
+        // Verificar si es usuario regular y buscar alumno por email
+        elseif (Auth::check()) {
+            $alumno = Alumno::where('email', Auth::user()->email)->first();
+            
+            // Si no se encuentra por email, permitir acceso a administradores
+            if (!$alumno && Auth::user()->hasRole(['admin', 'super-admin'])) {
+                // Para administradores, tomar el primer alumno como ejemplo
+                $alumno = Alumno::first();
+            }
+        }
+        
+        // Si no hay alumno, redirigir al login
+        if (!$alumno) {
+            return redirect()->route('login')->with('error', 'No se encontró información de alumno asociada a tu cuenta');
+        }
+
+        // Obtener todas las calificaciones del alumno agrupadas por materia y período
+        $kardexData = Calificacion::where('alumno_id', $alumno->id)
+            ->with(['materia', 'maestro'])
+            ->orderBy('periodo_escolar')
+            ->orderBy('materia_id')
+            ->get()
+            ->groupBy(['periodo_escolar', 'materia.materia']);
+
+        // Calcular estadísticas generales
+        $estadisticas = [
+            'materias_cursadas' => Calificacion::where('alumno_id', $alumno->id)
+                ->distinct('materia_id')
+                ->count(),
+            'materias_aprobadas' => Calificacion::where('alumno_id', $alumno->id)
+                ->select('materia_id')
+                ->groupBy('materia_id')
+                ->havingRaw('AVG(calificacion) >= 70')
+                ->count(),
+            'materias_reprobadas' => 0, // Se calculará después
+            'promedio_general' => Calificacion::where('alumno_id', $alumno->id)
+                ->avg('calificacion') ?? 0,
+            'creditos_aprobados' => 0, // Para futuras implementaciones
+            'creditos_totales' => 0 // Para futuras implementaciones
+        ];
+
+        $estadisticas['materias_reprobadas'] = $estadisticas['materias_cursadas'] - $estadisticas['materias_aprobadas'];
+
+        // Obtener períodos únicos
+        $periodos = Calificacion::where('alumno_id', $alumno->id)
+            ->distinct()
+            ->pluck('periodo_escolar')
+            ->sort();
+
+        return view('calificaciones.kardex', compact('kardexData', 'estadisticas', 'periodos', 'alumno'));
     }
 
     /**
