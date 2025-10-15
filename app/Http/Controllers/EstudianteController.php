@@ -10,6 +10,7 @@ use App\Models\Calificacion;
 use App\Models\Reunion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class EstudianteController extends Controller
@@ -196,6 +197,12 @@ class EstudianteController extends Controller
         $tareas = $query->orderBy('fecha_entrega', 'asc')
                        ->paginate(10);
 
+        // Obtener calificaciones/entregas del alumno para estas tareas
+        $entregasIds = $tareas->pluck('id');
+        $entregas = Calificacion::where('alumno_id', $alumno->id)
+                                ->whereIn('tarea_id', $entregasIds)
+                                ->pluck('estado_entrega', 'tarea_id');
+
         // Para los filtros
         $materias = Materia::where('especialidad', $alumno->especialidad)
                           ->where('semestre', $alumno->semestre)
@@ -210,7 +217,7 @@ class EstudianteController extends Controller
             'ensayo' => 'Ensayo'
         ];
 
-        return view('estudiantes.tareas.index', compact('tareas', 'materias', 'tipos', 'alumno'));
+        return view('estudiantes.tareas.index', compact('tareas', 'materias', 'tipos', 'alumno', 'entregas'));
     }
 
     /**
@@ -233,6 +240,104 @@ class EstudianteController extends Controller
                              ->first();
 
         return view('estudiantes.tareas.show', compact('tarea', 'calificacion', 'alumno'));
+    }
+
+    /**
+     * Descargar archivo adjunto de tarea para estudiantes
+     */
+    public function descargarArchivoTarea(Tarea $tarea)
+    {
+        $alumno = Auth::guard('alumno')->user();
+        
+        // Verificar que la tarea corresponde al grupo y semestre del alumno
+        if ($tarea->grupo !== $alumno->Grupo || $tarea->semestre != $alumno->semestre) {
+            abort(403, 'No autorizado para descargar este archivo.');
+        }
+
+        if (!$tarea->archivo_adjunto || !Storage::disk('public')->exists($tarea->archivo_adjunto)) {
+            abort(404, 'Archivo no encontrado.');
+        }
+
+        return Storage::disk('public')->download($tarea->archivo_adjunto);
+    }
+
+    /**
+     * Subir entrega de tarea del estudiante
+     */
+    public function subirEntregaTarea(Request $request, Tarea $tarea)
+    {
+        $alumno = Auth::guard('alumno')->user();
+        
+        // Verificar que la tarea corresponde al grupo y semestre del alumno
+        if ($tarea->grupo !== $alumno->Grupo || $tarea->semestre != $alumno->semestre) {
+            abort(403, 'No autorizado para entregar esta tarea.');
+        }
+
+        // Verificar que la tarea no esté vencida (opcional, puede permitir entregas tardías)
+        $esTarde = now()->isAfter($tarea->fecha_entrega);
+
+        $request->validate([
+            'archivo_entrega' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,txt,jpg,jpeg,png|max:10240', // 10MB max
+        ]);
+
+        // Verificar si ya existe una entrega para esta tarea y alumno
+        $calificacion = Calificacion::where('tarea_id', $tarea->id)
+                                   ->where('alumno_id', $alumno->id)
+                                   ->first();
+
+        if (!$calificacion) {
+            // Crear nueva calificación/entrega
+            $calificacion = new Calificacion();
+            $calificacion->alumno_id = $alumno->id;
+            $calificacion->tarea_id = $tarea->id;
+            $calificacion->materia_id = $tarea->materia_id;
+            $calificacion->maestro_id = $tarea->maestro_id;
+            $calificacion->tipo_evaluacion = $tarea->tipo;
+            $calificacion->puntos_totales = $tarea->puntos_totales;
+            $calificacion->periodo_escolar = now()->year . '-' . (now()->year + 1) . '-' . (now()->month <= 6 ? '2' : '1');
+        } else {
+            // Si ya tenía archivo anterior, eliminarlo
+            if ($calificacion->archivo_entrega && Storage::disk('public')->exists($calificacion->archivo_entrega)) {
+                Storage::disk('public')->delete($calificacion->archivo_entrega);
+            }
+        }
+
+        // Subir el nuevo archivo
+        $path = $request->file('archivo_entrega')->store('entregas/' . $tarea->id, 'public');
+        
+        $calificacion->archivo_entrega = $path;
+        $calificacion->fecha_entrega_alumno = now();
+        $calificacion->estado_entrega = $esTarde ? 'tarde' : 'entregada';
+        
+        $calificacion->save();
+
+        $mensaje = $esTarde 
+            ? 'Tarea entregada exitosamente, pero fue entregada después de la fecha límite.'
+            : 'Tarea entregada exitosamente.';
+
+        return redirect()->back()->with('success', $mensaje);
+    }
+
+    /**
+     * Descargar entrega del estudiante (para que pueda ver su propio archivo)
+     */
+    public function descargarMiEntrega(Tarea $tarea)
+    {
+        $alumno = Auth::guard('alumno')->user();
+        
+        $calificacion = Calificacion::where('tarea_id', $tarea->id)
+                                   ->where('alumno_id', $alumno->id)
+                                   ->first();
+
+        if (!$calificacion || !$calificacion->archivo_entrega) {
+            abort(404, 'No hay entrega para esta tarea.');
+        }
+
+        if (!Storage::disk('public')->exists($calificacion->archivo_entrega)) {
+            abort(404, 'Archivo de entrega no encontrado.');
+        }
+
+        return Storage::disk('public')->download($calificacion->archivo_entrega);
     }
 
     /**

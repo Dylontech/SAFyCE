@@ -103,7 +103,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Crear Rol alumno para guardia web (para portal estudiantil)
         $alumnoWebRole = Role::firstOrCreate(['name' => 'alumno', 'guard_name' => 'web']);
         $alumnoWebRole->syncPermissions([
-            'ver horarios', 'ver salas'
+            'ver horarios', 'ver salas', 'ver tareas'
         ]);
 
         // Crear Rol y Asignar Permisos para guardia alumno (sistema separado)

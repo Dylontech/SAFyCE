@@ -19,6 +19,10 @@
                         <i class="ti ti-arrow-left me-1"></i>
                         Volver a Tareas
                     </a>
+                    <a href="{{ route('maestros.tareas.entregas', $tarea) }}" class="btn btn-info">
+                        <i class="ti ti-file-check me-1"></i>
+                        Ver Entregas
+                    </a>
                     <a href="{{ route('maestros.tareas.edit', $tarea) }}" class="btn btn-warning">
                         <i class="ti ti-edit me-1"></i>
                         Editar

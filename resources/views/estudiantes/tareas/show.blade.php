@@ -22,9 +22,8 @@
                         Volver a Tareas
                     </a>
                     @if($tarea->archivo_adjunto)
-                        <a href="{{ asset('storage/' . $tarea->archivo_adjunto) }}" 
-                           class="btn btn-primary" 
-                           target="_blank">
+                        <a href="{{ route('estudiantes.tareas.descargar', $tarea) }}" 
+                           class="btn btn-primary">
                             <i class="ti ti-download me-1"></i>
                             Descargar Archivo
                         </a>
@@ -69,8 +68,7 @@
                                 <h4>Archivo Adjunto:</h4>
                                 <div class="d-flex align-items-center">
                                     <i class="ti ti-paperclip me-2 text-primary"></i>
-                                    <a href="{{ asset('storage/' . $tarea->archivo_adjunto) }}" 
-                                       target="_blank" 
+                                    <a href="{{ route('estudiantes.tareas.descargar', $tarea) }}" 
                                        class="text-decoration-none">
                                         {{ basename($tarea->archivo_adjunto) }}
                                     </a>
@@ -81,7 +79,7 @@
                 </div>
 
                 <!-- Estado de entrega -->
-                @if($calificacion)
+                @if($calificacion && $calificacion->calificacion !== null)
                     <div class="card mt-4">
                         <div class="card-header bg-success text-white">
                             <h3 class="card-title text-white">
@@ -99,7 +97,7 @@
                                 <div class="col-md-6">
                                     <p class="text-muted">
                                         <strong>Fecha de calificación:</strong> 
-                                        {{ $calificacion->created_at->format('d/m/Y H:i') }}
+                                        {{ $calificacion->fecha_evaluacion ? $calificacion->fecha_evaluacion->format('d/m/Y H:i') : 'No disponible' }}
                                     </p>
                                 </div>
                             </div>
@@ -111,6 +109,27 @@
                                     </div>
                                 </div>
                             @endif
+                        </div>
+                    </div>
+                @elseif($calificacion && $calificacion->archivo_entrega)
+                    <div class="card mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="card-title text-white">
+                                <i class="ti ti-clock me-2"></i>
+                                Tarea Entregada - Pendiente de Calificación
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="ti ti-info-circle me-2"></i>
+                                Tu tarea ha sido entregada exitosamente y está esperando calificación del maestro.
+                            </div>
+                            <p><strong>Fecha de entrega:</strong> {{ $calificacion->fecha_entrega_alumno->format('d/m/Y H:i') }}</p>
+                            <p><strong>Estado:</strong> 
+                                <span class="badge bg-{{ $calificacion->estado_entrega === 'tarde' ? 'warning' : 'info' }}">
+                                    {{ $calificacion->estado_entrega === 'tarde' ? 'Entregada tardía' : 'Entregada a tiempo' }}
+                                </span>
+                            </p>
                         </div>
                     </div>
                 @else
@@ -135,6 +154,121 @@
                                     Tienes hasta el {{ $tarea->fecha_entrega->format('d/m/Y a las H:i') }} para completarla.
                                 </div>
                                 <p><strong>Tiempo restante:</strong> {{ $tarea->diasRestantes() }} días</p>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Formulario de entrega -->
+                @if(!$calificacion || $calificacion->estado_entrega === 'pendiente')
+                    <div class="card mt-4">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title text-white">
+                                <i class="ti ti-upload me-2"></i>
+                                Entregar Tarea
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            @if($tarea->estaVencida())
+                                <div class="alert alert-warning">
+                                    <i class="ti ti-alert-triangle me-2"></i>
+                                    <strong>Atención:</strong> Esta tarea está vencida. Tu entrega será marcada como tardía.
+                                </div>
+                            @endif
+
+                            <form action="{{ route('estudiantes.tareas.entregar', $tarea) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="mb-3">
+                                    <label class="form-label">Archivo de entrega *</label>
+                                    <input type="file" name="archivo_entrega" 
+                                           class="form-control @error('archivo_entrega') is-invalid @enderror"
+                                           accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png" required>
+                                    <div class="form-text">
+                                        Formatos permitidos: PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, PNG. Tamaño máximo: 10MB
+                                    </div>
+                                    @error('archivo_entrega')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="ti ti-clock me-1"></i>
+                                        Fecha límite: {{ $tarea->fecha_entrega->format('d/m/Y H:i') }}
+                                    </small>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="ti ti-upload me-1"></i>
+                                        Entregar Tarea
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @elseif($calificacion && in_array($calificacion->estado_entrega, ['entregada', 'tarde']))
+                    <div class="card mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="card-title text-white">
+                                <i class="ti ti-file-check me-2"></i>
+                                Mi Entrega
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="mb-1">
+                                        <strong>Estado:</strong> 
+                                        <span class="badge bg-{{ $calificacion->estado_entrega === 'tarde' ? 'warning' : 'success' }}">
+                                            {{ ucfirst($calificacion->estado_entrega) }}
+                                        </span>
+                                    </p>
+                                    <p class="mb-1">
+                                        <strong>Entregada el:</strong> 
+                                        {{ $calificacion->fecha_entrega_alumno->format('d/m/Y H:i') }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Archivo:</strong> 
+                                        {{ basename($calificacion->archivo_entrega) }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <a href="{{ route('estudiantes.tareas.mi-entrega', $tarea) }}" 
+                                       class="btn btn-outline-primary btn-sm me-2">
+                                        <i class="ti ti-download me-1"></i>
+                                        Descargar
+                                    </a>
+                                    @if($calificacion->estado_entrega !== 'calificada')
+                                        <button type="button" class="btn btn-warning btn-sm" 
+                                                onclick="document.getElementById('reentrega-form').style.display = document.getElementById('reentrega-form').style.display === 'none' ? 'block' : 'none'">
+                                            <i class="ti ti-edit me-1"></i>
+                                            Reenviar
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if($calificacion->estado_entrega !== 'calificada')
+                                <div id="reentrega-form" style="display: none;" class="mt-3 pt-3 border-top">
+                                    <h5>Reenviar tarea</h5>
+                                    <form action="{{ route('estudiantes.tareas.entregar', $tarea) }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label class="form-label">Nuevo archivo de entrega *</label>
+                                            <input type="file" name="archivo_entrega" 
+                                                   class="form-control @error('archivo_entrega') is-invalid @enderror"
+                                                   accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png" required>
+                                            <div class="form-text">
+                                                Esto reemplazará tu entrega anterior.
+                                            </div>
+                                            @error('archivo_entrega')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            <i class="ti ti-upload me-1"></i>
+                                            Reenviar Tarea
+                                        </button>
+                                    </form>
+                                </div>
                             @endif
                         </div>
                     </div>

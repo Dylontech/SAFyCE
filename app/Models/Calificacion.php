@@ -35,7 +35,7 @@ class Calificacion extends Model
         'alumno_id' => 'required|exists:alumnos,id',
         'materia_id' => 'required|exists:materias,id',
         'maestro_id' => 'required|exists:users,id',
-        'calificacion' => 'required|numeric|min:0|max:100',
+        'calificacion' => 'nullable|numeric|min:0|max:100',
         'tipo_evaluacion' => 'required|in:tarea,examen_parcial,examen_final,proyecto,participacion,practica',
         'periodo_escolar' => 'required|string|max:20',
         'parcial' => 'nullable|integer|min:1|max:3',
@@ -57,11 +57,15 @@ class Calificacion extends Model
         'periodo_escolar',
         'parcial',
         'comentarios',
-        'fecha_evaluacion'
+        'fecha_evaluacion',
+        'archivo_entrega',
+        'fecha_entrega_alumno',
+        'estado_entrega'
     ];
 
     protected $casts = [
         'fecha_evaluacion' => 'datetime',
+        'fecha_entrega_alumno' => 'datetime',
         'calificacion' => 'decimal:2',
     ];
 

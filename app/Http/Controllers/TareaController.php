@@ -227,7 +227,17 @@ class TareaController extends Controller
      */
     public function descargarArchivo(Tarea $tarea)
     {
-        Gate::authorize('ver tareas');
+        // Verificar autorización específica según el tipo de usuario
+        if (Auth::user()->esAlumno()) {
+            // Para alumnos, verificar que la tarea les corresponde
+            $alumno = Auth::user()->alumno;
+            if (!$alumno || $tarea->grupo !== $alumno->Grupo || $tarea->semestre != $alumno->semestre) {
+                abort(403, 'No autorizado para descargar este archivo.');
+            }
+        } else {
+            // Para otros usuarios, usar el gate estándar
+            Gate::authorize('ver tareas');
+        }
 
         if (!$tarea->archivo_adjunto || !Storage::disk('public')->exists($tarea->archivo_adjunto)) {
             abort(404, 'Archivo no encontrado.');
@@ -272,6 +282,6 @@ class TareaController extends Controller
                                     ->whereIn('tarea_id', $tareas->pluck('id'))
                                     ->pluck('calificacion', 'tarea_id');
 
-        return view('tareas.mis-tareas', compact('tareas', 'calificaciones'));
+        return view('estudiantes.tareas.index', compact('tareas', 'calificaciones', 'alumno'));
     }
 }

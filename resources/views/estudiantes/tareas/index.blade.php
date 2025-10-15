@@ -162,18 +162,52 @@
                         </div>
                         <div class="card-footer bg-light">
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ route('estudiantes.tareas.show', $tarea) }}" class="btn btn-sm btn-primary">
-                                    <i class="ti ti-eye me-1"></i>
-                                    Ver Detalles
-                                </a>
-                                @if($tarea->archivo_adjunto)
-                                    <a href="{{ asset('storage/' . $tarea->archivo_adjunto) }}" 
-                                       class="btn btn-sm btn-outline-secondary" 
-                                       target="_blank" 
-                                       title="Descargar archivo adjunto">
-                                        <i class="ti ti-paperclip"></i>
+                                <div class="d-flex align-items-center">
+                                    <a href="{{ route('estudiantes.tareas.show', $tarea) }}" class="btn btn-sm btn-primary me-2">
+                                        <i class="ti ti-eye me-1"></i>
+                                        Ver Detalles
                                     </a>
-                                @endif
+                                    @if($tarea->archivo_adjunto)
+                                        <a href="{{ route('estudiantes.tareas.descargar', $tarea) }}" 
+                                           class="btn btn-sm btn-outline-secondary me-2" 
+                                           title="Descargar archivo adjunto">
+                                            <i class="ti ti-paperclip"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                                <div>
+                                    @php
+                                        $estadoEntrega = $entregas[$tarea->id] ?? 'pendiente';
+                                    @endphp
+                                    @if($estadoEntrega === 'pendiente')
+                                        @if($tarea->estaVencida())
+                                            <span class="badge bg-danger">
+                                                <i class="ti ti-alert-triangle me-1"></i>
+                                                Vencida
+                                            </span>
+                                        @else
+                                            <span class="badge bg-warning">
+                                                <i class="ti ti-clock me-1"></i>
+                                                Pendiente
+                                            </span>
+                                        @endif
+                                    @elseif($estadoEntrega === 'entregada')
+                                        <span class="badge bg-success">
+                                            <i class="ti ti-check me-1"></i>
+                                            Entregada
+                                        </span>
+                                    @elseif($estadoEntrega === 'tarde')
+                                        <span class="badge bg-orange">
+                                            <i class="ti ti-clock-x me-1"></i>
+                                            Entrega tardía
+                                        </span>
+                                    @elseif($estadoEntrega === 'calificada')
+                                        <span class="badge bg-info">
+                                            <i class="ti ti-star me-1"></i>
+                                            Calificada
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>

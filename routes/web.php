@@ -165,7 +165,7 @@ Route::get('/formularios/download-liga-pago-formularios/{id}', [FormularioContro
     Route::post('/formularios/subir-comprobante-alumno/{id}', [FormularioController::class, 'subirComprobanteAlumno'])->name('formularios.subirComprobanteAlumno');
 
     // Ruta para eliminar una solicitud
-    Route::delete('/formularios/{id}', [FormularioController::class, 'destroy'])->name('formulario.destroy');
+    Route::delete('/formularios/{id}', [FormularioController::class, 'destroy'])->name('formularios.destroy');
 });
 
 // Ruta para la vista de administración sin bloqueo de rol
@@ -294,6 +294,11 @@ Route::prefix('maestros')->name('maestros.')->middleware(['auth', 'role:maestro'
     Route::delete('/tareas/{tarea}', [App\Http\Controllers\Maestros\TareaController::class, 'destroy'])->name('tareas.destroy');
     Route::patch('/tareas/{tarea}/toggle-estado', [App\Http\Controllers\Maestros\TareaController::class, 'toggleEstado'])->name('tareas.toggle-estado');
     
+    // Rutas para gestión de entregas
+    Route::get('/tareas/{tarea}/entregas', [App\Http\Controllers\Maestros\TareaController::class, 'verEntregas'])->name('tareas.entregas');
+    Route::get('/tareas/{tarea}/entregas/{calificacion}/descargar', [App\Http\Controllers\Maestros\TareaController::class, 'descargarEntregaAlumno'])->name('tareas.descargar-entrega');
+    Route::patch('/tareas/{tarea}/entregas/{calificacion}/calificar', [App\Http\Controllers\Maestros\TareaController::class, 'calificarEntrega'])->name('tareas.calificar-entrega');
+    
     // Rutas de calificaciones para maestros
     Route::get('/calificaciones', [App\Http\Controllers\Maestros\CalificacionController::class, 'index'])->name('calificaciones.index');
     Route::get('/calificaciones/crear', [App\Http\Controllers\Maestros\CalificacionController::class, 'create'])->name('calificaciones.create');
@@ -321,6 +326,9 @@ Route::prefix('estudiantes')->name('estudiantes.')->middleware(['auth:alumno'])-
     // Rutas de tareas para estudiantes
     Route::get('/tareas', [App\Http\Controllers\EstudianteController::class, 'tareas'])->name('tareas');
     Route::get('/tareas/{tarea}', [App\Http\Controllers\EstudianteController::class, 'showTarea'])->name('tareas.show');
+    Route::get('/tareas/{tarea}/descargar', [App\Http\Controllers\EstudianteController::class, 'descargarArchivoTarea'])->name('tareas.descargar');
+    Route::post('/tareas/{tarea}/entregar', [App\Http\Controllers\EstudianteController::class, 'subirEntregaTarea'])->name('tareas.entregar');
+    Route::get('/tareas/{tarea}/mi-entrega', [App\Http\Controllers\EstudianteController::class, 'descargarMiEntrega'])->name('tareas.mi-entrega');
     
     // Rutas de calificaciones para estudiantes
     Route::get('/calificaciones', [App\Http\Controllers\EstudianteController::class, 'calificaciones'])->name('calificaciones');

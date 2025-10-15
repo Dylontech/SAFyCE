@@ -97,7 +97,7 @@
                                             <option value="">Seleccionar materia</option>
                                             @foreach($materias as $materia)
                                                 <option value="{{ $materia->id }}" {{ old('materia_id') == $materia->id ? 'selected' : '' }}>
-                                                    {{ $materia->nombre }}
+                                                    {{ $materia->materia }} - {{ $materia->semestre }}° Semestre ({{ $materia->especialidad }})
                                                 </option>
                                             @endforeach
                                         </select>
@@ -109,8 +109,14 @@
                                 <div class="col-md-3">
                                     <div class="mb-3">
                                         <label class="form-label text-light">Grupo *</label>
-                                        <input type="text" name="grupo" class="form-control @error('grupo') is-invalid @enderror" 
-                                               value="{{ old('grupo') }}" placeholder="Ej: A, B, 1A, 2B">
+                                        <select name="grupo" class="form-select @error('grupo') is-invalid @enderror">
+                                            <option value="">Seleccionar grupo</option>
+                                            @foreach($grupos as $grupo)
+                                                <option value="{{ $grupo->nombre_completo }}" {{ old('grupo') == $grupo->nombre_completo ? 'selected' : '' }}>
+                                                    {{ strtoupper($grupo->nombre_completo) }} ({{ $grupo->semestre }}° Sem)
+                                                </option>
+                                            @endforeach
+                                        </select>
                                         @error('grupo')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -121,11 +127,11 @@
                                         <label class="form-label text-light">Semestre *</label>
                                         <select name="semestre" class="form-select @error('semestre') is-invalid @enderror">
                                             <option value="">Seleccionar</option>
-                                            @for($i = 1; $i <= 8; $i++)
-                                                <option value="{{ $i }}" {{ old('semestre') == $i ? 'selected' : '' }}>
-                                                    {{ $i }}° Semestre
+                                            @foreach($semestres as $sem)
+                                                <option value="{{ $sem['id'] }}" {{ old('semestre') == $sem['id'] ? 'selected' : '' }}>
+                                                    {{ $sem['nombre'] }}
                                                 </option>
-                                            @endfor
+                                            @endforeach
                                         </select>
                                         @error('semestre')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -244,4 +250,66 @@
     background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const semestreSelect = document.querySelector('select[name="semestre"]');
+    const grupoSelect = document.querySelector('select[name="grupo"]');
+    const materiaSelect = document.querySelector('select[name="materia_id"]');
+    
+    // Filtrar grupos por semestre seleccionado
+    semestreSelect.addEventListener('change', function() {
+        const semestreSeleccionado = this.value;
+        const grupoOptions = grupoSelect.querySelectorAll('option');
+        
+        grupoOptions.forEach(option => {
+            if (option.value === '') {
+                option.style.display = 'block';
+                return;
+            }
+            
+            const grupoSemestre = option.textContent.match(/\((\d+)° Sem\)/);
+            if (grupoSemestre && grupoSemestre[1] === semestreSeleccionado) {
+                option.style.display = 'block';
+            } else if (semestreSeleccionado === '') {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        // Reset grupo selection if current selection is now hidden
+        if (grupoSelect.value && grupoSelect.querySelector(`option[value="${grupoSelect.value}"]`).style.display === 'none') {
+            grupoSelect.value = '';
+        }
+    });
+    
+    // Filtrar materias por semestre seleccionado
+    semestreSelect.addEventListener('change', function() {
+        const semestreSeleccionado = this.value;
+        const materiaOptions = materiaSelect.querySelectorAll('option');
+        
+        materiaOptions.forEach(option => {
+            if (option.value === '') {
+                option.style.display = 'block';
+                return;
+            }
+            
+            const materiaSemestre = option.textContent.match(/(\d+)° Semestre/);
+            if (materiaSemestre && materiaSemestre[1] === semestreSeleccionado) {
+                option.style.display = 'block';
+            } else if (semestreSeleccionado === '') {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        // Reset materia selection if current selection is now hidden
+        if (materiaSelect.value && materiaSelect.querySelector(`option[value="${materiaSelect.value}"]`).style.display === 'none') {
+            materiaSelect.value = '';
+        }
+    });
+});
+</script>
 @endsection

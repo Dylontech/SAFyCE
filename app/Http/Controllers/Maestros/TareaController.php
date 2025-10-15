@@ -9,9 +9,12 @@ use App\Models\Calificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TareaController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()
     {
         $maestroId = Auth::id();
@@ -26,7 +29,12 @@ class TareaController extends Controller
     public function create()
     {
         $materias = Materia::all();
-        return view('maestros.tareas.create', compact('materias'));
+        $grupos = \App\Models\Grupo::activos()->orderBy('semestre')->orderBy('letra')->get();
+        $semestres = collect(range(1, 8))->map(function($sem) {
+            return ['id' => $sem, 'nombre' => $sem . '° Semestre'];
+        });
+        
+        return view('maestros.tareas.create', compact('materias', 'grupos', 'semestres'));
     }
 
     public function store(Request $request)
@@ -35,7 +43,7 @@ class TareaController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'materia_id' => 'required|exists:materias,id',
-            'grupo' => 'required|string|max:10',
+            'grupo' => 'required|string|exists:grupos,nombre_completo',
             'semestre' => 'required|in:1,2,3,4,5,6,7,8',
             'fecha_entrega' => 'required|date|after:now',
             'puntos_totales' => 'required|integer|min:1|max:100',
@@ -74,7 +82,74 @@ class TareaController extends Controller
     {
         $this->authorize('update', $tarea);
         $materias = Materia::all();
-        return view('maestros.tareas.edit', compact('tarea', 'materias'));
+        $grupos = \App\Models\Grupo::activos()->orderBy('semestre')->orderBy('letra')->get();
+        $semestres = collect(range(1, 8))->map(function($sem) {
+            return ['id' => $sem, 'nombre' => $sem . '° Semestre'];
+        });
+        return view('maestros.tareas.edit', compact('tarea', 'materias', 'grupos', 'semestres'));
+    }
+
+    /**
+     * Ver entregas de una tarea específica
+     */
+    public function verEntregas(Tarea $tarea)
+    {
+        $this->authorize('view', $tarea);
+        
+        $entregas = Calificacion::with(['alumno'])
+                                ->where('tarea_id', $tarea->id)
+                                ->whereNotNull('archivo_entrega')
+                                ->orderBy('fecha_entrega_alumno', 'desc')
+                                ->paginate(15);
+        
+        return view('maestros.tareas.entregas', compact('tarea', 'entregas'));
+    }
+
+    /**
+     * Descargar entrega de un alumno específico
+     */
+    public function descargarEntregaAlumno(Tarea $tarea, Calificacion $calificacion)
+    {
+        $this->authorize('view', $tarea);
+        
+        // Verificar que la calificación pertenece a esta tarea
+        if ($calificacion->tarea_id !== $tarea->id) {
+            abort(403, 'Entrega no válida para esta tarea.');
+        }
+
+        if (!$calificacion->archivo_entrega || !\Storage::disk('public')->exists($calificacion->archivo_entrega)) {
+            abort(404, 'Archivo de entrega no encontrado.');
+        }
+
+        return \Storage::disk('public')->download($calificacion->archivo_entrega);
+    }
+
+    /**
+     * Calificar una entrega específica
+     */
+    public function calificarEntrega(Request $request, Tarea $tarea, Calificacion $calificacion)
+    {
+        $this->authorize('update', $tarea);
+        
+        // Verificar que la calificación pertenece a esta tarea
+        if ($calificacion->tarea_id !== $tarea->id) {
+            abort(403, 'Entrega no válida para esta tarea.');
+        }
+
+        $validated = $request->validate([
+            'calificacion' => 'required|numeric|min:0|max:' . $tarea->puntos_totales,
+            'comentarios' => 'nullable|string|max:1000',
+        ]);
+
+        $calificacion->update([
+            'calificacion' => $validated['calificacion'],
+            'puntos_obtenidos' => $validated['calificacion'],
+            'comentarios' => $validated['comentarios'],
+            'estado_entrega' => 'calificada',
+            'fecha_evaluacion' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Tarea calificada exitosamente.');
     }
 
     public function update(Request $request, Tarea $tarea)
