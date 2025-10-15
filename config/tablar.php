@@ -251,6 +251,12 @@ return [
             'icon' => 'ti ti-list',
             'roles' => ['alumno']
         ],
+        [
+            'text' => 'Reuniones Virtuales',
+            'url' => 'alumnos/reuniones',
+            'icon' => 'ti ti-video',
+            'roles' => ['alumno']
+        ],
 
         // SECCIÓN: CONTROL ESCOLAR (SIN TESTER)
         [

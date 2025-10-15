@@ -61,6 +61,18 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('salas/verificar-disponibilidad', [\App\Http\Controllers\SalaController::class, 'verificarDisponibilidad'])
         ->name('salas.verificar-disponibilidad');
     
+    // Rutas para Reuniones
+    Route::post('salas/crear-reunion', [\App\Http\Controllers\SalaController::class, 'crearReunion'])
+        ->name('salas.crear-reunion');
+    Route::get('salas/{sala}/reuniones', [\App\Http\Controllers\SalaController::class, 'reunionesSala'])
+        ->name('salas.reuniones');
+    Route::get('reuniones/{reunion}', [\App\Http\Controllers\SalaController::class, 'obtenerReunion'])
+        ->name('reuniones.obtener');
+    Route::patch('reuniones/{reunion}/cancelar', [\App\Http\Controllers\SalaController::class, 'cancelarReunion'])
+        ->name('reuniones.cancelar');
+    Route::delete('reuniones/{reunion}', [\App\Http\Controllers\SalaController::class, 'eliminarReunion'])
+        ->name('reuniones.eliminar');
+    
     // Rutas para Horarios
     Route::resource('horarios', \App\Http\Controllers\HorarioController::class);
     Route::get('horarios/grupo/{grupo}', [\App\Http\Controllers\HorarioController::class, 'porGrupo'])
@@ -305,4 +317,13 @@ Route::prefix('estudiantes')->name('estudiantes.')->middleware(['auth:alumno'])-
     // Rutas de salas para estudiantes
     Route::get('/salas', [App\Http\Controllers\EstudianteController::class, 'salas'])->name('salas');
     Route::get('/salas/{sala}', [App\Http\Controllers\EstudianteController::class, 'showSala'])->name('salas.show');
+});
+
+// Rutas para reuniones de alumnos
+Route::prefix('alumnos')->name('alumnos.')->middleware(['auth:alumno'])->group(function () {
+    Route::get('/reuniones', [App\Http\Controllers\ReunionController::class, 'index'])->name('reuniones.index');
+    Route::get('/reuniones/{reunion}', [App\Http\Controllers\ReunionController::class, 'show'])->name('reuniones.show');
+    Route::post('/reuniones/{reunion}/unirse', [App\Http\Controllers\ReunionController::class, 'unirse'])->name('reuniones.unirse');
+    Route::get('/reuniones/api/hoy', [App\Http\Controllers\ReunionController::class, 'reunionesHoy'])->name('reuniones.hoy');
+    Route::get('/reuniones/buscar', [App\Http\Controllers\ReunionController::class, 'buscar'])->name('reuniones.buscar');
 });

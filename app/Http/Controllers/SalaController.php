@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sala;
+use App\Models\Reunion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class SalaController extends Controller
 {
@@ -85,7 +88,14 @@ class SalaController extends Controller
                          ->orderBy('hora_inicio')
                          ->get();
 
-        return view('salas.show', compact('sala', 'horarios'));
+        // Obtener reuniones de la sala (próximas y de hoy)
+        $reuniones = $sala->reuniones()
+                          ->with('creador')
+                          ->proximasActivas()
+                          ->limit(5)
+                          ->get();
+
+        return view('salas.show', compact('sala', 'horarios', 'reuniones'));
     }
 
     /**
@@ -161,5 +171,195 @@ class SalaController extends Controller
             'disponible' => $disponible,
             'mensaje' => $disponible ? 'La sala está disponible.' : 'La sala no está disponible en ese horario.'
         ]);
+    }
+
+    /**
+     * Crear una nueva reunión
+     */
+    public function crearReunion(Request $request)
+    {
+        Gate::authorize('crear reuniones');
+
+        // Validación personalizada para el formulario
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'fecha' => 'required|date|after_or_equal:today',
+            'hora' => 'required',
+            'duracion_minutos' => 'required|integer|min:15|max:480',
+            'plataforma' => 'required|in:meet,zoom,teams,webex',
+            'enlace' => 'required|url',
+            'sala_id' => 'required|exists:salas,id',
+            'descripcion' => 'nullable|string|max:1000'
+        ]);
+
+        try {
+            $reunion = Reunion::create([
+                'titulo' => $request->titulo,
+                'descripcion' => $request->descripcion,
+                'fecha' => $request->fecha,
+                'hora' => $request->hora,
+                'duracion' => $request->duracion_minutos,
+                'plataforma' => $request->plataforma,
+                'enlace_reunion' => $request->enlace,
+                'tipo' => 'clase', // Valor por defecto
+                'estado' => 'activa', // Valor por defecto
+                'sala_id' => $request->sala_id,
+                'user_id' => Auth::id(),
+                'codigo_reunion' => $this->generarCodigoReunion($request->plataforma),
+                'max_participantes' => 100
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reunión creada exitosamente',
+                'reunion' => [
+                    'id' => $reunion->id,
+                    'titulo' => $reunion->titulo,
+                    'fecha' => $reunion->fecha_formateada,
+                    'hora' => $reunion->hora_formateada,
+                    'enlace' => $reunion->enlace_reunion,
+                    'plataforma' => $reunion->plataforma
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al crear reunión: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear la reunión: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener reuniones de una sala
+     */
+    public function reunionesSala(Sala $sala)
+    {
+        Gate::authorize('ver salas');
+
+        $reuniones = $sala->reuniones()
+                         ->with('creador')
+                         ->proximasActivas()
+                         ->get();
+
+        return response()->json([
+            'reuniones' => $reuniones->map(function($reunion) {
+                return [
+                    'id' => $reunion->id,
+                    'titulo' => $reunion->titulo,
+                    'fecha' => $reunion->fecha_formateada,
+                    'hora' => $reunion->hora_formateada,
+                    'duracion' => $reunion->duracion_formateada,
+                    'plataforma' => $reunion->plataforma,
+                    'tipo' => $reunion->tipo,
+                    'estado' => $reunion->estado,
+                    'creador' => $reunion->creador->name,
+                    'puede_unirse' => $reunion->puedeUnirse(),
+                    'enlace' => $reunion->enlace_reunion
+                ];
+            })
+        ]);
+    }
+
+    /**
+     * Obtener reunión específica para unirse
+     */
+    public function obtenerReunion(Reunion $reunion)
+    {
+        if (!$reunion->puedeUnirse()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Esta reunión no está disponible en este momento'
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'reunion' => [
+                'id' => $reunion->id,
+                'titulo' => $reunion->titulo,
+                'descripcion' => $reunion->descripcion,
+                'enlace' => $reunion->enlace_reunion,
+                'plataforma' => $reunion->plataforma
+            ]
+        ]);
+    }
+
+    /**
+     * Cancelar una reunión
+     */
+    public function cancelarReunion(Reunion $reunion)
+    {
+        Gate::authorize('crear reuniones');
+
+        // Solo el creador o un administrador puede cancelar
+        if ($reunion->user_id !== Auth::id() && !Auth::user()->hasRole('administrador')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para cancelar esta reunión'
+            ], 403);
+        }
+
+        $reunion->update(['estado' => 'cancelada']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Reunión cancelada exitosamente'
+        ]);
+    }
+
+    /**
+     * Eliminar una reunión
+     */
+    public function eliminarReunion(Reunion $reunion)
+    {
+        Gate::authorize('crear reuniones');
+
+        // Solo el creador o un administrador puede eliminar
+        if ($reunion->user_id !== Auth::id() && !Auth::user()->hasRole('administrador')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para eliminar esta reunión'
+            ], 403);
+        }
+
+        $tituloReunion = $reunion->titulo;
+        $reunion->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Reunión '{$tituloReunion}' eliminada exitosamente"
+        ]);
+    }
+
+    /**
+     * Generar código único para la reunión según la plataforma
+     */
+    private function generarCodigoReunion($plataforma)
+    {
+        switch ($plataforma) {
+            case 'google_meet':
+            case 'meet':
+                // Para Google Meet: formato abc-defg-hij
+                return strtolower(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . '-' . 
+                                 substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 4) . '-' . 
+                                 substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3));
+                
+            case 'zoom':
+                // Para Zoom: número de 10-11 dígitos
+                return rand(1000000000, 99999999999);
+                
+            case 'teams':
+                // Para Teams: ID único
+                return uniqid('teams_', true);
+                
+            case 'webex':
+                // Para Webex: número de meeting
+                return rand(100000000, 999999999);
+                
+            default:
+                return uniqid('reunion_', true);
+        }
     }
 }

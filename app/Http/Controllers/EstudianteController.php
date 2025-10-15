@@ -114,7 +114,14 @@ class EstudianteController extends Controller
                                   ->orderBy('hora_inicio')
                                   ->get();
 
-        return view('estudiantes.salas.show', compact('sala', 'horariosActuales'));
+        // Obtener reuniones de la sala (próximas y de hoy)
+        $reuniones = $sala->reuniones()
+                          ->with('creador')
+                          ->proximasActivas()
+                          ->limit(5)
+                          ->get();
+
+        return view('estudiantes.salas.show', compact('sala', 'horariosActuales', 'reuniones'));
     }
 
     /**

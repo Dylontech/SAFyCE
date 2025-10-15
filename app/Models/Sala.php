@@ -55,6 +55,14 @@ class Sala extends Model
     }
 
     /**
+     * Relación con reuniones
+     */
+    public function reuniones()
+    {
+        return $this->hasMany(Reunion::class);
+    }
+
+    /**
      * Verificar si la sala está disponible en un horario específico
      */
     public function estaDisponible($dia_semana, $hora_inicio, $hora_fin, $excluir_horario_id = null)
