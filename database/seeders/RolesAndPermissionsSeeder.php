@@ -49,7 +49,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'editar salas',
             'eliminar salas',
             'ver salas',
-            'crear reuniones'
+            'crear reuniones',
+            'eliminar reuniones'
         ];
 
         foreach ($permissions as $permission) {
@@ -82,7 +83,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestionar salas', 'crear salas', 'editar salas', 'eliminar salas', 'ver salas',
             'gestionar horarios', 'crear horarios', 'editar horarios', 'eliminar horarios', 'ver horarios',
             'gestionar tareas', 'crear tareas', 'editar tareas', 'eliminar tareas', 'ver tareas',
-            'gestionar calificaciones', 'ver calificaciones', 'editar calificaciones'
+            'gestionar calificaciones', 'ver calificaciones', 'editar calificaciones',
+            'crear reuniones', 'eliminar reuniones'
         ]);
 
         $servicioFinancieroRole = Role::firstOrCreate(['name' => 'servicio_financiero', 'guard_name' => 'web']);

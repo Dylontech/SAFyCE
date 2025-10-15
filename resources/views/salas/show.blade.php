@@ -135,9 +135,9 @@
                                         <p class="card-text small text-muted mb-2">{{ Str::limit($reunion->descripcion, 80) }}</p>
                                         @endif
                                         
-                                        <!-- Botones de Administración para Maestros -->
+                                        <!-- Botones de Administración para Maestros, Administradores y Control Escolar -->
                                         @can('crear reuniones')
-                                            @if($reunion->user_id == Auth::id() || Auth::user()->hasRole('administrador'))
+                                            @if($reunion->user_id == Auth::id() || Auth::user()->hasRole('administrador') || Auth::user()->hasRole('control_escolar'))
                                             <div class="btn-group w-100 mb-2" role="group">
                                                 <button type="button" class="btn btn-outline-warning btn-sm btn-cancelar-reunion" 
                                                         data-reunion-id="{{ $reunion->id }}"
@@ -165,6 +165,29 @@
                                             </div>
                                             @endif
                                         @endcan
+                                        
+                                        {{-- Botón especial solo para Control Escolar --}}
+                                        @if(Auth::user() && Auth::user()->hasRole('control_escolar') && !($reunion->user_id == Auth::id() || Auth::user()->hasRole('administrador')))
+                                        <div class="alert alert-warning py-2 px-3 mb-2 small">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shield-check me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M9 12l2 2l4 -4"/>
+                                                <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/>
+                                            </svg>
+                                            <strong>Control Escolar:</strong> Tienes permisos administrativos
+                                        </div>
+                                        <button type="button" class="btn btn-danger btn-sm w-100 btn-eliminar-reunion" 
+                                                data-reunion-id="{{ $reunion->id }}"
+                                                data-reunion-titulo="{{ $reunion->titulo }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shield-x me-1" width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M13.252 20.601c-.408 .155 -.826 .288 -1.252 .399a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.19 1.686"/>
+                                                <path d="M22 22l-5 -5"/>
+                                                <path d="M17 22l5 -5"/>
+                                            </svg>
+                                            Eliminar Reunión (Control Escolar)
+                                        </button>
+                                        @endif
                                         
                                         @auth('alumno')
                                             @if($reunion->puedeUnirse())
@@ -338,9 +361,62 @@
 
                         <div class="mb-3">
                             <label class="form-label">Enlace de la Reunión <span class="text-danger">*</span></label>
-                            <input type="url" class="form-control" name="enlace" required
+                            <input type="url" class="form-control" name="enlace" id="enlace-reunion" required
                                    placeholder="https://meet.google.com/abc-defg-hij o similar">
                             <small class="form-hint">Ingresa el enlace directo generado por la plataforma de videollamada</small>
+                            
+                            {{-- Botones de Acceso Rápido a Plataformas --}}
+                            <div class="mt-3">
+                                <label class="form-label small text-muted fw-bold">ACCESOS RÁPIDOS A PLATAFORMAS:</label>
+                                <div class="row g-2">
+                                    <div class="col-6 col-md-3">
+                                        <button type="button" class="btn btn-outline-primary btn-sm btn-plataforma w-100" data-plataforma="meet">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="4" y="4" width="16" height="12" rx="1"/>
+                                                <path d="m16 8l-8 5l8 5v-10z"/>
+                                            </svg>
+                                            Meet
+                                        </button>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <button type="button" class="btn btn-outline-info btn-sm btn-plataforma w-100" data-plataforma="zoom">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                                <line x1="15" y1="9" x2="15.01" y2="9"/>
+                                            </svg>
+                                            Zoom
+                                        </button>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm btn-plataforma w-100" data-plataforma="teams">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v-2z"/>
+                                                <path d="M8 21V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14"/>
+                                            </svg>
+                                            Teams
+                                        </button>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <button type="button" class="btn btn-outline-success btn-sm btn-plataforma w-100" data-plataforma="webex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                                <path d="M8 12l2 2 4-4"/>
+                                            </svg>
+                                            Webex
+                                        </button>
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm me-1" width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="9"/>
+                                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                        <polyline points="11,12 12,12 12,16 13,16"/>
+                                    </svg>
+                                    Haz clic en una plataforma para abrirla en una nueva ventana y crear tu reunión
+                                </small>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -575,20 +651,52 @@ function eliminarReunion(reunionId, reunionTitulo) {
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
+            // Mostrar indicador de carga
+            Swal.fire({
+                title: 'Eliminando reunión...',
+                html: 'Por favor espera...',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            console.log(`Eliminando reunión ID: ${reunionId}`);
+
             fetch(`/reuniones/${reunionId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log(`Respuesta del servidor:`, response.status, response.statusText);
+                
+                if (!response.ok) {
+                    // Para errores 403, intentar obtener el JSON con información de debugging
+                    if (response.status === 403) {
+                        return response.json().then(errorData => {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorData.message || 'Forbidden'}`);
+                        }).catch(() => {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        });
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return response.json();
+            })
             .then(data => {
-                if (data.success) {
+                console.log('Datos recibidos:', data);
+                
+                if (data && data.success) {
                     Swal.fire({
                         icon: 'success',
                         title: '✅ Reunión Eliminada',
-                        text: data.message,
+                        text: data.message || 'La reunión ha sido eliminada correctamente',
                         timer: 2000,
                         showConfirmButton: false
                     }).then(() => {
@@ -597,22 +705,141 @@ function eliminarReunion(reunionId, reunionTitulo) {
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: data.message || 'Error al eliminar la reunión'
+                        title: '❌ Error',
+                        html: `
+                            <div class="text-start">
+                                <p><strong>No se pudo eliminar la reunión.</strong></p>
+                                <p class="text-muted small">Mensaje: ${data?.message || 'Error desconocido'}</p>
+                                ${data?.debug_info ? `
+                                    <hr class="my-2">
+                                    <p class="text-warning small"><strong>Información de debugging:</strong></p>
+                                    <p class="text-muted small">Roles: ${data.debug_info.user_roles ? data.debug_info.user_roles.join(', ') : 'N/A'}</p>
+                                    <p class="text-muted small">Es creador: ${data.debug_info.es_creador ? 'Sí' : 'No'}</p>
+                                    <p class="text-muted small">Es administrador: ${data.debug_info.es_administrador ? 'Sí' : 'No'}</p>
+                                    <p class="text-muted small">Es control escolar: ${data.debug_info.es_control_escolar ? 'Sí' : 'No'}</p>
+                                ` : ''}
+                            </div>
+                        `
                     });
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error al eliminar reunión:', error);
+                
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error de Conexión',
-                    text: 'No se pudo conectar con el servidor.'
+                    title: '🔌 Error de Conexión',
+                    html: `
+                        <div class="text-start">
+                            <p><strong>No se pudo conectar con el servidor.</strong></p>
+                            <p class="text-muted small">Error: ${error.message}</p>
+                            <p class="text-warning small">
+                                <strong>Posibles causas:</strong><br>
+                                • Problemas de conexión a internet<br>
+                                • Sesión expirada<br>
+                                • Permisos insuficientes<br>
+                                • Error del servidor
+                            </p>
+                            <p class="text-info small">Intenta recargar la página e intentar nuevamente.</p>
+                        </div>
+                    `,
+                    confirmButtonText: 'Recargar Página',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cerrar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
                 });
             });
         }
     });
 }
+
+// Función para manejar los botones de acceso rápido a plataformas
+function abrirPlataforma(plataforma) {
+    const urls = {
+        'meet': 'https://meet.google.com/new',
+        'zoom': 'https://zoom.us/start/videomeeting',
+        'teams': 'https://teams.microsoft.com/l/meeting/new',
+        'webex': 'https://www.webex.com/pricing/index.html'
+    };
+    
+    const nombres = {
+        'meet': 'Google Meet',
+        'zoom': 'Zoom',
+        'teams': 'Microsoft Teams',
+        'webex': 'Cisco Webex'
+    };
+    
+    const url = urls[plataforma];
+    const nombre = nombres[plataforma];
+    
+    if (url) {
+        // Mostrar notificación informativa
+        Swal.fire({
+            icon: 'info',
+            title: `🚀 Abriendo ${nombre}`,
+            html: `
+                <div class="text-start">
+                    <p><strong>Se abrirá una nueva ventana para crear tu reunión en ${nombre}.</strong></p>
+                    <p class="text-muted small">Pasos a seguir:</p>
+                    <ol class="text-muted small text-start">
+                        <li>Crea o programa tu reunión</li>
+                        <li>Copia el enlace generado</li>
+                        <li>Pégalo en el campo "Enlace de la Reunión"</li>
+                    </ol>
+                    <p class="text-info small">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm me-1" width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            <polyline points="11,12 12,12 12,16 13,16"/>
+                        </svg>
+                        Si no se abre automáticamente, verifica que tu navegador permita ventanas emergentes.
+                    </p>
+                </div>
+            `,
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#28a745'
+        });
+        
+        // Abrir la plataforma en nueva ventana
+        window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        
+        // Enfocar el campo de enlace después de un momento
+        setTimeout(() => {
+            const enlaceInput = document.getElementById('enlace-reunion');
+            if (enlaceInput) {
+                enlaceInput.focus();
+                enlaceInput.select();
+            }
+        }, 1000);
+    }
+}
+
+// Event listeners para los botones de plataforma
+document.addEventListener('DOMContentLoaded', function() {
+    const botonesPlatforma = document.querySelectorAll('.btn-plataforma');
+    
+    botonesPlatforma.forEach(boton => {
+        boton.addEventListener('click', function() {
+            const plataforma = this.dataset.plataforma;
+            
+            // Agregar efecto visual al botón
+            this.classList.add('active');
+            setTimeout(() => {
+                this.classList.remove('active');
+            }, 200);
+            
+            abrirPlataforma(plataforma);
+        });
+        
+        // Agregar tooltip informativo
+        boton.setAttribute('title', `Abrir ${boton.textContent.trim()} en nueva ventana`);
+    });
+});
 </script>
 
 <style>
@@ -652,14 +879,101 @@ function eliminarReunion(reunionId, reunionTitulo) {
 }
 
 .btn-eliminar-reunion {
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .btn-eliminar-reunion:hover {
-    background-color: #dc2626 !important;
-    border-color: #dc2626 !important;
-    color: white !important;
     transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
 }
+
+/* Estilos específicos para Control Escolar */
+.btn-eliminar-reunion.btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    font-weight: 600;
+}
+
+.btn-eliminar-reunion.btn-danger:hover {
+    background: linear-gradient(135deg, #bd2130 0%, #a71e2a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.5);
+}
+
+.alert.alert-warning.small {
+    font-size: 0.8rem;
+    border-left: 4px solid #ffc107;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+}
+
+/* Estilos para botones de plataforma */
+.btn-plataforma {
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border-width: 1.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-plataforma:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-plataforma.active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-plataforma:focus {
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+}
+
+.btn-plataforma .icon {
+    transition: transform 0.2s ease;
+}
+
+.btn-plataforma:hover .icon {
+    transform: scale(1.1);
+}
+
+/* Colores específicos para cada plataforma */
+.btn-plataforma[data-plataforma="meet"]:hover {
+    background-color: #4285f4;
+    border-color: #4285f4;
+    color: white;
+}
+
+.btn-plataforma[data-plataforma="zoom"]:hover {
+    background-color: #2d8cff;
+    border-color: #2d8cff;
+    color: white;
+}
+
+.btn-plataforma[data-plataforma="teams"]:hover {
+    background-color: #6264a7;
+    border-color: #6264a7;
+    color: white;
+}
+
+.btn-plataforma[data-plataforma="webex"]:hover {
+    background-color: #00bceb;
+    border-color: #00bceb;
+    color: white;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+    .btn-plataforma {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.5rem;
+    }
+    
+    .btn-plataforma .icon {
+        width: 14px;
+        height: 14px;
+    }
+}
+</style>
 </style>
 @endsection

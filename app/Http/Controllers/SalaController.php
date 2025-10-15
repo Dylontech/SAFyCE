@@ -314,13 +314,46 @@ class SalaController extends Controller
      */
     public function eliminarReunion(Reunion $reunion)
     {
-        Gate::authorize('crear reuniones');
-
-        // Solo el creador o un administrador puede eliminar
-        if ($reunion->user_id !== Auth::id() && !Auth::user()->hasRole('administrador')) {
+        // Verificar que el usuario esté autenticado
+        if (!Auth::check()) {
             return response()->json([
                 'success' => false,
-                'message' => 'No tienes permisos para eliminar esta reunión'
+                'message' => 'Usuario no autenticado'
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        // Verificar permisos: creador, administrador, control escolar, o permiso específico
+        $esCreador = $reunion->user_id === $user->id;
+        $esAdministrador = $user->hasRole('administrador');
+        $esControlEscolar = $user->hasRole('control_escolar');
+        $tienePermisoEliminar = $user->can('eliminar reuniones');
+
+        $puedeEliminar = $esCreador || $esAdministrador || $esControlEscolar || $tienePermisoEliminar;
+
+        if (!$puedeEliminar) {
+            \Log::warning('Acceso denegado para eliminar reunión', [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'user_roles' => $user->getRoleNames(),
+                'reunion_id' => $reunion->id,
+                'es_creador' => $esCreador,
+                'es_administrador' => $esAdministrador,
+                'es_control_escolar' => $esControlEscolar,
+                'tiene_permiso_eliminar' => $tienePermisoEliminar
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para eliminar esta reunión.',
+                'debug_info' => [
+                    'user_roles' => $user->getRoleNames(),
+                    'es_creador' => $esCreador,
+                    'es_administrador' => $esAdministrador,
+                    'es_control_escolar' => $esControlEscolar,
+                    'tiene_permiso_eliminar' => $tienePermisoEliminar
+                ]
             ], 403);
         }
 
