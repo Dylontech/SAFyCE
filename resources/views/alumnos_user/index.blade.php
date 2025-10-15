@@ -301,11 +301,86 @@
                                 <div class="small opacity-75">Tareas Pendientes</div>
                             </div>
                         </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card">
+                                @php
+                                    $reunionesActivas = App\Models\Reunion::activas()
+                                                                         ->get()
+                                                                         ->filter(function ($reunion) {
+                                                                             return $reunion->puedeUnirse();
+                                                                         })
+                                                                         ->count();
+                                @endphp
+                                <div class="h2 mb-1 {{ $reunionesActivas > 0 ? 'text-success' : '' }}">{{ $reunionesActivas }}</div>
+                                <div class="small opacity-75">
+                                    Reuniones Activas
+                                    @if($reunionesActivas > 0)
+                                        <i class="ti ti-live-photo text-success ms-1"></i>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    @endauth
+
+    <!-- Notificación de reuniones activas -->
+    @auth('alumno')
+    @php
+        $reunionesDisponibles = App\Models\Reunion::with(['creador'])
+                                                  ->activas()
+                                                  ->get()
+                                                  ->filter(function ($reunion) {
+                                                      return $reunion->puedeUnirse();
+                                                  });
+    @endphp
+    @if($reunionesDisponibles->count() > 0)
+        <div class="container-xl mb-4">
+            <div class="alert alert-success alert-dismissible border-0 shadow-sm" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="ti ti-broadcast fs-1 text-white" style="animation: pulse 2s infinite;"></i>
+                    </div>
+                    <div class="flex-grow-1 text-white">
+                        <h4 class="alert-heading text-white mb-2">
+                            <i class="ti ti-live-photo me-2"></i>
+                            ¡Reuniones Disponibles Ahora!
+                        </h4>
+                        <p class="mb-2">
+                            @if($reunionesDisponibles->count() === 1)
+                                Hay <strong>1 reunión</strong> disponible para unirse en este momento:
+                            @else
+                                Hay <strong>{{ $reunionesDisponibles->count() }} reuniones</strong> disponibles para unirse en este momento:
+                            @endif
+                        </p>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            @foreach($reunionesDisponibles->take(3) as $reunion)
+                                <span class="badge bg-light text-success">
+                                    <i class="ti ti-video me-1"></i>
+                                    {{ Str::limit($reunion->titulo, 25) }}
+                                </span>
+                            @endforeach
+                            @if($reunionesDisponibles->count() > 3)
+                                <span class="badge bg-light text-success">
+                                    +{{ $reunionesDisponibles->count() - 3 }} más...
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <a href="{{ route('estudiantes.reuniones.activas') }}" class="btn btn-light btn-lg me-2">
+                            <i class="ti ti-external-link me-2"></i>
+                            Unirse Ahora
+                        </a>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    @endif
     @endauth
 
     <!-- Accesos rápidos para estudiantes -->
@@ -382,7 +457,7 @@
                             </div>
                             <div class="fw-bold text-dark mb-1">Mis Tareas</div>
                             <div class="small text-muted mb-3">Ver tareas pendientes</div>
-                            <a href="{{ route('tareas.mis-tareas') }}" class="btn btn-sm w-100" style="background-color: #6f42c1; border-color: #6f42c1; color: white;">
+                            <a href="{{ route('estudiantes.tareas') }}" class="btn btn-sm w-100" style="background-color: #6f42c1; border-color: #6f42c1; color: white;">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M5 12l5 5l10 -10"/>
@@ -404,7 +479,7 @@
                             </div>
                             <div class="fw-bold text-dark mb-1">Calificaciones</div>
                             <div class="small text-muted mb-3">Revisar notas y progreso</div>
-                            <a href="{{ route('calificaciones.mis-calificaciones') }}" class="btn btn-success btn-sm w-100">
+                            <a href="{{ route('estudiantes.calificaciones') }}" class="btn btn-success btn-sm w-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M5 12l5 5l10 -10"/>
@@ -487,7 +562,7 @@
                             </div>
                             <div class="fw-bold text-dark mb-1">Reuniones Virtuales</div>
                             <div class="small text-muted mb-3">Unirse a videollamadas</div>
-                            <a href="{{ route('alumnos.reuniones.index') }}" class="btn btn-danger btn-sm w-100">
+                            <a href="{{ route('estudiantes.reuniones.activas') }}" class="btn btn-danger btn-sm w-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M5 12l5 5l10 -10"/>

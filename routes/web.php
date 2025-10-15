@@ -317,6 +317,20 @@ Route::prefix('estudiantes')->name('estudiantes.')->middleware(['auth:alumno'])-
     // Rutas de salas para estudiantes
     Route::get('/salas', [App\Http\Controllers\EstudianteController::class, 'salas'])->name('salas');
     Route::get('/salas/{sala}', [App\Http\Controllers\EstudianteController::class, 'showSala'])->name('salas.show');
+    
+    // Rutas de tareas para estudiantes
+    Route::get('/tareas', [App\Http\Controllers\EstudianteController::class, 'tareas'])->name('tareas');
+    Route::get('/tareas/{tarea}', [App\Http\Controllers\EstudianteController::class, 'showTarea'])->name('tareas.show');
+    
+    // Rutas de calificaciones para estudiantes
+    Route::get('/calificaciones', [App\Http\Controllers\EstudianteController::class, 'calificaciones'])->name('calificaciones');
+    Route::get('/calificaciones/reportes', [App\Http\Controllers\EstudianteController::class, 'reportesCalificaciones'])->name('calificaciones.reportes');
+    Route::get('/calificaciones/boleta', [App\Http\Controllers\EstudianteController::class, 'boleta'])->name('calificaciones.boleta');
+    
+    // Rutas de reuniones para estudiantes
+    Route::get('/reuniones', [App\Http\Controllers\EstudianteController::class, 'reuniones'])->name('reuniones');
+    Route::get('/reuniones/activas', [App\Http\Controllers\EstudianteController::class, 'reunionesActivas'])->name('reuniones.activas');
+    Route::post('/reuniones/{reunion}/unirse', [App\Http\Controllers\EstudianteController::class, 'unirseReunion'])->name('reuniones.unirse');
 });
 
 // Rutas para reuniones de alumnos

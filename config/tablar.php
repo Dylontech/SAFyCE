@@ -252,6 +252,24 @@ return [
             'roles' => ['alumno']
         ],
         [
+            'text' => 'Mis Tareas',
+            'url' => 'estudiantes/tareas',
+            'icon' => 'ti ti-checklist',
+            'roles' => ['alumno']
+        ],
+        [
+            'text' => 'Mis Horarios',
+            'url' => 'estudiantes/horarios',
+            'icon' => 'ti ti-calendar',
+            'roles' => ['alumno']
+        ],
+        [
+            'text' => 'Salas Disponibles',
+            'url' => 'estudiantes/salas',
+            'icon' => 'ti ti-building',
+            'roles' => ['alumno']
+        ],
+        [
             'text' => 'Reuniones Virtuales',
             'url' => 'alumnos/reuniones',
             'icon' => 'ti ti-video',
