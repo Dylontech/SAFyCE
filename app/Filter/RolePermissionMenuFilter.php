@@ -18,7 +18,10 @@ class RolePermissionMenuFilter implements FilterInterface
 
     protected function isVisible($item)
     {
-        $user = Auth::user();
+        // Detectar usuario autenticado en cualquier guard
+        $webUser = auth('web')->user();
+        $alumnoUser = auth('alumno')->user();
+        $user = $webUser ?? $alumnoUser;
 
         if (!$user) {
             return false;
@@ -41,8 +44,13 @@ class RolePermissionMenuFilter implements FilterInterface
 
     protected function userHasAnyRole($user, $roles)
     {
+        if (!$user || !method_exists($user, 'roles') || !$user->roles) {
+            return false;
+        }
+
+        $userRoles = $user->roles->pluck('name')->toArray();
         foreach ($roles as $role) {
-            if (in_array($role, $user->roles->pluck('name')->toArray())) {
+            if (in_array($role, $userRoles)) {
                 return true;
             }
         }
@@ -51,6 +59,10 @@ class RolePermissionMenuFilter implements FilterInterface
 
     protected function userHasAnyPermission($user, $permissions)
     {
+        if (!$user || !method_exists($user, 'can')) {
+            return false;
+        }
+
         foreach ($permissions as $permission) {
             if ($user->can($permission)) {
                 return true;

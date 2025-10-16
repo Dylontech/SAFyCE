@@ -281,6 +281,12 @@ return [
             'icon' => 'ti ti-video',
             'roles' => ['alumno']
         ],
+        [
+            'text' => 'Biblioteca Virtual',
+            'url' => 'biblioteca-virtual',
+            'icon' => 'ti ti-book-2',
+            'roles' => ['alumno']
+        ],
 
         // SECCIÓN: CONTROL ESCOLAR (SIN TESTER)
         [
@@ -347,6 +353,12 @@ return [
             'icon' => 'ti ti-certificate',
             'roles' => ['control_escolar', 'admin']
         ],
+        [
+            'text' => 'Biblioteca Virtual',
+            'url' => 'biblioteca-virtual',
+            'icon' => 'ti ti-book-2',
+            'roles' => ['control_escolar', 'admin']
+        ],
 
         // SECCIÓN: SERVICIO FINANCIERO (SIN TESTER)
         [
@@ -404,6 +416,12 @@ return [
             'text' => 'salas',
             'url' => 'salas',
             'icon' => 'ti ti-door',
+            'roles' => ['maestro']
+        ],
+        [
+            'text' => 'Biblioteca Virtual',
+            'url' => 'biblioteca-virtual',
+            'icon' => 'ti ti-book-2',
             'roles' => ['maestro']
         ]
     ],

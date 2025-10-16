@@ -55,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
         // Registrar las políticas
         Gate::policy(Tarea::class, TareaPolicy::class);
         Gate::policy(Calificacion::class, CalificacionPolicy::class);
+        Gate::policy(\App\Models\BibliotecaVirtual::class, \App\Policies\BibliotecaVirtualPolicy::class);
 
         // Compartir la configuración de WhatsApp en todas las vistas
        // $settings = DB::table('whatsapp_settings')->first();

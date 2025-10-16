@@ -30,6 +30,11 @@ class Alumno extends Model implements AuthenticatableContract
 {
     use Authenticatable, HasRoles, HasFactory;
 
+    /**
+     * The guard used by this model for roles and permissions
+     */
+    protected $guard_name = 'alumno';
+
     static $rules = [
         'numero_control' => 'required',
         'CURP' => 'required',

@@ -1,15 +1,30 @@
-@auth
-    @php
-        $user = Auth::user();
-        $userName = 'Usuario';
-        $userRoles = $user->roles->pluck('name')->implode(', ') ?? 'Sin rol';
+@php
+    // Detectar usuario autenticado en cualquier guard
+    $webUser = auth('web')->user();
+    $alumnoUser = auth('alumno')->user();
+    $user = $webUser ?? $alumnoUser;
+    $isAuthenticated = $user !== null;
+@endphp
 
-        // Obtener el nombre según el rol
-        if ($user->hasRole('alumno')) {
-            $alumno = \App\Models\Alumno::find($user->id);
-            $userName = $alumno ? $alumno->Nombre : 'Alumno';
-        } else {
-            $userName = $user->name ?? 'Usuario';
+@if($isAuthenticated)
+    @php
+        $userName = 'Usuario';
+        $userRoles = 'Sin rol';
+        
+        try {
+            if ($user && method_exists($user, 'getRoleNames')) {
+                $rolesCollection = $user->getRoleNames();
+                $userRoles = $rolesCollection->implode(', ') ?: 'Sin rol';
+            }
+        } catch (\Exception $e) {
+            $userRoles = 'Sin rol';
+        }
+
+        // Obtener el nombre según el tipo de usuario
+        if ($webUser) {
+            $userName = $webUser->name ?? 'Usuario Web';
+        } elseif ($alumnoUser) {
+            $userName = $alumnoUser->Nombre ?? 'Alumno';
         }
     @endphp
 
@@ -62,6 +77,6 @@
     </div>
 @else
     <div class="container text-center">
-        <h1>Sin rol</h1>
+        <a href="{{ route('login') }}" class="btn btn-primary">Iniciar Sesión</a>
     </div>
-@endauth
+@endif

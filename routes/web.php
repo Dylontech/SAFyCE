@@ -23,6 +23,7 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\BibliotecaVirtualController;
 
 
 
@@ -120,6 +121,11 @@ Route::get('/admin/pagina-inicio', [AdminPaginaInicioController::class, 'edit'])
 // Ruta para actualizar (PUT) - CAMBIADO DE POST A PUT
 Route::put('/admin/pagina-inicio', [AdminPaginaInicioController::class, 'update'])
     ->name('admin.pagina-inicio.update');
+
+    // === RUTAS DE BIBLIOTECA VIRTUAL (ADMINISTRACIÓN) ===
+    Route::resource('biblioteca-virtual', BibliotecaVirtualController::class);
+    Route::patch('biblioteca-virtual/{bibliotecaVirtual}/toggle-activo', [BibliotecaVirtualController::class, 'toggleActivo'])
+        ->name('biblioteca-virtual.toggle-activo');
 });
 
 // Rutas de calificaciones (accesibles para múltiples tipos de usuarios)
@@ -127,6 +133,12 @@ Route::get('kardex', [\App\Http\Controllers\CalificacionController::class, 'kard
     ->name('calificaciones.kardex');
 Route::get('mis-calificaciones', [\App\Http\Controllers\CalificacionController::class, 'misCalificaciones'])
     ->name('calificaciones.mis-calificaciones');
+
+// Ruta para Biblioteca Virtual (accesible para usuarios web y alumnos)
+Route::middleware(['multi.auth'])->group(function () {
+    Route::get('/biblioteca-virtual', [BibliotecaVirtualController::class, 'bibliotecaEstudiantes'])
+        ->name('biblioteca-virtual.estudiantes');
+});
 
 // Rutas para alumnos autenticados
 Route::middleware(['auth:alumno'])->group(function () {
