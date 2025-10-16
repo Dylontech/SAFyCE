@@ -25,15 +25,15 @@
         
         .periodo-section {
             margin-bottom: 2rem;
-            border: 1px solid #e9ecef;
+            border: 1px solid #3b97f2ff;
             border-radius: 10px;
             overflow: hidden;
         }
         
         .periodo-header {
-            background: #f8f9fa;
+            background: #54a9feff;
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid #55aaffff;
             font-weight: 600;
             color: #495057;
         }
@@ -43,19 +43,21 @@
         }
         
         .materia-row:hover {
-            background-color: #f8f9fa;
+            background-color: #7dbeffff;
         }
         
         .badge-aprobado {
             background-color: #28a745;
+            color: white;
         }
         
         .badge-reprobado {
             background-color: #dc3545;
+            color: white;
         }
         
         .promedio-excellent {
-            color: #28a745;
+            color: #42fe6eff;
             font-weight: bold;
         }
         
@@ -98,13 +100,13 @@
         .nav-tabs .nav-link:hover {
             border-color: transparent;
             color: #495057;
-            background-color: #f8f9fa;
+            background-color: #5daeffff;
         }
         
         .nav-tabs .nav-link.active {
             color: #495057;
-            background-color: #fff;
-            border-color: #dee2e6 #dee2e6 #fff;
+            background-color: #6cfffaff;
+            border-color: #dee2e6 #dee2e6 #ffababff;
             font-weight: 600;
         }
         
@@ -113,7 +115,7 @@
         }
         
         .materia-resumen {
-            background: #f8f9fa;
+            background: #7dbeffff;
             border-radius: 8px;
             padding: 1rem;
             margin-bottom: 1rem;
@@ -121,7 +123,7 @@
         }
         
         .materia-resumen:hover {
-            background: #e9ecef;
+            background: #6db6ffff;
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
@@ -278,7 +280,7 @@
                                                             </span>
                                                         </td>
                                                         <td class="text-center">
-                                                            <span class="badge bg-light text-dark">
+                                                            <span class="badge bg-warning text-white">
                                                                 {{ $totalEvaluaciones }} evaluaciones
                                                             </span>
                                                         </td>
@@ -331,7 +333,7 @@
                                                         <td class="text-center">
                                                             <div class="d-flex flex-wrap justify-content-center gap-1">
                                                                 @foreach($calificaciones as $cal)
-                                                                    <span class="badge bg-light text-dark" 
+                                                                    <span class="badge bg-warning text-white" 
                                                                           title="{{ $cal->tipo_evaluacion }} - {{ $cal->fecha_evaluacion ? $cal->fecha_evaluacion->format('d/m/Y') : 'Sin fecha' }}">
                                                                         {{ number_format($cal->calificacion, 0) }}
                                                                     </span>

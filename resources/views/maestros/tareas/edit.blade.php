@@ -308,13 +308,13 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-success {
-    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-warning {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-info {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 </style>
 @endsection

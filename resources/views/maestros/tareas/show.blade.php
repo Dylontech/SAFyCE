@@ -74,7 +74,7 @@
                                 <div class="mb-3">
                                     <label class="form-label text-light">Estado</label>
                                     <div>
-                                        <span class="badge badge-lg
+                                        <span class="badge badge-lg text-white
                                             @if($tarea->estado === 'activa') bg-success
                                             @elseif($tarea->estado === 'vencida') bg-danger
                                             @else bg-secondary
@@ -82,9 +82,9 @@
                                             {{ ucfirst($tarea->estado) }}
                                         </span>
                                         @if($tarea->estaVencida())
-                                            <span class="badge bg-warning ms-2">Vencida</span>
+                                            <span class="badge bg-warning text-white ms-2">Vencida</span>
                                         @elseif($tarea->diasRestantes() <= 3 && $tarea->estado === 'activa')
-                                            <span class="badge bg-warning ms-2">{{ $tarea->diasRestantes() }}d restantes</span>
+                                            <span class="badge bg-warning text-white ms-2">{{ $tarea->diasRestantes() }}d restantes</span>
                                         @endif
                                     </div>
                                 </div>
@@ -161,13 +161,22 @@
                                         @foreach($calificaciones as $calificacion)
                                             <tr>
                                                 <td>
-                                                    <div>
-                                                        <strong>{{ $calificacion->alumno->nombres }} {{ $calificacion->alumno->apellidos }}</strong>
-                                                        <div class="text-muted small">{{ $calificacion->alumno->matricula }}</div>
-                                                    </div>
+                                                    @if(isset($calificacion->alumno))
+                                                        <div>
+                                                            <strong>
+                                                                {{ $calificacion->alumno->Nombre ?? $calificacion->alumno->nombres ?? 'Sin nombre' }} 
+                                                                {{ $calificacion->alumno->apellidos ?? $calificacion->alumno->apellido_paterno ?? '' }}
+                                                            </strong>
+                                                            <div class="text-muted small">
+                                                                {{ $calificacion->alumno->numero_control ?? $calificacion->alumno->matricula ?? 'Sin matrícula' }}
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div class="text-muted">Sin estudiante asignado</div>
+                                                    @endif
                                                 </td>
                                                 <td>
-                                                    <span class="badge badge-lg
+                                                    <span class="badge badge-lg text-white
                                                         @if($calificacion->calificacion >= 80) bg-success
                                                         @elseif($calificacion->calificacion >= 60) bg-warning
                                                         @else bg-danger
@@ -253,7 +262,7 @@
                         <div class="mb-3">
                             <label class="form-label text-light">Tipo</label>
                             <div>
-                                <span class="badge 
+                                <span class="badge text-white
                                     @if($tarea->tipo === 'examen') bg-danger
                                     @elseif($tarea->tipo === 'proyecto') bg-warning
                                     @elseif($tarea->tipo === 'practica') bg-success
@@ -360,13 +369,13 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-success {
-    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-info {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-warning {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 </style>
 @endsection

@@ -111,17 +111,27 @@
                                 @foreach($entregas as $entrega)
                                     <tr>
                                         <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="avatar avatar-sm me-3 bg-primary-lt">
-                                                    {{ substr($entrega->alumno->nombre, 0, 1) }}{{ substr($entrega->alumno->apellido_paterno, 0, 1) }}
-                                                </span>
-                                                <div>
-                                                    <div class="font-weight-medium">
-                                                        {{ $entrega->alumno->nombre }} {{ $entrega->alumno->apellido_paterno }}
+                                            @if(isset($entrega->alumno))
+                                                <div class="d-flex align-items-center">
+                                                    <span class="avatar avatar-sm me-3 bg-primary-lt">
+                                                        @php
+                                                            $nombre = $entrega->alumno->Nombre ?? $entrega->alumno->nombre ?? $entrega->alumno->nombres ?? 'A';
+                                                            $apellido = $entrega->alumno->apellido_paterno ?? $entrega->alumno->apellidos ?? $entrega->alumno->apellido ?? 'A';
+                                                        @endphp
+                                                        {{ substr($nombre, 0, 1) }}{{ substr($apellido, 0, 1) }}
+                                                    </span>
+                                                    <div>
+                                                        <div class="font-weight-medium">
+                                                            {{ $nombre }} {{ $apellido }}
+                                                        </div>
+                                                        <div class="text-muted">
+                                                            {{ $entrega->alumno->numero_control ?? $entrega->alumno->matricula ?? 'Sin número' }}
+                                                        </div>
                                                     </div>
-                                                    <div class="text-muted">{{ $entrega->alumno->numero_control }}</div>
                                                 </div>
-                                            </div>
+                                            @else
+                                                <div class="text-muted">Sin estudiante asignado</div>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="text-muted">
@@ -133,17 +143,17 @@
                                         </td>
                                         <td>
                                             @if($entrega->estado_entrega === 'entregada')
-                                                <span class="badge bg-success">
+                                                <span class="badge bg-success text-white">
                                                     <i class="ti ti-check me-1"></i>
                                                     A tiempo
                                                 </span>
                                             @elseif($entrega->estado_entrega === 'tarde')
-                                                <span class="badge bg-warning">
+                                                <span class="badge bg-warning text-white">
                                                     <i class="ti ti-clock-x me-1"></i>
                                                     Tardía
                                                 </span>
                                             @elseif($entrega->estado_entrega === 'calificada')
-                                                <span class="badge bg-info">
+                                                <span class="badge bg-info text-white">
                                                     <i class="ti ti-star me-1"></i>
                                                     Calificada
                                                 </span>

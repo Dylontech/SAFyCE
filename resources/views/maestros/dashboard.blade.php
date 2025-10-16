@@ -107,7 +107,7 @@
                                     <div class="list-group-item bg-transparent border-secondary text-light">
                                         <div class="row align-items-center">
                                             <div class="col-auto">
-                                                <span class="badge 
+                                                <span class="badge text-white
                                                     @if($tarea->diasRestantes() <= 1) bg-danger
                                                     @elseif($tarea->diasRestantes() <= 3) bg-warning
                                                     @else bg-info
@@ -157,7 +157,7 @@
                                     <div class="list-group-item bg-transparent border-secondary text-light">
                                         <div class="row align-items-center">
                                             <div class="col-auto">
-                                                <span class="badge 
+                                                <span class="badge text-white
                                                     @if($tarea->estado === 'activa') bg-success
                                                     @elseif($tarea->estado === 'vencida') bg-danger
                                                     @else bg-secondary
@@ -273,13 +273,13 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-success {
-    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-info {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-warning {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 </style>
 @endsection

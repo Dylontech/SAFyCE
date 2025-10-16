@@ -120,12 +120,26 @@
                                     <tr>
                                         <td>
                                             <div>
-                                                <strong>{{ $calificacion->alumno->nombres }} {{ $calificacion->alumno->apellidos }}</strong>
-                                                <div class="text-muted small">{{ $calificacion->alumno->matricula }}</div>
+                                                <strong>
+                                                    @if(isset($calificacion->alumno))
+                                                        {{ $calificacion->alumno->Nombre ?? $calificacion->alumno->nombres ?? 'Sin nombre' }}
+                                                    @else
+                                                        Sin estudiante
+                                                    @endif
+                                                </strong>
+                                                <div class="text-muted small">
+                                                    @if(isset($calificacion->alumno))
+                                                        {{ $calificacion->alumno->numero_control ?? $calificacion->alumno->matricula ?? 'Sin matrícula' }}
+                                                    @endif
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ $calificacion->materia->nombre }}</span>
+                                            @if(isset($calificacion->materia))
+                                                <span class="badge bg-info text-white">{{ $calificacion->materia->materia ?? $calificacion->materia->nombre ?? 'Sin materia' }}</span>
+                                            @else
+                                                <span class="text-muted">Sin materia</span>
+                                            @endif
                                         </td>
                                         <td>
                                             @if($calificacion->tarea)
@@ -138,39 +152,49 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge 
-                                                @if($calificacion->tipo_evaluacion === 'examen_parcial' || $calificacion->tipo_evaluacion === 'examen_final') bg-danger
-                                                @elseif($calificacion->tipo_evaluacion === 'proyecto') bg-warning
-                                                @elseif($calificacion->tipo_evaluacion === 'practica') bg-success
-                                                @elseif($calificacion->tipo_evaluacion === 'participacion') bg-purple
-                                                @else bg-primary
-                                                @endif">
-                                                {{ ucfirst(str_replace('_', ' ', $calificacion->tipo_evaluacion)) }}
-                                            </span>
+                                            @if($calificacion->tipo_evaluacion)
+                                                <span class="badge text-white
+                                                    @if($calificacion->tipo_evaluacion === 'examen_parcial' || $calificacion->tipo_evaluacion === 'examen_final') bg-danger
+                                                    @elseif($calificacion->tipo_evaluacion === 'proyecto') bg-warning
+                                                    @elseif($calificacion->tipo_evaluacion === 'practica') bg-success
+                                                    @elseif($calificacion->tipo_evaluacion === 'participacion') bg-purple
+                                                    @else bg-primary
+                                                    @endif">
+                                                    {{ ucfirst(str_replace('_', ' ', $calificacion->tipo_evaluacion)) }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">Sin tipo</span>
+                                            @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-lg
-                                                @if($calificacion->calificacion >= 80) bg-success
-                                                @elseif($calificacion->calificacion >= 60) bg-warning
-                                                @else bg-danger
-                                                @endif">
-                                                {{ $calificacion->calificacion }}
-                                            </span>
+                                            @if($calificacion->calificacion !== null)
+                                                <span class="badge badge-lg text-white
+                                                    @if($calificacion->calificacion >= 80) bg-success
+                                                    @elseif($calificacion->calificacion >= 60) bg-warning
+                                                    @else bg-danger
+                                                    @endif">
+                                                    {{ $calificacion->calificacion }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">Sin calificación</span>
+                                            @endif
                                         </td>
                                         <td>
                                             {{ $calificacion->puntos_obtenidos ?? '-' }}/{{ $calificacion->puntos_totales ?? '-' }}
                                         </td>
                                         <td>
                                             @if($calificacion->parcial)
-                                                <span class="badge bg-secondary">{{ $calificacion->parcial }}°</span>
+                                                <span class="badge bg-secondary text-white">{{ $calificacion->parcial }}°</span>
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
                                         </td>
                                         <td>
                                             <div>
-                                                {{ $calificacion->fecha_evaluacion->format('d/m/Y') }}
-                                                <div class="text-muted small">{{ $calificacion->fecha_evaluacion->format('H:i') }}</div>
+                                                {{ $calificacion->fecha_evaluacion ? $calificacion->fecha_evaluacion->format('d/m/Y') : 'Sin fecha' }}
+                                                <div class="text-muted small">
+                                                    {{ $calificacion->fecha_evaluacion ? $calificacion->fecha_evaluacion->format('H:i') : '' }}
+                                                </div>
                                             </div>
                                         </td>
                                         <td>

@@ -195,7 +195,7 @@
                                 <div class="list-group-item bg-transparent border-secondary text-light">
                                     <div class="d-flex align-items-center">
                                         <div class="me-3">
-                                            <span class="badge 
+                                            <span class="badge text-white
                                                 @if($i == 1) bg-warning
                                                 @elseif($i == 2) bg-secondary
                                                 @elseif($i == 3) bg-orange
@@ -241,7 +241,7 @@
                             @foreach($tipos as $tipo)
                                 <div class="d-flex align-items-center justify-content-between mb-3">
                                     <div class="d-flex align-items-center">
-                                        <span class="badge bg-{{ $tipo['color'] }} me-2">{{ $tipo['cantidad'] }}</span>
+                                        <span class="badge bg-{{ $tipo['color'] }} text-white me-2">{{ $tipo['cantidad'] }}</span>
                                         <span>{{ $tipo['nombre'] }}</span>
                                     </div>
                                     <div class="progress" style="width: 60px; height: 8px;">
@@ -292,16 +292,16 @@
                                         <span class="text-muted">202{{ 4-($i%3) }}00{{ $i }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-primary">{{ rand(75, 95) }}</span>
+                                        <span class="badge bg-primary text-white">{{ rand(75, 95) }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-danger">{{ rand(65, 90) }}</span>
+                                        <span class="badge bg-danger text-white">{{ rand(65, 90) }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-warning">{{ rand(70, 95) }}</span>
+                                        <span class="badge bg-warning text-white">{{ rand(70, 95) }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-success">{{ rand(80, 100) }}</span>
+                                        <span class="badge bg-success text-white">{{ rand(80, 100) }}</span>
                                     </td>
                                     <td>
                                         <strong class="
@@ -313,7 +313,7 @@
                                         </strong>
                                     </td>
                                     <td>
-                                        <span class="badge 
+                                        <span class="badge text-white
                                             @if($promedio >= 80) bg-success
                                             @elseif($promedio >= 60) bg-warning
                                             @else bg-danger
@@ -339,13 +339,13 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-success {
-    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-info {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .bg-gradient-warning {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 @media print {

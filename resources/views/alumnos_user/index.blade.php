@@ -831,7 +831,7 @@
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="quick-access">
                         <div class="quick-access-content">
-                            <div class="h2 mb-3 text-muted">
+                            <div class="h2 mb-3" style="color: #8B4513;">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12z"/>
@@ -842,15 +842,13 @@
                             </div>
                             <div class="fw-bold text-dark mb-1">Biblioteca Virtual</div>
                             <div class="small text-muted mb-3">Recursos académicos digitales</div>
-                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                            <a href="{{ route('biblioteca-virtual.estudiantes') }}" class="btn btn-sm w-100" style="background-color: #8B4513; border-color: #8B4513; color: white;">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 1v6m0 6v6"/>
-                                    <path d="m21 12l-6 0m-6 0l-6 0"/>
+                                    <path d="M5 12l5 5l10 -10"/>
                                 </svg>
-                                Próximamente
-                            </button>
+                                Acceder
+                            </a>
                         </div>
                     </div>
                 </div>

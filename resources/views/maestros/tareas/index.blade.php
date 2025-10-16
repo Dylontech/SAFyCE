@@ -124,7 +124,7 @@
                                             <span class="badge bg-info">{{ $tarea->materia->nombre }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge 
+                                            <span class="badge text-white
                                                 @if($tarea->tipo === 'examen') bg-danger
                                                 @elseif($tarea->tipo === 'proyecto') bg-warning
                                                 @elseif($tarea->tipo === 'practica') bg-success
@@ -154,7 +154,7 @@
                                             <strong>{{ $tarea->puntos_totales }}</strong>
                                         </td>
                                         <td>
-                                            <span class="badge 
+                                            <span class="badge text-white
                                                 @if($tarea->estado === 'activa') bg-success
                                                 @elseif($tarea->estado === 'vencida') bg-danger
                                                 @else bg-secondary
