@@ -725,6 +725,28 @@
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="quick-access">
                         <div class="quick-access-content">
+                            <div class="h2 mb-3 text-cyan">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                    <path d="m12 2l3.09 6.26l6.91 1.01l-5 4.87l1.18 6.88l-6.18 -3.25l-6.18 3.25l1.18 -6.88l-5 -4.87l6.91 -1.01z"/>
+                                </svg>
+                            </div>
+                            <div class="fw-bold text-dark mb-1">Feed Social</div>
+                            <div class="small text-muted mb-3">Publicaciones y actividad</div>
+                            <a href="{{ route('perfil.feed') }}" class="btn btn-sm w-100" style="background-color: #17a2b8; border-color: #17a2b8; color: white;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M5 12l5 5l10 -10"/>
+                                </svg>
+                                Ingresar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="quick-access">
+                        <div class="quick-access-content">
                             <div class="h2 mb-3 text-muted">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -750,7 +772,7 @@
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="quick-access">
                         <div class="quick-access-content">
-                            <div class="h2 mb-3 text-muted">
+                            <div class="h2 mb-3 text-purple">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="40" height="40" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <circle cx="12" cy="12" r="3"/>
@@ -758,16 +780,14 @@
                                 </svg>
                             </div>
                             <div class="fw-bold text-dark mb-1">Mi Perfil</div>
-                            <div class="small text-muted mb-3">Configuración personal</div>
-                            <button class="btn btn-secondary btn-sm w-100" disabled>
+                            <div class="small text-muted mb-3">Personalizar perfil y publicaciones</div>
+                            <a href="{{ route('perfil.index') }}" class="btn btn-sm w-100" style="background-color: #6f42c1; border-color: #6f42c1; color: white;">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 1v6m0 6v6"/>
-                                    <path d="m21 12l-6 0m-6 0l-6 0"/>
+                                    <path d="M5 12l5 5l10 -10"/>
                                 </svg>
-                                Próximamente
-                            </button>
+                                Ingresar
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -40,11 +40,11 @@
         @endif
 
         <!-- Filtros -->
-        <div class="card mb-4 bg-secondary">
+        <div class="card mb-4">
             <div class="card-body">
                 <form method="GET" action="{{ route('maestros.tareas.index') }}" class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label text-light">Estado</label>
+                        <label class="form-label">Estado</label>
                         <select name="estado" class="form-select">
                             <option value="">Todos los estados</option>
                             <option value="activa" {{ request('estado') === 'activa' ? 'selected' : '' }}>Activa</option>
@@ -53,7 +53,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-light">Tipo</label>
+                        <label class="form-label">Tipo</label>
                         <select name="tipo" class="form-select">
                             <option value="">Todos los tipos</option>
                             <option value="tarea" {{ request('tipo') === 'tarea' ? 'selected' : '' }}>Tarea</option>
@@ -64,18 +64,18 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-light">Búsqueda</label>
+                        <label class="form-label">Búsqueda</label>
                         <input type="text" name="search" class="form-control" 
                                placeholder="Buscar por título..." value="{{ request('search') }}">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-light">&nbsp;</label>
+                        <label class="form-label">&nbsp;</label>
                         <div class="d-grid gap-2 d-md-flex">
                             <button type="submit" class="btn btn-primary">
                                 <i class="ti ti-search me-1"></i>
                                 Filtrar
                             </button>
-                            <a href="{{ route('maestros.tareas.index') }}" class="btn btn-outline-light">
+                            <a href="{{ route('maestros.tareas.index') }}" class="btn btn-outline-primary">
                                 <i class="ti ti-refresh me-1"></i>
                                 Limpiar
                             </a>
@@ -86,18 +86,18 @@
         </div>
 
         <!-- Lista de tareas -->
-        <div class="card bg-dark text-light">
-            <div class="card-header bg-gradient-primary">
-                <h3 class="card-title text-white">
-                    <i class="ti ti-list me-2"></i>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-list me-2 text-primary"></i>
                     Lista de Tareas ({{ $tareas->total() }})
                 </h3>
             </div>
             <div class="card-body p-0">
                 @if($tareas->count() > 0)
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover mb-0">
-                            <thead class="bg-secondary">
+                        <table class="table table-hover mb-0">
+                            <thead>
                                 <tr>
                                     <th>Título</th>
                                     <th>Materia</th>
@@ -121,7 +121,11 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ $tarea->materia->nombre }}</span>
+                                            @if(isset($tarea->materia))
+                                                <span class="badge bg-info text-white">{{ $tarea->materia->materia ?? $tarea->materia->nombre ?? 'Sin materia' }}</span>
+                                            @else
+                                                <span class="text-muted">Sin materia</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <span class="badge text-white
@@ -144,9 +148,9 @@
                                                 {{ $tarea->fecha_entrega->format('d/m/Y') }}
                                                 <div class="text-muted small">{{ $tarea->fecha_entrega->format('H:i') }}</div>
                                                 @if($tarea->estaVencida())
-                                                    <span class="badge bg-danger">Vencida</span>
+                                                    <span class="badge bg-danger text-white">Vencida</span>
                                                 @elseif($tarea->diasRestantes() <= 3)
-                                                    <span class="badge bg-warning">{{ $tarea->diasRestantes() }}d restantes</span>
+                                                    <span class="badge bg-warning text-white">{{ number_format($tarea->diasRestantes(), 1) }}d restantes</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -211,9 +215,4 @@
     </div>
 </div>
 
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-</style>
 @endsection

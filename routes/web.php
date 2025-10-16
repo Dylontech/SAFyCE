@@ -24,6 +24,10 @@ use App\Http\Controllers\TareaController;
 use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\BibliotecaVirtualController;
+use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PublicacionController;
+use App\Http\Controllers\ReaccionController;
+use App\Http\Controllers\ComentarioController;
 
 
 
@@ -364,4 +368,56 @@ Route::prefix('alumnos')->name('alumnos.')->middleware(['auth:alumno'])->group(f
     Route::post('/reuniones/{reunion}/unirse', [App\Http\Controllers\ReunionController::class, 'unirse'])->name('reuniones.unirse');
     Route::get('/reuniones/api/hoy', [App\Http\Controllers\ReunionController::class, 'reunionesHoy'])->name('reuniones.hoy');
     Route::get('/reuniones/buscar', [App\Http\Controllers\ReunionController::class, 'buscar'])->name('reuniones.buscar');
+});
+
+// === RUTAS DEL MÓDULO DE PERFIL ESTUDIANTIL ===
+Route::prefix('perfil')->name('perfil.')->middleware(['auth:alumno'])->group(function () {
+    // Rutas principales del perfil
+    Route::get('/', [App\Http\Controllers\PerfilController::class, 'index'])->name('index');
+    Route::get('/editar', [App\Http\Controllers\PerfilController::class, 'edit'])->name('edit');
+    Route::put('/actualizar', [App\Http\Controllers\PerfilController::class, 'update'])->name('update');
+    Route::put('/redes-sociales', [App\Http\Controllers\PerfilController::class, 'updateRedesSociales'])->name('redes-sociales.update');
+    
+    // Feed y publicaciones
+    Route::get('/feed', [App\Http\Controllers\PerfilController::class, 'feed'])->name('feed');
+    Route::get('/galeria', [App\Http\Controllers\PerfilController::class, 'galeria'])->name('galeria');
+    Route::get('/configuracion', [App\Http\Controllers\PerfilController::class, 'configuracion'])->name('configuracion');
+    
+    // Búsqueda y perfiles de otros usuarios
+    Route::get('/buscar', [App\Http\Controllers\PerfilController::class, 'buscar'])->name('buscar');
+    Route::get('/ver/{id}', [App\Http\Controllers\PerfilController::class, 'show'])->name('show');
+    
+    // Rutas de publicaciones
+    Route::prefix('publicaciones')->name('publicaciones.')->group(function () {
+        Route::post('/', [App\Http\Controllers\PublicacionController::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\PublicacionController::class, 'show'])->name('show');
+        Route::get('/{id}/editar', [App\Http\Controllers\PublicacionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\PublicacionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\PublicacionController::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/toggle-active', [App\Http\Controllers\PublicacionController::class, 'toggleActive'])->name('toggle-active');
+        Route::get('/buscar/resultados', [App\Http\Controllers\PublicacionController::class, 'buscar'])->name('buscar');
+        Route::get('/etiqueta/{etiqueta}', [App\Http\Controllers\PublicacionController::class, 'porEtiqueta'])->name('etiqueta');
+        Route::get('/{publicacionId}/archivo/{archivoIndex}', [App\Http\Controllers\PublicacionController::class, 'descargarArchivo'])->name('descargar-archivo');
+    });
+    
+    // Rutas de reacciones (API/AJAX)
+    Route::prefix('reacciones')->name('reacciones.')->group(function () {
+        Route::post('/{publicacionId}/toggle', [App\Http\Controllers\ReaccionController::class, 'toggle'])->name('toggle');
+        Route::delete('/{publicacionId}', [App\Http\Controllers\ReaccionController::class, 'destroy'])->name('destroy');
+        Route::get('/{publicacionId}', [App\Http\Controllers\ReaccionController::class, 'show'])->name('show');
+        Route::get('/{publicacionId}/tipo/{tipo}', [App\Http\Controllers\ReaccionController::class, 'porTipo'])->name('por-tipo');
+        Route::get('/estadisticas/mis-reacciones', [App\Http\Controllers\ReaccionController::class, 'estadisticas'])->name('estadisticas');
+    });
+    
+    // Rutas de comentarios (API/AJAX)
+    Route::prefix('comentarios')->name('comentarios.')->group(function () {
+        Route::post('/{publicacionId}', [App\Http\Controllers\ComentarioController::class, 'store'])->name('store');
+        Route::put('/{id}', [App\Http\Controllers\ComentarioController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\ComentarioController::class, 'destroy'])->name('destroy');
+        Route::get('/{publicacionId}', [App\Http\Controllers\ComentarioController::class, 'index'])->name('index');
+        Route::patch('/{id}/toggle-active', [App\Http\Controllers\ComentarioController::class, 'toggleActive'])->name('toggle-active');
+        Route::get('/mis-comentarios', [App\Http\Controllers\ComentarioController::class, 'misComentarios'])->name('mis-comentarios');
+        Route::get('/estadisticas', [App\Http\Controllers\ComentarioController::class, 'estadisticas'])->name('estadisticas');
+        Route::post('/{id}/reportar', [App\Http\Controllers\ComentarioController::class, 'reportar'])->name('reportar');
+    });
 });

@@ -55,10 +55,10 @@
             <!-- Información principal -->
             <div class="col-lg-8">
                 <!-- Detalles de la tarea -->
-                <div class="card mb-4 bg-dark text-light">
-                    <div class="card-header bg-gradient-primary">
-                        <h3 class="card-title text-white">
-                            <i class="ti ti-info-circle me-2"></i>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="ti ti-info-circle me-2 text-primary"></i>
                             Información de la Tarea
                         </h3>
                     </div>
@@ -66,13 +66,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label text-light">Título</label>
+                                    <label class="form-label">Título</label>
                                     <div class="h5 text-primary">{{ $tarea->titulo }}</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label text-light">Estado</label>
+                                    <label class="form-label">Estado</label>
                                     <div>
                                         <span class="badge badge-lg text-white
                                             @if($tarea->estado === 'activa') bg-success
@@ -92,16 +92,16 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label text-light">Descripción</label>
-                            <div class="bg-secondary p-3 rounded">
+                            <label class="form-label">Descripción</label>
+                            <div class="card card-body bg-light">
                                 {{ $tarea->descripcion }}
                             </div>
                         </div>
                         
                         @if($tarea->instrucciones)
                             <div class="mb-3">
-                                <label class="form-label text-light">Instrucciones Adicionales</label>
-                                <div class="bg-secondary p-3 rounded">
+                                <label class="form-label">Instrucciones Adicionales</label>
+                                <div class="card card-body bg-light">
                                     {{ $tarea->instrucciones }}
                                 </div>
                             </div>
@@ -109,16 +109,16 @@
                         
                         @if($tarea->archivo_adjunto)
                             <div class="mb-3">
-                                <label class="form-label text-light">Archivo Adjunto</label>
-                                <div class="card bg-secondary">
+                                <label class="form-label">Archivo Adjunto</label>
+                                <div class="card">
                                     <div class="card-body">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
-                                                <i class="ti ti-file-text me-2"></i>
+                                                <i class="ti ti-file-text me-2 text-primary"></i>
                                                 <span>{{ basename($tarea->archivo_adjunto) }}</span>
                                             </div>
                                             <a href="{{ Storage::url($tarea->archivo_adjunto) }}" 
-                                               class="btn btn-sm btn-outline-light" target="_blank">
+                                               class="btn btn-sm btn-outline-primary" target="_blank">
                                                 <i class="ti ti-download me-1"></i>
                                                 Descargar
                                             </a>
@@ -131,14 +131,14 @@
                 </div>
 
                 <!-- Calificaciones -->
-                <div class="card bg-dark text-light">
-                    <div class="card-header bg-gradient-success d-flex justify-content-between align-items-center">
-                        <h3 class="card-title text-white mb-0">
-                            <i class="ti ti-star me-2"></i>
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">
+                            <i class="ti ti-star me-2 text-success"></i>
                             Calificaciones ({{ $calificaciones->total() }})
                         </h3>
                         <a href="{{ route('maestros.calificaciones.create') }}?tarea_id={{ $tarea->id }}" 
-                           class="btn btn-sm btn-outline-light">
+                           class="btn btn-sm btn-outline-success">
                             <i class="ti ti-plus me-1"></i>
                             Nueva Calificación
                         </a>
@@ -146,8 +146,8 @@
                     <div class="card-body p-0">
                         @if($calificaciones->count() > 0)
                             <div class="table-responsive">
-                                <table class="table table-dark table-hover mb-0">
-                                    <thead class="bg-secondary">
+                                <table class="table table-hover mb-0">
+                                    <thead>
                                         <tr>
                                             <th>Estudiante</th>
                                             <th>Calificación</th>
@@ -231,36 +231,36 @@
             <!-- Panel lateral -->
             <div class="col-lg-4">
                 <!-- Información académica -->
-                <div class="card mb-4 bg-dark text-light">
-                    <div class="card-header bg-gradient-info">
-                        <h3 class="card-title text-white">
-                            <i class="ti ti-school me-2"></i>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="ti ti-school me-2 text-info"></i>
                             Información Académica
                         </h3>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label text-light">Materia</label>
+                            <label class="form-label">Materia</label>
                             <div class="h6 text-info">{{ $tarea->materia->nombre }}</div>
                         </div>
                         
                         <div class="row">
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <label class="form-label text-light">Grupo</label>
+                                    <label class="form-label">Grupo</label>
                                     <div class="h6">{{ $tarea->grupo }}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <label class="form-label text-light">Semestre</label>
+                                    <label class="form-label">Semestre</label>
                                     <div class="h6">{{ $tarea->semestre }}°</div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label text-light">Tipo</label>
+                            <label class="form-label">Tipo</label>
                             <div>
                                 <span class="badge text-white
                                     @if($tarea->tipo === 'examen') bg-danger
@@ -274,28 +274,28 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label text-light">Puntos Totales</label>
+                            <label class="form-label">Puntos Totales</label>
                             <div class="h5 text-warning">{{ $tarea->puntos_totales }} pts</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Fechas importantes -->
-                <div class="card mb-4 bg-dark text-light">
-                    <div class="card-header bg-gradient-warning">
-                        <h3 class="card-title text-white">
-                            <i class="ti ti-calendar me-2"></i>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="ti ti-calendar me-2 text-warning"></i>
                             Fechas Importantes
                         </h3>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label text-light">Fecha de Asignación</label>
+                            <label class="form-label">Fecha de Asignación</label>
                             <div class="h6">{{ $tarea->fecha_asignacion->format('d/m/Y H:i') }}</div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label text-light">Fecha de Entrega</label>
+                            <label class="form-label">Fecha de Entrega</label>
                             <div class="h6 {{ $tarea->estaVencida() ? 'text-danger' : 'text-success' }}">
                                 {{ $tarea->fecha_entrega->format('d/m/Y H:i') }}
                             </div>
@@ -313,10 +313,10 @@
                 </div>
 
                 <!-- Estadísticas -->
-                <div class="card bg-dark text-light">
-                    <div class="card-header bg-gradient-success">
-                        <h3 class="card-title text-white">
-                            <i class="ti ti-chart-bar me-2"></i>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="ti ti-chart-bar me-2 text-success"></i>
                             Estadísticas
                         </h3>
                     </div>
@@ -363,19 +363,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-success {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-info {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-warning {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-</style>
 @endsection

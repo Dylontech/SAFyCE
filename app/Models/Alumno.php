@@ -127,4 +127,12 @@ class Alumno extends Model implements AuthenticatableContract
                      ->where('semestre', $this->semestre)
                      ->get();
     }
+
+    /**
+     * Relación con perfil
+     */
+    public function perfil()
+    {
+        return $this->hasOne(\App\Models\Perfil::class);
+    }
 }

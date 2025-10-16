@@ -8,7 +8,7 @@
         <div class="row g-2 align-items-center">
             <div class="col">
                 <h2 class="page-title text-primary">
-                    <i class="ti ti-star me-2"></i>
+                    <i class="ti ti-star me-2 text-success"></i>
                     Registrar Nueva Calificación
                 </h2>
                 <div class="text-muted mt-1">Agrega una nueva calificación para un estudiante</div>
@@ -31,9 +31,9 @@
                     @csrf
                     
                     <!-- Información del estudiante -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-primary">
-                            <h3 class="card-title text-white">
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
                                 <i class="ti ti-user me-2"></i>
                                 Información del Estudiante
                             </h3>
@@ -42,7 +42,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Estudiante *</label>
+                                        <label class="form-label">Estudiante *</label>
                                         <select name="alumno_id" class="form-select @error('alumno_id') is-invalid @enderror" required>
                                             <option value="">Seleccionar estudiante</option>
                                             @foreach($alumnos as $alumno)
@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Materia *</label>
+                                        <label class="form-label">Materia *</label>
                                         <select name="materia_id" id="materia_id" class="form-select @error('materia_id') is-invalid @enderror" required>
                                             <option value="">Seleccionar materia</option>
                                             @foreach($materias as $materia)
@@ -77,9 +77,9 @@
                     </div>
 
                     <!-- Información de la evaluación -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-success">
-                            <h3 class="card-title text-white">
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
                                 <i class="ti ti-clipboard me-2"></i>
                                 Información de la Evaluación
                             </h3>
@@ -88,7 +88,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Tipo de Evaluación *</label>
+                                        <label class="form-label">Tipo de Evaluación *</label>
                                         <select name="tipo_evaluacion" class="form-select @error('tipo_evaluacion') is-invalid @enderror" required>
                                             <option value="">Seleccionar tipo</option>
                                             <option value="tarea" {{ old('tipo_evaluacion') === 'tarea' ? 'selected' : '' }}>Tarea</option>
@@ -105,7 +105,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Tarea Relacionada (Opcional)</label>
+                                        <label class="form-label">Tarea Relacionada (Opcional)</label>
                                         <select name="tarea_id" id="tarea_id" class="form-select @error('tarea_id') is-invalid @enderror">
                                             <option value="">Sin tarea específica</option>
                                             @foreach($tareas as $tarea)
@@ -127,7 +127,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Periodo Escolar *</label>
+                                        <label class="form-label">Periodo Escolar *</label>
                                         <input type="text" name="periodo_escolar" class="form-control @error('periodo_escolar') is-invalid @enderror" 
                                                value="{{ old('periodo_escolar', '2024-2025') }}" placeholder="Ej: 2024-2025" required>
                                         @error('periodo_escolar')
@@ -137,7 +137,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Parcial</label>
+                                        <label class="form-label">Parcial</label>
                                         <select name="parcial" class="form-select @error('parcial') is-invalid @enderror">
                                             <option value="">Sin parcial específico</option>
                                             <option value="1" {{ old('parcial') == '1' ? 'selected' : '' }}>Primer Parcial</option>
@@ -151,7 +151,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Fecha de Evaluación *</label>
+                                        <label class="form-label">Fecha de Evaluación *</label>
                                         <input type="date" name="fecha_evaluacion" class="form-control @error('fecha_evaluacion') is-invalid @enderror" 
                                                value="{{ old('fecha_evaluacion', now()->format('Y-m-d')) }}" required>
                                         @error('fecha_evaluacion')
@@ -164,9 +164,9 @@
                     </div>
 
                     <!-- Calificación y puntos -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-warning">
-                            <h3 class="card-title text-white">
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
                                 <i class="ti ti-calculator me-2"></i>
                                 Calificación y Puntos
                             </h3>
@@ -175,7 +175,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Calificación *</label>
+                                        <label class="form-label">Calificación *</label>
                                         <div class="input-group">
                                             <input type="number" name="calificacion" id="calificacion" 
                                                    class="form-control @error('calificacion') is-invalid @enderror" 
@@ -189,7 +189,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Puntos Obtenidos</label>
+                                        <label class="form-label">Puntos Obtenidos</label>
                                         <input type="number" name="puntos_obtenidos" id="puntos_obtenidos" 
                                                class="form-control @error('puntos_obtenidos') is-invalid @enderror" 
                                                value="{{ old('puntos_obtenidos') }}" min="0">
@@ -200,7 +200,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Puntos Totales</label>
+                                        <label class="form-label">Puntos Totales</label>
                                         <input type="number" name="puntos_totales" id="puntos_totales" 
                                                class="form-control @error('puntos_totales') is-invalid @enderror" 
                                                value="{{ old('puntos_totales') }}" min="1">
@@ -214,16 +214,16 @@
                     </div>
 
                     <!-- Comentarios -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-info">
-                            <h3 class="card-title text-white">
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
                                 <i class="ti ti-message-circle me-2"></i>
                                 Comentarios Adicionales
                             </h3>
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <label class="form-label text-light">Comentarios</label>
+                                <label class="form-label">Comentarios</label>
                                 <textarea name="comentarios" rows="4" 
                                           class="form-control @error('comentarios') is-invalid @enderror" 
                                           placeholder="Observaciones, fortalezas, áreas de mejora...">{{ old('comentarios') }}</textarea>
@@ -255,20 +255,6 @@
     </div>
 </div>
 
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-success {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-warning {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-info {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

@@ -38,10 +38,10 @@
                     @method('PUT')
                     
                     <!-- Información básica -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-primary">
-                            <h3 class="card-title text-white">
-                                <i class="ti ti-info-circle me-2"></i>
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
+                                <i class="ti ti-info-circle me-2 text-primary"></i>
                                 Información Básica
                             </h3>
                         </div>
@@ -49,7 +49,7 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Título de la Tarea *</label>
+                                        <label class="form-label">Título de la Tarea *</label>
                                         <input type="text" name="titulo" class="form-control @error('titulo') is-invalid @enderror" 
                                                value="{{ old('titulo', $tarea->titulo) }}" placeholder="Ej: Ensayo sobre la Revolución Mexicana">
                                         @error('titulo')
@@ -59,7 +59,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Tipo de Evaluación *</label>
+                                        <label class="form-label">Tipo de Evaluación *</label>
                                         <select name="tipo" class="form-select @error('tipo') is-invalid @enderror">
                                             <option value="">Seleccionar tipo</option>
                                             <option value="tarea" {{ old('tipo', $tarea->tipo) === 'tarea' ? 'selected' : '' }}>Tarea</option>
@@ -76,7 +76,7 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label class="form-label text-light">Descripción *</label>
+                                <label class="form-label">Descripción *</label>
                                 <textarea name="descripcion" rows="4" 
                                           class="form-control @error('descripcion') is-invalid @enderror" 
                                           placeholder="Describe detalladamente qué deben hacer los estudiantes...">{{ old('descripcion', $tarea->descripcion) }}</textarea>
@@ -88,10 +88,10 @@
                     </div>
 
                     <!-- Configuración académica -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-success">
-                            <h3 class="card-title text-white">
-                                <i class="ti ti-school me-2"></i>
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
+                                <i class="ti ti-school me-2 text-success"></i>
                                 Configuración Académica
                             </h3>
                         </div>
@@ -99,7 +99,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Materia *</label>
+                                        <label class="form-label">Materia *</label>
                                         <select name="materia_id" class="form-select @error('materia_id') is-invalid @enderror">
                                             <option value="">Seleccionar materia</option>
                                             @foreach($materias as $materia)
@@ -115,7 +115,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Grupo *</label>
+                                        <label class="form-label">Grupo *</label>
                                         <input type="text" name="grupo" class="form-control @error('grupo') is-invalid @enderror" 
                                                value="{{ old('grupo', $tarea->grupo) }}" placeholder="Ej: A, B, 1A, 2B">
                                         @error('grupo')
@@ -125,7 +125,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Semestre *</label>
+                                        <label class="form-label">Semestre *</label>
                                         <select name="semestre" class="form-select @error('semestre') is-invalid @enderror">
                                             <option value="">Seleccionar</option>
                                             @for($i = 1; $i <= 8; $i++)
@@ -144,9 +144,9 @@
                     </div>
 
                     <!-- Fechas y calificación -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-warning">
-                            <h3 class="card-title text-white">
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
                                 <i class="ti ti-calendar-clock me-2"></i>
                                 Fechas y Calificación
                             </h3>
@@ -155,7 +155,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Fecha y Hora de Entrega *</label>
+                                        <label class="form-label">Fecha y Hora de Entrega *</label>
                                         <input type="datetime-local" name="fecha_entrega" 
                                                class="form-control @error('fecha_entrega') is-invalid @enderror" 
                                                value="{{ old('fecha_entrega', $tarea->fecha_entrega?->format('Y-m-d\TH:i')) }}">
@@ -166,7 +166,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Puntos Totales *</label>
+                                        <label class="form-label">Puntos Totales *</label>
                                         <div class="input-group">
                                             <input type="number" name="puntos_totales" 
                                                    class="form-control @error('puntos_totales') is-invalid @enderror" 
@@ -180,7 +180,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label text-light">Estado *</label>
+                                        <label class="form-label">Estado *</label>
                                         <select name="estado" class="form-select @error('estado') is-invalid @enderror">
                                             <option value="activa" {{ old('estado', $tarea->estado) === 'activa' ? 'selected' : '' }}>Activa</option>
                                             <option value="vencida" {{ old('estado', $tarea->estado) === 'vencida' ? 'selected' : '' }}>Vencida</option>
@@ -196,16 +196,16 @@
                     </div>
 
                     <!-- Instrucciones adicionales -->
-                    <div class="card mb-4 bg-dark text-light">
-                        <div class="card-header bg-gradient-info">
-                            <h3 class="card-title text-white">
+                    <div class="card mb-4 ">
+                        <div class="card-header ">
+                            <h3 class="card-title">
                                 <i class="ti ti-file-text me-2"></i>
                                 Instrucciones y Archivos
                             </h3>
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <label class="form-label text-light">Instrucciones Adicionales</label>
+                                <label class="form-label">Instrucciones Adicionales</label>
                                 <textarea name="instrucciones" rows="4" 
                                           class="form-control @error('instrucciones') is-invalid @enderror" 
                                           placeholder="Criterios de evaluación, formato requerido, recursos adicionales...">{{ old('instrucciones', $tarea->instrucciones) }}</textarea>
@@ -216,7 +216,7 @@
                             
                             @if($tarea->archivo_adjunto)
                                 <div class="mb-3">
-                                    <label class="form-label text-light">Archivo Actual</label>
+                                    <label class="form-label">Archivo Actual</label>
                                     <div class="card bg-secondary">
                                         <div class="card-body">
                                             <div class="d-flex align-items-center justify-content-between">
@@ -236,7 +236,7 @@
                             @endif
                             
                             <div class="mb-3">
-                                <label class="form-label text-light">
+                                <label class="form-label">
                                     {{ $tarea->archivo_adjunto ? 'Reemplazar Archivo' : 'Archivo Adjunto' }}
                                 </label>
                                 <input type="file" name="archivo_adjunto" 
@@ -282,7 +282,7 @@
 <!-- Modal de confirmación para eliminar -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content bg-dark text-light">
+        <div class="modal-content ">
             <div class="modal-header">
                 <h5 class="modal-title">Confirmar Eliminación</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -303,18 +303,4 @@
     </div>
 </div>
 
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-success {
-   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-warning {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-info {
-   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-</style>
 @endsection

@@ -36,7 +36,7 @@
             <div class="card-body">
                 <form method="GET" action="{{ route('maestros.calificaciones.reportes') }}" class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label text-light">Materia</label>
+                        <label class="form-label">Materia</label>
                         <select name="materia_id" class="form-select">
                             <option value="">Todas las materias</option>
                             @foreach($materias as $materia)
@@ -47,7 +47,7 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label text-light">Tipo de Evaluación</label>
+                        <label class="form-label">Tipo de Evaluación</label>
                         <select name="tipo_evaluacion" class="form-select">
                             <option value="">Todos los tipos</option>
                             <option value="tarea" {{ request('tipo_evaluacion') === 'tarea' ? 'selected' : '' }}>Tarea</option>
@@ -59,7 +59,7 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label text-light">&nbsp;</label>
+                        <label class="form-label">&nbsp;</label>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
                                 <i class="ti ti-search me-1"></i>
@@ -133,9 +133,9 @@
         <div class="row">
             <!-- Distribución de calificaciones -->
             <div class="col-lg-8">
-                <div class="card bg-dark text-light">
-                    <div class="card-header bg-gradient-primary">
-                        <h3 class="card-title text-white">
+                <div class="card ">
+                    <div class="card-header ">
+                        <h3 class="card-title">
                             <i class="ti ti-chart-pie me-2"></i>
                             Distribución de Calificaciones por Materia
                         </h3>
@@ -182,9 +182,9 @@
             <!-- Estadísticas detalladas -->
             <div class="col-lg-4">
                 <!-- Top estudiantes -->
-                <div class="card mb-4 bg-dark text-light">
-                    <div class="card-header bg-gradient-success">
-                        <h3 class="card-title text-white">
+                <div class="card mb-4 ">
+                    <div class="card-header ">
+                        <h3 class="card-title">
                             <i class="ti ti-trophy me-2"></i>
                             Mejores Estudiantes
                         </h3>
@@ -219,9 +219,9 @@
                 </div>
 
                 <!-- Evaluaciones por tipo -->
-                <div class="card bg-dark text-light">
-                    <div class="card-header bg-gradient-info">
-                        <h3 class="card-title text-white">
+                <div class="card ">
+                    <div class="card-header ">
+                        <h3 class="card-title">
                             <i class="ti ti-chart-donut me-2"></i>
                             Evaluaciones por Tipo
                         </h3>
@@ -257,16 +257,16 @@
         </div>
 
         <!-- Tabla de rendimiento por estudiante -->
-        <div class="card mt-4 bg-dark text-light">
-            <div class="card-header bg-gradient-warning">
-                <h3 class="card-title text-white">
+        <div class="card mt-4 ">
+            <div class="card-header ">
+                <h3 class="card-title">
                     <i class="ti ti-table me-2"></i>
                     Rendimiento Detallado por Estudiante
                 </h3>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover mb-0">
+                    <table class="table table table-hover mb-0">
                         <thead class="bg-secondary">
                             <tr>
                                 <th>Estudiante</th>
@@ -334,32 +334,4 @@
     </div>
 </div>
 
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-success {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-info {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.bg-gradient-warning {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-@media print {
-    .page-header, .btn-list, .card-header {
-        background: none !important;
-        color: black !important;
-    }
-    .bg-dark, .bg-secondary {
-        background: white !important;
-        color: black !important;
-    }
-    .text-light {
-        color: black !important;
-    }
-}
-</style>
 @endsection

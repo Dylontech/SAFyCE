@@ -8,7 +8,7 @@
         <div class="row g-2 align-items-center">
             <div class="col">
                 <h2 class="page-title text-primary">
-                    <i class="ti ti-star me-2"></i>
+                    <i class="ti ti-star me-2 text-success"></i>
                     Gestión de Calificaciones
                 </h2>
                 <div class="text-muted mt-1">Administra las calificaciones de tus estudiantes</div>
@@ -48,7 +48,7 @@
             <div class="card-body">
                 <form method="GET" action="{{ route('maestros.calificaciones.index') }}" class="row g-3">
                     <div class="col-md-3">
-                        <label class="form-label text-light">Tipo de Evaluación</label>
+                        <label class="form-label">Tipo de Evaluación</label>
                         <select name="tipo_evaluacion" class="form-select">
                             <option value="">Todos los tipos</option>
                             <option value="tarea" {{ request('tipo_evaluacion') === 'tarea' ? 'selected' : '' }}>Tarea</option>
@@ -60,7 +60,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-light">Parcial</label>
+                        <label class="form-label">Parcial</label>
                         <select name="parcial" class="form-select">
                             <option value="">Todos los parciales</option>
                             <option value="1" {{ request('parcial') === '1' ? 'selected' : '' }}>Primer Parcial</option>
@@ -69,12 +69,12 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-light">Búsqueda de Estudiante</label>
+                        <label class="form-label">Búsqueda de Estudiante</label>
                         <input type="text" name="search" class="form-control" 
                                placeholder="Buscar por nombre o matrícula..." value="{{ request('search') }}">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-light">&nbsp;</label>
+                        <label class="form-label">&nbsp;</label>
                         <div class="d-grid gap-2 d-md-flex">
                             <button type="submit" class="btn btn-primary">
                                 <i class="ti ti-search me-1"></i>
@@ -91,9 +91,9 @@
         </div>
 
         <!-- Lista de calificaciones -->
-        <div class="card bg-dark text-light">
-            <div class="card-header bg-gradient-primary">
-                <h3 class="card-title text-white">
+        <div class="card ">
+            <div class="card-header ">
+                <h3 class="card-title">
                     <i class="ti ti-list me-2"></i>
                     Lista de Calificaciones ({{ $calificaciones->total() }})
                 </h3>
@@ -101,7 +101,7 @@
             <div class="card-body p-0">
                 @if($calificaciones->count() > 0)
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover mb-0">
+                        <table class="table table table-hover mb-0">
                             <thead class="bg-secondary">
                                 <tr>
                                     <th>Estudiante</th>
@@ -305,9 +305,4 @@
     </div>
 </div>
 
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-</style>
 @endsection
