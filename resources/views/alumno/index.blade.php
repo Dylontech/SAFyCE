@@ -23,6 +23,46 @@
                 <!-- Page title actions -->
                 <div class="col-12 col-md-auto ms-auto d-print-none">
                     <div class="btn-list">
+                        <!-- Dropdown para edición masiva (solo escritorio) -->
+                        <div class="dropdown d-none d-md-inline-block">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                                    <polyline points="3 7 12 13 21 7" />
+                                </svg>
+                                Edición Masiva
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form action="{{ route('alumnos.incrementar-semestre') }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de incrementar un semestre a TODOS los alumnos? Esta operación no se puede deshacer.')">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                            </svg>
+                                            Incrementar Semestre (Todos)
+                                        </button>
+                                    </form>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button type="button" class="dropdown-item" id="btnActualizarSeleccionados" onclick="mostrarModalActualizacion()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M9 12l2 2l4 -4" />
+                                            <circle cx="12" cy="12" r="9" />
+                                        </svg>
+                                        <span id="textoBotonSeleccionados">Actualizar Seleccionados (0)</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        
                         <!-- Botón completo para escritorio -->
                         <a href="{{ route('alumnos.create') }}" class="btn btn-primary d-none d-sm-inline-block">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
@@ -92,6 +132,25 @@
                         <div class="flex-fill">
                             <h4 class="alert-title">Error</h4>
                             <div class="text-muted">{{ session('error') }}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if(session('warning'))
+                <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+                    <div class="d-flex">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M12 9v2m0 4v.01" />
+                                <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+                            </svg>
+                        </div>
+                        <div class="flex-fill">
+                            <h4 class="alert-title">Advertencia</h4>
+                            <div class="text-muted">{{ session('warning') }}</div>
                         </div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -278,6 +337,9 @@
                             <table class="table card-table table-vcenter text-nowrap datatable">
                                 <thead>
                                 <tr>
+                                    <th class="w-1">
+                                        <input class="form-check-input m-0 align-middle" type="checkbox" id="selectAll" title="Seleccionar todo">
+                                    </th>
                                     <th class="text-nowrap">N° Control</th>
                                     <th class="text-nowrap d-none d-lg-table-cell">CURP</th>
                                     <th class="text-nowrap d-none d-md-table-cell">Especialidad</th>
@@ -293,6 +355,13 @@
                                 <tbody>
                                 @forelse ($alumnos as $alumno)
                                     <tr>
+                                        <!-- Checkbox para selección -->
+                                        <td>
+                                            <input class="form-check-input m-0 align-middle alumno-checkbox" type="checkbox" 
+                                                   value="{{ $alumno->id }}" name="selected_alumnos[]" 
+                                                   data-numero-control="{{ $alumno->numero_control }}"
+                                                   data-nombre="{{ $alumno->Nombre }}">
+                                        </td>
                                         <!-- Número de control - siempre visible -->
                                         <td>
                                             <div class="fw-bold">{{ $alumno->numero_control }}</div>
@@ -460,7 +529,242 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para actualización selectiva -->
+    <div class="modal modal-blur fade" id="modalActualizacionSelectiva" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Actualizar Alumnos Seleccionados</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formActualizacionSelectiva" action="{{ route('alumnos.actualizacion-selectiva') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Alumnos seleccionados <span class="badge bg-primary" id="contadorSeleccionados">0</span></label>
+                            <div id="listaSeleccionados" class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                <small class="text-muted">No hay alumnos seleccionados</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de actualización <span class="text-danger">*</span></label>
+                            <select class="form-control" name="tipo_actualizacion_selectiva" id="tipoActualizacionSelectiva" required>
+                                <option value="">Seleccione el tipo de actualización</option>
+                                <option value="grupo">Actualizar Grupo</option>
+                                <option value="especialidad">Actualizar Especialidad</option>
+                            </select>
+                        </div>
+
+                        <div id="campoGrupoSelectivo" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Nuevo grupo <span class="text-danger">*</span></label>
+                                <select class="form-control" name="nuevo_grupo" id="nuevoGrupo">
+                                    <option value="">Seleccione el nuevo grupo</option>
+                                    @foreach($grupos as $grupo)
+                                        <option value="{{ $grupo }}">{{ $grupo }}</option>
+                                    @endforeach
+                                    <option value="_nuevo_">➕ Crear nuevo grupo...</option>
+                                </select>
+                                <!-- Campo de texto para nuevo grupo (oculto inicialmente) -->
+                                <div id="campoNuevoGrupo" style="display: none; margin-top: 10px;">
+                                    <input type="text" class="form-control" name="grupo_personalizado" id="grupoPersonalizado" 
+                                           placeholder="Ingrese el nombre del nuevo grupo">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="campoEspecialidadSelectivo" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Nueva especialidad <span class="text-danger">*</span></label>
+                                <select class="form-control" name="nueva_especialidad" id="nuevaEspecialidad">
+                                    <option value="">Seleccione la nueva especialidad</option>
+                                    @foreach($especialidadesDB as $especialidad)
+                                        <option value="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="alumnos_seleccionados" id="alumnosSeleccionadosHidden">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn me-auto" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Actualizar seleccionados</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@section('js')
+<script>
+// Variables globales
+let alumnosSeleccionados = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.alumno-checkbox');
+    const btnActualizar = document.getElementById('btnActualizarSeleccionados');
+    const textoBoton = document.getElementById('textoBotonSeleccionados');
+    
+    // Manejar selección de todos
+    selectAll.addEventListener('change', function() {
+        const isChecked = this.checked;
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+        actualizarSeleccionados();
+    });
+    
+    // Manejar selección individual
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            actualizarSeleccionados();
+            // Actualizar estado del checkbox "seleccionar todo"
+            const checkedCount = document.querySelectorAll('.alumno-checkbox:checked').length;
+            selectAll.checked = checkedCount === checkboxes.length;
+            selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+        });
+    });
+    
+    // Modal de actualización selectiva
+    const tipoSelect = document.getElementById('tipoActualizacionSelectiva');
+    const campoGrupo = document.getElementById('campoGrupoSelectivo');
+    const campoEspecialidad = document.getElementById('campoEspecialidadSelectivo');
+    
+    tipoSelect.addEventListener('change', function() {
+        campoGrupo.style.display = 'none';
+        campoEspecialidad.style.display = 'none';
+        
+        if (this.value === 'grupo') {
+            campoGrupo.style.display = 'block';
+        } else if (this.value === 'especialidad') {
+            campoEspecialidad.style.display = 'block';
+        }
+    });
+    
+    // Manejar selección de grupo (existente o nuevo)
+    const selectGrupo = document.getElementById('nuevoGrupo');
+    const campoNuevoGrupo = document.getElementById('campoNuevoGrupo');
+    
+    selectGrupo.addEventListener('change', function() {
+        if (this.value === '_nuevo_') {
+            campoNuevoGrupo.style.display = 'block';
+            document.getElementById('grupoPersonalizado').required = true;
+        } else {
+            campoNuevoGrupo.style.display = 'none';
+            document.getElementById('grupoPersonalizado').required = false;
+        }
+    });
+});
+
+function actualizarSeleccionados() {
+    const checkboxes = document.querySelectorAll('.alumno-checkbox:checked');
+    const btnActualizar = document.getElementById('btnActualizarSeleccionados');
+    const textoBoton = document.getElementById('textoBotonSeleccionados');
+    
+    alumnosSeleccionados = Array.from(checkboxes).map(checkbox => ({
+        id: checkbox.value,
+        numeroControl: checkbox.dataset.numeroControl,
+        nombre: checkbox.dataset.nombre
+    }));
+    
+    const count = alumnosSeleccionados.length;
+    textoBoton.textContent = `Actualizar Seleccionados (${count})`;
+    
+    if (count > 0) {
+        btnActualizar.classList.remove('disabled');
+        btnActualizar.disabled = false;
+    } else {
+        btnActualizar.classList.add('disabled');
+        btnActualizar.disabled = true;
+    }
+}
+
+function mostrarModalActualizacion() {
+    if (alumnosSeleccionados.length === 0) {
+        alert('Debe seleccionar al menos un alumno para actualizar.');
+        return;
+    }
+    
+    // Actualizar lista de seleccionados en el modal
+    const listaDiv = document.getElementById('listaSeleccionados');
+    const contadorSpan = document.getElementById('contadorSeleccionados');
+    
+    contadorSpan.textContent = alumnosSeleccionados.length;
+    
+    listaDiv.innerHTML = alumnosSeleccionados.map(alumno => 
+        `<div class="d-flex justify-content-between align-items-center mb-1">
+            <small><strong>${alumno.numeroControl}</strong> - ${alumno.nombre}</small>
+        </div>`
+    ).join('');
+    
+    // Preparar IDs para envío
+    document.getElementById('alumnosSeleccionadosHidden').value = 
+        alumnosSeleccionados.map(a => a.id).join(',');
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modalActualizacionSelectiva'));
+    modal.show();
+}
+
+// Manejar envío del formulario selectivo
+document.getElementById('formActualizacionSelectiva').addEventListener('submit', function(e) {
+    if (!confirm(`¿Está seguro de actualizar ${alumnosSeleccionados.length} alumnos seleccionados? Esta operación no se puede deshacer.`)) {
+        e.preventDefault();
+    }
+});
+</script>
+@endsection
+
+@section('css')
+    @vite(['resources/css/pagination-responsive.css'])
+    <style>
+    /* Estilos para el botón de acciones mejorado */
+    .table-action-btn {
+        min-width: 100px !important;
+        padding: 0.375rem 0.75rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    .table-dropdown {
+        min-width: 180px;
+        font-size: 0.875rem !important;
+    }
+    
+    .table-dropdown .dropdown-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .table-dropdown .dropdown-item i {
+        width: 16px;
+        margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .table-action-btn {
+            min-width: 80px !important;
+            padding: 0.3rem 0.6rem !important;
+        }
+    }
+    
+    /* Estilos para checkboxes */
+    .alumno-checkbox:checked {
+        background-color: #206bc4;
+        border-color: #206bc4;
+    }
+    
+    #selectAll:indeterminate {
+        background-color: #f59f00;
+        border-color: #f59f00;
+    }
+    </style>
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

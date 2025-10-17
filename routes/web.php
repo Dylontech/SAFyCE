@@ -60,6 +60,10 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('/alumnos', AlumnoController::class);
     
+    // Rutas para edición masiva de alumnos
+    Route::post('/alumnos/incrementar-semestre', [AlumnoController::class, 'incrementarSemestre'])->name('alumnos.incrementar-semestre');
+    Route::post('/alumnos/actualizacion-selectiva', [AlumnoController::class, 'actualizacionSelectiva'])->name('alumnos.actualizacion-selectiva');
+    
     // === MÓDULOS DE CONTROL ESCOLAR ===
     
     // Rutas para Salas
