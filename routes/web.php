@@ -28,6 +28,7 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PublicacionController;
 use App\Http\Controllers\ReaccionController;
 use App\Http\Controllers\ComentarioController;
+use App\Http\Controllers\ModeracionController;
 
 
 
@@ -328,6 +329,31 @@ Route::prefix('maestros')->name('maestros.')->middleware(['auth', 'role:maestro'
     Route::delete('/calificaciones/{calificacion}', [App\Http\Controllers\Maestros\CalificacionController::class, 'destroy'])->name('calificaciones.destroy');
     Route::get('/calificaciones/reportes', [App\Http\Controllers\Maestros\CalificacionController::class, 'reportes'])->name('calificaciones.reportes');
     Route::get('/ajax/tareas-by-materia', [App\Http\Controllers\Maestros\CalificacionController::class, 'getTareasByMateria'])->name('ajax.tareas-by-materia');
+});
+
+// Rutas de moderación (accesibles para maestros y control escolar)
+Route::prefix('moderacion')->name('moderacion.')->middleware(['auth', 'role:maestro|controlescolar'])->group(function () {
+    // Dashboard de moderación
+    Route::get('/dashboard', [ModeracionController::class, 'dashboard'])->name('dashboard');
+    
+    // Gestión de reportes
+    Route::get('/reportes', [ModeracionController::class, 'reportes'])->name('reportes.index');
+    Route::get('/reportes/{reporte}', [ModeracionController::class, 'verReporte'])->name('reportes.show');
+    Route::patch('/reportes/{reporte}/asignar', [ModeracionController::class, 'asignarReporte'])->name('reportes.asignar');
+    Route::patch('/reportes/{reporte}/resolver', [ModeracionController::class, 'resolverReporte'])->name('reportes.resolver');
+    
+    // Gestión de contenido
+    Route::delete('/publicaciones/{publicacion}', [ModeracionController::class, 'eliminarPublicacion'])->name('publicaciones.eliminar');
+    Route::delete('/comentarios/{comentario}', [ModeracionController::class, 'eliminarComentario'])->name('comentarios.eliminar');
+    
+    // Gestión de usuarios bloqueados
+    Route::get('/bloqueados', [ModeracionController::class, 'usuariosBloqueados'])->name('bloqueados.index');
+    Route::post('/usuarios/{alumno}/bloquear', [ModeracionController::class, 'bloquearUsuario'])->name('usuarios.bloquear');
+    Route::patch('/bloqueados/{bloqueo}/desbloquear', [ModeracionController::class, 'desbloquearUsuario'])->name('bloqueados.desbloquear');
+    
+    // Historial y estadísticas
+    Route::get('/historial', [ModeracionController::class, 'historial'])->name('historial.index');
+    Route::get('/estadisticas', [ModeracionController::class, 'estadisticas'])->name('estadisticas.index');
 });
 
 Route::resource('/especialidades', App\Http\Controllers\EspecialidadeController::class);

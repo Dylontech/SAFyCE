@@ -232,6 +232,24 @@
         </div>
     </div>
     @endhasrole
+
+    <!-- Moderación Social - Para Control Escolar -->
+    @hasrole('control_escolar')
+    <div class="col-lg-3 col-md-6">
+        <div class="card card-link">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ti ti-shield-check fs-1 text-danger"></i>
+                </div>
+                <h3 class="card-title">Moderación Social</h3>
+                <p class="text-muted">Supervisar plataforma estudiantil</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ route('moderacion.dashboard') }}" class="btn btn-danger w-100">Acceder</a>
+            </div>
+        </div>
+    </div>
+    @endhasrole
 </div>
 
 <!-- Accesos rápidos para maestros -->
@@ -368,6 +386,67 @@
             </div>
             <div class="card-footer">
                 <a href="{{ route('maestros.calificaciones.create') }}" class="btn btn-info w-100">Calificar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acceso de moderación para Control Escolar y Maestros -->
+<div class="row mt-3 row-deck row-cards">
+    <div class="col-12">
+        <div class="page-title">Sistema de Moderación Social</div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card card-link">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ti ti-shield-check fs-1 text-danger"></i>
+                </div>
+                <h3 class="card-title">Moderación Social</h3>
+                <p class="text-muted">Panel de control para moderar publicaciones estudiantiles</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ route('moderacion.dashboard') }}" class="btn btn-danger w-100">
+                    <i class="ti ti-shield-check me-1"></i>
+                    Acceder al Panel
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card card-link">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ti ti-flag fs-1 text-warning"></i>
+                </div>
+                <h3 class="card-title">Reportes</h3>
+                <p class="text-muted">Revisar reportes de contenido inapropiado</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ route('moderacion.reportes.index') }}" class="btn btn-warning w-100">
+                    <i class="ti ti-flag me-1"></i>
+                    Ver Reportes
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card card-link">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="ti ti-ban fs-1 text-secondary"></i>
+                </div>
+                <h3 class="card-title">Usuarios Bloqueados</h3>
+                <p class="text-muted">Gestionar estudiantes con restricciones</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ route('moderacion.bloqueados.index') }}" class="btn btn-secondary w-100">
+                    <i class="ti ti-ban me-1"></i>
+                    Gestionar Bloqueos
+                </a>
             </div>
         </div>
     </div>

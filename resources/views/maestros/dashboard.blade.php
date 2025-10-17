@@ -253,6 +253,10 @@
                                 <i class="ti ti-list me-2"></i>
                                 Gestionar Tareas
                             </a>
+                            <a href="{{ route('moderacion.dashboard') }}" class="btn btn-danger">
+                                <i class="ti ti-shield-check me-2"></i>
+                                Moderación Social
+                            </a>
                         </div>
                         
                         @if($calificacionesPendientes > 0)
