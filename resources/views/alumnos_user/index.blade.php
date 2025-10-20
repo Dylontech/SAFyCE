@@ -886,16 +886,15 @@
                                 </svg>
                             </div>
                             <div class="fw-bold text-dark mb-1">Documentación</div>
-                            <div class="small text-muted mb-3">Manuales y guías académicas</div>
-                            <button class="btn btn-secondary btn-sm w-100" disabled>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 1v6m0 6v6"/>
-                                    <path d="m21 12l-6 0m-6 0l-6 0"/>
-                                </svg>
-                                Próximamente
-                            </button>
+                            <div class="small text-muted mb-3">Sube y consulta tus documentos oficiales</div>
+                            <div class="d-grid gap-2">
+                                <a href="{{ route('documentos.create') }}" class="btn btn-primary btn-sm w-100">
+                                    <i class="ti ti-upload me-1"></i> Subir Documentos
+                                </a>
+                                <a href="{{ route('documentos.my') }}" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="ti ti-file-text me-1"></i> Mis Documentos
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

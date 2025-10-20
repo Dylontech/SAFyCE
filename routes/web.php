@@ -191,6 +191,12 @@ Route::get('/formularios/download-liga-pago-formularios/{id}', [FormularioContro
 
     // Ruta para eliminar una solicitud
     Route::delete('/formularios/{id}', [FormularioController::class, 'destroy'])->name('formularios.destroy');
+
+    // Documentos: módulo de documentación para alumnos
+    Route::get('/documentos/mis-documentos', [\App\Http\Controllers\DocumentoController::class, 'myDocuments'])->name('documentos.my');
+    Route::get('/documentos/subir', [\App\Http\Controllers\DocumentoController::class, 'create'])->name('documentos.create');
+    Route::get('/documentos/download/{documento}', [\App\Http\Controllers\DocumentoController::class, 'download'])->name('documentos.download');
+    Route::post('/documentos/store', [\App\Http\Controllers\DocumentoController::class, 'store'])->name('documentos.store');
 });
 
 // Ruta para la vista de administración sin bloqueo de rol
@@ -358,6 +364,14 @@ Route::prefix('moderacion')->name('moderacion.')->middleware(['auth', 'role:maes
     // Historial y estadísticas
     Route::get('/historial', [ModeracionController::class, 'historial'])->name('historial.index');
     Route::get('/estadisticas', [ModeracionController::class, 'estadisticas'])->name('estadisticas.index');
+});
+
+// Rutas para control escolar: revisión de documentos
+// Aceptar ambos slugs de rol por compatibilidad: 'controlescolar' y 'control_escolar'
+Route::prefix('control_documentos')->name('control_documentos.')->middleware(['auth', 'role:controlescolar|control_escolar'])->group(function () {
+    Route::get('/', [\App\Http\Controllers\DocumentoController::class, 'index'])->name('index');
+    Route::get('/download/{documento}', [\App\Http\Controllers\DocumentoController::class, 'download'])->name('download');
+    Route::post('/review/{documento}', [\App\Http\Controllers\DocumentoController::class, 'review'])->name('review');
 });
 
 Route::resource('/especialidades', App\Http\Controllers\EspecialidadeController::class);

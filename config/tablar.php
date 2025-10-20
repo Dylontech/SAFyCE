@@ -287,6 +287,12 @@ return [
             'icon' => 'ti ti-book-2',
             'roles' => ['alumno']
         ],
+        [
+            'text' => 'Documentación',
+            'url' => 'documentos/subir',
+            'icon' => 'ti ti-file-text',
+            'roles' => ['alumno']
+        ],
 
         // SECCIÓN: CONTROL ESCOLAR (SIN TESTER)
         [
@@ -358,6 +364,13 @@ return [
             'url' => 'biblioteca-virtual',
             'icon' => 'ti ti-book-2',
             'roles' => ['control_escolar', 'admin']
+        ],
+        [
+            'text' => 'Revisión de Documentos',
+            'url' => 'control_documentos',
+            'icon' => 'ti ti-files',
+            // incluir ambas variantes de nombre de rol por compatibilidad
+            'roles' => ['control_escolar', 'controlescolar', 'admin']
         ],
 
         // SECCIÓN: SERVICIO FINANCIERO (SIN TESTER)
