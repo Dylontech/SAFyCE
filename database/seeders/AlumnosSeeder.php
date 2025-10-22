@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Alumno;
+use App\Models\Especialidade;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -22,7 +23,11 @@ class AlumnosSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         $alumnos = [];
-        $especialidades = ['diseño grafico digital', 'ventas', 'produccion industrial de alimentos', 'NA'];
+        // Obtener especialidades desde la tabla; si no hay, usar fallback
+        $especialidades = Especialidade::pluck('nombre')->toArray();
+        if (empty($especialidades)) {
+            $especialidades = ['diseno grafico digital', 'ventas', 'produccion industrial de alimentos', 'NA'];
+        }
         $estatusOptions = ['Activo', 'Inactivo'];
         
         // Grupos por semestre
@@ -103,9 +108,11 @@ class AlumnosSeeder extends Seeder
      */
     private function generarNumeroControl($index)
     {
+        // Formato: YY + 6 dígitos de secuencia = 8 caracteres
+        // Usamos el índice mod 1_000_000 para evitar secuencias demasiado largas
         $year = date('y'); // Año actual en 2 dígitos
-        $secuencia = str_pad($index, 5, '0', STR_PAD_LEFT);
-        return $year . '0805123' . $secuencia;
+        $secuencia = str_pad($index % 1000000, 6, '0', STR_PAD_LEFT);
+        return $year . $secuencia;
     }
 
     /**

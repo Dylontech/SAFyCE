@@ -25,6 +25,13 @@ class HomeController extends Controller
     public function index()
     {
         $carrusels = Carrusel::all();
+        
+        // Solo maestros ven el dashboard de control escolar
+        if (auth()->user()->hasRole('maestro')) {
+            return view('dashboard-control-escolar', compact('carrusels'));
+        }
+        
+        // Todos los demás usuarios van al home normal (admin, teste, control_escolar, servicio_financiero, etc.)
         return view('home', compact('carrusels'));
     }
 }

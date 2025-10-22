@@ -18,6 +18,18 @@ use App\Http\Controllers\GestionEController;
 use App\Http\Controllers\CarruselController;
 use App\Http\Controllers\PaginaInicioController;
 use App\Http\Controllers\AdminPaginaInicioController;
+use App\Http\Controllers\SalaController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\TareaController;
+use App\Http\Controllers\CalificacionController;
+use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\BibliotecaVirtualController;
+use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\PublicacionController;
+use App\Http\Controllers\ReaccionController;
+use App\Http\Controllers\ComentarioController;
+use App\Http\Controllers\ModeracionController;
+use App\Http\Controllers\AsistenciaController;
 
 
 
@@ -49,12 +61,68 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('/alumnos', AlumnoController::class);
     
+    // Rutas para edición masiva de alumnos
+    Route::post('/alumnos/incrementar-semestre', [AlumnoController::class, 'incrementarSemestre'])->name('alumnos.incrementar-semestre');
+    Route::post('/alumnos/actualizacion-selectiva', [AlumnoController::class, 'actualizacionSelectiva'])->name('alumnos.actualizacion-selectiva');
+    
+    // === MÓDULOS DE CONTROL ESCOLAR ===
+    
+    // Rutas para Salas
+    Route::resource('salas', \App\Http\Controllers\SalaController::class);
+    Route::post('salas/verificar-disponibilidad', [\App\Http\Controllers\SalaController::class, 'verificarDisponibilidad'])
+        ->name('salas.verificar-disponibilidad');
+    
+    // Rutas para Reuniones
+    Route::post('salas/crear-reunion', [\App\Http\Controllers\SalaController::class, 'crearReunion'])
+        ->name('salas.crear-reunion');
+    Route::get('salas/{sala}/reuniones', [\App\Http\Controllers\SalaController::class, 'reunionesSala'])
+        ->name('salas.reuniones');
+    Route::get('reuniones/{reunion}', [\App\Http\Controllers\SalaController::class, 'obtenerReunion'])
+        ->name('reuniones.obtener');
+    Route::patch('reuniones/{reunion}/cancelar', [\App\Http\Controllers\SalaController::class, 'cancelarReunion'])
+        ->name('reuniones.cancelar');
+    Route::delete('reuniones/{reunion}', [\App\Http\Controllers\SalaController::class, 'eliminarReunion'])
+        ->name('reuniones.eliminar');
+    
+    // Rutas para Horarios
+    Route::resource('horarios', \App\Http\Controllers\HorarioController::class);
+    Route::get('horarios/grupo/{grupo}', [\App\Http\Controllers\HorarioController::class, 'porGrupo'])
+        ->name('horarios.grupo');
+    Route::get('mi-horario', [\App\Http\Controllers\HorarioController::class, 'miHorario'])
+        ->name('horarios.mi-horario');
+    
+    // Rutas para Tareas
+    Route::resource('tareas', \App\Http\Controllers\TareaController::class);
+    Route::get('tareas/{tarea}/descargar', [\App\Http\Controllers\TareaController::class, 'descargarArchivo'])
+        ->name('tareas.descargar');
+    Route::post('tareas/marcar-vencidas', [\App\Http\Controllers\TareaController::class, 'marcarVencidas'])
+        ->name('tareas.marcar-vencidas');
+    Route::get('mis-tareas', [\App\Http\Controllers\TareaController::class, 'misTareas'])
+        ->name('tareas.mis-tareas');
+    
+    // Rutas para Calificaciones
+    Route::resource('calificaciones', \App\Http\Controllers\CalificacionController::class);
+    Route::get('tareas/{tarea}/calificar', [\App\Http\Controllers\CalificacionController::class, 'calificarTarea'])
+        ->name('calificaciones.calificar-tarea');
+    Route::post('tareas/{tarea}/calificar', [\App\Http\Controllers\CalificacionController::class, 'guardarCalificacionesTarea'])
+        ->name('calificaciones.guardar-tarea');
+    Route::get('alumnos/{alumno}/boleta/{periodo?}', [\App\Http\Controllers\CalificacionController::class, 'boleta'])
+        ->name('calificaciones.boleta');
+    Route::get('api/tareas-por-materia', [\App\Http\Controllers\CalificacionController::class, 'obtenerTareasPorMateria'])
+        ->name('api.tareas-por-materia');
+    
+    // === FIN MÓDULOS DE CONTROL ESCOLAR ===
+    
     Route::get('/configuracion', [RoleController::class, 'index'])->name('roles.index');
     Route::post('/configuracion/asignar', [RoleController::class, 'assignRoles'])->name('roles.assign');
+    Route::post('/configuracion/remover', [RoleController::class, 'removeRole'])->name('roles.remove');
     Route::resource('users', UserController::class);
 
     // Ruta para búsqueda de alumnos
     Route::get('/search/alumnos', [AlumnoController::class, 'search'])->name('search.alumnos');
+    
+    // Ruta AJAX para obtener grupos por semestre
+    Route::get('/api/grupos/semestre/{semestre}', [App\Http\Controllers\GrupoController::class, 'getGruposPorSemestre'])->name('grupos.por-semestre');
     
     // Configuración de página de inicio (protegida por auth)
     // Ruta para mostrar el formulario (GET)
@@ -64,11 +132,35 @@ Route::get('/admin/pagina-inicio', [AdminPaginaInicioController::class, 'edit'])
 // Ruta para actualizar (PUT) - CAMBIADO DE POST A PUT
 Route::put('/admin/pagina-inicio', [AdminPaginaInicioController::class, 'update'])
     ->name('admin.pagina-inicio.update');
+
+    // === RUTAS DE BIBLIOTECA VIRTUAL (ADMINISTRACIÓN) ===
+    Route::resource('biblioteca-virtual', BibliotecaVirtualController::class);
+    Route::patch('biblioteca-virtual/{bibliotecaVirtual}/toggle-activo', [BibliotecaVirtualController::class, 'toggleActivo'])
+        ->name('biblioteca-virtual.toggle-activo');
+});
+
+// Rutas de calificaciones (accesibles para múltiples tipos de usuarios)
+Route::get('kardex', [\App\Http\Controllers\CalificacionController::class, 'kardex'])
+    ->name('calificaciones.kardex');
+Route::get('mis-calificaciones', [\App\Http\Controllers\CalificacionController::class, 'misCalificaciones'])
+    ->name('calificaciones.mis-calificaciones');
+
+// Ruta para Biblioteca Virtual (accesible para usuarios web y alumnos)
+Route::middleware(['multi.auth'])->group(function () {
+    Route::get('/biblioteca-virtual', [BibliotecaVirtualController::class, 'bibliotecaEstudiantes'])
+        ->name('biblioteca-virtual.estudiantes');
 });
 
 // Rutas para alumnos autenticados
 Route::middleware(['auth:alumno'])->group(function () {
     Route::get('/alumnos_user', [App\Http\Controllers\alumnos_userController::class, 'index'])->name('alumnos_user.index');
+
+    // Ruta para que el alumno vea su propio historial de asistencias
+    Route::get('/asistencias/mis', [AsistenciaController::class, 'miHistorial'])->name('asistencias.mis');
+
+    // Asistencias - historial y subir comprobante
+    Route::get('/asistencias/historial/{alumno}', [AsistenciaController::class, 'historialAlumno'])->name('asistencias.historial');
+    Route::post('/asistencias/comprobantes/subir', [AsistenciaController::class, 'subirComprobante'])->name('asistencias.comprobantes.subir');
 
     // NUEVA RUTA: Descargar liga de pago desde tabla formularios
 Route::get('/formularios/download-liga-pago-formularios/{id}', [FormularioController::class, 'downloadLigaPagoFormularios'])->name('formularios.downloadLigaPagoFormularios');
@@ -107,7 +199,13 @@ Route::get('/formularios/download-liga-pago-formularios/{id}', [FormularioContro
     Route::post('/formularios/subir-comprobante-alumno/{id}', [FormularioController::class, 'subirComprobanteAlumno'])->name('formularios.subirComprobanteAlumno');
 
     // Ruta para eliminar una solicitud
-    Route::delete('/formularios/{id}', [FormularioController::class, 'destroy'])->name('formulario.destroy');
+    Route::delete('/formularios/{id}', [FormularioController::class, 'destroy'])->name('formularios.destroy');
+
+    // Documentos: módulo de documentación para alumnos
+    Route::get('/documentos/mis-documentos', [\App\Http\Controllers\DocumentoController::class, 'myDocuments'])->name('documentos.my');
+    Route::get('/documentos/subir', [\App\Http\Controllers\DocumentoController::class, 'create'])->name('documentos.create');
+    Route::get('/documentos/download/{documento}', [\App\Http\Controllers\DocumentoController::class, 'download'])->name('documentos.download');
+    Route::post('/documentos/store', [\App\Http\Controllers\DocumentoController::class, 'store'])->name('documentos.store');
 });
 
 // Ruta para la vista de administración sin bloqueo de rol
@@ -165,6 +263,12 @@ Route::get('gestions/downloadComprobante/{id}', [App\Http\Controllers\GestionSCo
 
 Route::resource('/materias', App\Http\Controllers\MateriaController::class);
 
+// Rutas públicas/externas para asistencias (registro en entrada por código de barras)
+Route::post('/asistencias/entrada', [AsistenciaController::class, 'registrarPlantel'])->name('asistencias.entrada');
+
+// Rutas para el CRUD de Grupos
+Route::resource('/grupos', App\Http\Controllers\GrupoController::class);
+
 // Rutas para el controlador FormularioEController
 Route::get('/formulario/{id}/edit', [FormularioEController::class, 'edit'])->name('formulario.edit');
 Route::put('/formulario/{id}', [FormularioEController::class, 'update'])->name('formulario.update');
@@ -218,6 +322,163 @@ Route::get('carrusel/image/{id}', [CarruselController::class, 'getImage'])->name
 
 Route::get('/debug-sessions', [LoginController::class, 'debugSessions']);
 
+// Rutas para maestros
+Route::prefix('maestros')->name('maestros.')->middleware(['auth', 'role:maestro'])->group(function () {
+    // Dashboard de maestros
+    Route::get('/dashboard', [App\Http\Controllers\MaestroController::class, 'dashboard'])->name('dashboard');
+    
+    // Rutas de tareas para maestros
+    Route::get('/tareas', [App\Http\Controllers\Maestros\TareaController::class, 'index'])->name('tareas.index');
+    Route::get('/tareas/crear', [App\Http\Controllers\Maestros\TareaController::class, 'create'])->name('tareas.create');
+    Route::post('/tareas', [App\Http\Controllers\Maestros\TareaController::class, 'store'])->name('tareas.store');
+    Route::get('/tareas/{tarea}', [App\Http\Controllers\Maestros\TareaController::class, 'show'])->name('tareas.show');
+    Route::get('/tareas/{tarea}/editar', [App\Http\Controllers\Maestros\TareaController::class, 'edit'])->name('tareas.edit');
+    Route::put('/tareas/{tarea}', [App\Http\Controllers\Maestros\TareaController::class, 'update'])->name('tareas.update');
+    Route::delete('/tareas/{tarea}', [App\Http\Controllers\Maestros\TareaController::class, 'destroy'])->name('tareas.destroy');
+    Route::patch('/tareas/{tarea}/toggle-estado', [App\Http\Controllers\Maestros\TareaController::class, 'toggleEstado'])->name('tareas.toggle-estado');
+    
+    // Rutas para gestión de entregas
+    Route::get('/tareas/{tarea}/entregas', [App\Http\Controllers\Maestros\TareaController::class, 'verEntregas'])->name('tareas.entregas');
+    Route::get('/tareas/{tarea}/entregas/{calificacion}/descargar', [App\Http\Controllers\Maestros\TareaController::class, 'descargarEntregaAlumno'])->name('tareas.descargar-entrega');
+    Route::patch('/tareas/{tarea}/entregas/{calificacion}/calificar', [App\Http\Controllers\Maestros\TareaController::class, 'calificarEntrega'])->name('tareas.calificar-entrega');
+    
+    // Rutas de calificaciones para maestros
+    Route::get('/calificaciones', [App\Http\Controllers\Maestros\CalificacionController::class, 'index'])->name('calificaciones.index');
+    Route::get('/calificaciones/crear', [App\Http\Controllers\Maestros\CalificacionController::class, 'create'])->name('calificaciones.create');
+    Route::post('/calificaciones', [App\Http\Controllers\Maestros\CalificacionController::class, 'store'])->name('calificaciones.store');
+    Route::get('/calificaciones/{calificacion}/editar', [App\Http\Controllers\Maestros\CalificacionController::class, 'edit'])->name('calificaciones.edit');
+    Route::put('/calificaciones/{calificacion}', [App\Http\Controllers\Maestros\CalificacionController::class, 'update'])->name('calificaciones.update');
+    Route::delete('/calificaciones/{calificacion}', [App\Http\Controllers\Maestros\CalificacionController::class, 'destroy'])->name('calificaciones.destroy');
+    Route::get('/calificaciones/reportes', [App\Http\Controllers\Maestros\CalificacionController::class, 'reportes'])->name('calificaciones.reportes');
+    Route::get('/ajax/tareas-by-materia', [App\Http\Controllers\Maestros\CalificacionController::class, 'getTareasByMateria'])->name('ajax.tareas-by-materia');
+    
+    // Rutas de asistencias para maestros
+    Route::get('/asistencias/salon', [AsistenciaController::class, 'listaSalon'])->name('asistencias.salon');
+    Route::post('/asistencias/salon/registrar', [AsistenciaController::class, 'registrarSalon'])->name('asistencias.salon.registrar');
+    Route::post('/asistencias/comprobantes/{id}/revisar', [AsistenciaController::class, 'revisarComprobante'])->name('asistencias.comprobantes.revisar');
+});
 
+// Rutas de moderación (accesibles para maestros y control escolar)
+Route::prefix('moderacion')->name('moderacion.')->middleware(['auth', 'role:maestro|controlescolar'])->group(function () {
+    // Dashboard de moderación
+    Route::get('/dashboard', [ModeracionController::class, 'dashboard'])->name('dashboard');
+    
+    // Gestión de reportes
+    Route::get('/reportes', [ModeracionController::class, 'reportes'])->name('reportes.index');
+    Route::get('/reportes/{reporte}', [ModeracionController::class, 'verReporte'])->name('reportes.show');
+    Route::patch('/reportes/{reporte}/asignar', [ModeracionController::class, 'asignarReporte'])->name('reportes.asignar');
+    Route::patch('/reportes/{reporte}/resolver', [ModeracionController::class, 'resolverReporte'])->name('reportes.resolver');
+    
+    // Gestión de contenido
+    Route::delete('/publicaciones/{publicacion}', [ModeracionController::class, 'eliminarPublicacion'])->name('publicaciones.eliminar');
+    Route::delete('/comentarios/{comentario}', [ModeracionController::class, 'eliminarComentario'])->name('comentarios.eliminar');
+    
+    // Gestión de usuarios bloqueados
+    Route::get('/bloqueados', [ModeracionController::class, 'usuariosBloqueados'])->name('bloqueados.index');
+    Route::post('/usuarios/{alumno}/bloquear', [ModeracionController::class, 'bloquearUsuario'])->name('usuarios.bloquear');
+    Route::patch('/bloqueados/{bloqueo}/desbloquear', [ModeracionController::class, 'desbloquearUsuario'])->name('bloqueados.desbloquear');
+    
+    // Historial y estadísticas
+    Route::get('/historial', [ModeracionController::class, 'historial'])->name('historial.index');
+    Route::get('/estadisticas', [ModeracionController::class, 'estadisticas'])->name('estadisticas.index');
+});
+
+// Rutas para control escolar: revisión de documentos
+// Aceptar ambos slugs de rol por compatibilidad: 'controlescolar' y 'control_escolar'
+Route::prefix('control_documentos')->name('control_documentos.')->middleware(['auth', 'role:controlescolar|control_escolar'])->group(function () {
+    Route::get('/', [\App\Http\Controllers\DocumentoController::class, 'index'])->name('index');
+    Route::get('/download/{documento}', [\App\Http\Controllers\DocumentoController::class, 'download'])->name('download');
+    Route::post('/review/{documento}', [\App\Http\Controllers\DocumentoController::class, 'review'])->name('review');
+});
 
 Route::resource('/especialidades', App\Http\Controllers\EspecialidadeController::class);
+
+// Rutas para estudiantes (portal estudiantil)
+Route::prefix('estudiantes')->name('estudiantes.')->middleware(['auth:alumno'])->group(function () {
+    // Rutas de horarios para estudiantes
+    Route::get('/horarios', [App\Http\Controllers\EstudianteController::class, 'horarios'])->name('horarios');
+    Route::get('/horarios/{horario}', [App\Http\Controllers\EstudianteController::class, 'showHorario'])->name('horarios.show');
+    Route::get('/horarios-semanal', [App\Http\Controllers\EstudianteController::class, 'horarioSemanal'])->name('horarios.semanal');
+    
+    // Rutas de salas para estudiantes
+    Route::get('/salas', [App\Http\Controllers\EstudianteController::class, 'salas'])->name('salas');
+    Route::get('/salas/{sala}', [App\Http\Controllers\EstudianteController::class, 'showSala'])->name('salas.show');
+    
+    // Rutas de tareas para estudiantes
+    Route::get('/tareas', [App\Http\Controllers\EstudianteController::class, 'tareas'])->name('tareas');
+    Route::get('/tareas/{tarea}', [App\Http\Controllers\EstudianteController::class, 'showTarea'])->name('tareas.show');
+    Route::get('/tareas/{tarea}/descargar', [App\Http\Controllers\EstudianteController::class, 'descargarArchivoTarea'])->name('tareas.descargar');
+    Route::post('/tareas/{tarea}/entregar', [App\Http\Controllers\EstudianteController::class, 'subirEntregaTarea'])->name('tareas.entregar');
+    Route::get('/tareas/{tarea}/mi-entrega', [App\Http\Controllers\EstudianteController::class, 'descargarMiEntrega'])->name('tareas.mi-entrega');
+    
+    // Rutas de calificaciones para estudiantes
+    Route::get('/calificaciones', [App\Http\Controllers\EstudianteController::class, 'calificaciones'])->name('calificaciones');
+    Route::get('/calificaciones/reportes', [App\Http\Controllers\EstudianteController::class, 'reportesCalificaciones'])->name('calificaciones.reportes');
+    Route::get('/calificaciones/boleta', [App\Http\Controllers\EstudianteController::class, 'boleta'])->name('calificaciones.boleta');
+    
+    // Rutas de reuniones para estudiantes
+    Route::get('/reuniones', [App\Http\Controllers\EstudianteController::class, 'reuniones'])->name('reuniones');
+    Route::get('/reuniones/activas', [App\Http\Controllers\EstudianteController::class, 'reunionesActivas'])->name('reuniones.activas');
+    Route::post('/reuniones/{reunion}/unirse', [App\Http\Controllers\EstudianteController::class, 'unirseReunion'])->name('reuniones.unirse');
+});
+
+// Rutas para reuniones de alumnos
+Route::prefix('alumnos')->name('alumnos.')->middleware(['auth:alumno'])->group(function () {
+    Route::get('/reuniones', [App\Http\Controllers\ReunionController::class, 'index'])->name('reuniones.index');
+    Route::get('/reuniones/{reunion}', [App\Http\Controllers\ReunionController::class, 'show'])->name('reuniones.show');
+    Route::post('/reuniones/{reunion}/unirse', [App\Http\Controllers\ReunionController::class, 'unirse'])->name('reuniones.unirse');
+    Route::get('/reuniones/api/hoy', [App\Http\Controllers\ReunionController::class, 'reunionesHoy'])->name('reuniones.hoy');
+    Route::get('/reuniones/buscar', [App\Http\Controllers\ReunionController::class, 'buscar'])->name('reuniones.buscar');
+});
+
+// === RUTAS DEL MÓDULO DE PERFIL ESTUDIANTIL ===
+Route::prefix('perfil')->name('perfil.')->middleware(['auth:alumno'])->group(function () {
+    // Rutas principales del perfil
+    Route::get('/', [App\Http\Controllers\PerfilController::class, 'index'])->name('index');
+    Route::get('/editar', [App\Http\Controllers\PerfilController::class, 'edit'])->name('edit');
+    Route::put('/actualizar', [App\Http\Controllers\PerfilController::class, 'update'])->name('update');
+    Route::put('/redes-sociales', [App\Http\Controllers\PerfilController::class, 'updateRedesSociales'])->name('redes-sociales.update');
+    
+    // Feed y publicaciones
+    Route::get('/feed', [App\Http\Controllers\PerfilController::class, 'feed'])->name('feed');
+    Route::get('/galeria', [App\Http\Controllers\PerfilController::class, 'galeria'])->name('galeria');
+    Route::get('/configuracion', [App\Http\Controllers\PerfilController::class, 'configuracion'])->name('configuracion');
+    
+    // Búsqueda y perfiles de otros usuarios
+    Route::get('/buscar', [App\Http\Controllers\PerfilController::class, 'buscar'])->name('buscar');
+    Route::get('/ver/{id}', [App\Http\Controllers\PerfilController::class, 'show'])->name('show');
+    
+    // Rutas de publicaciones
+    Route::prefix('publicaciones')->name('publicaciones.')->group(function () {
+        Route::post('/', [App\Http\Controllers\PublicacionController::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\PublicacionController::class, 'show'])->name('show');
+        Route::get('/{id}/editar', [App\Http\Controllers\PublicacionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [App\Http\Controllers\PublicacionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\PublicacionController::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/toggle-active', [App\Http\Controllers\PublicacionController::class, 'toggleActive'])->name('toggle-active');
+        Route::get('/buscar/resultados', [App\Http\Controllers\PublicacionController::class, 'buscar'])->name('buscar');
+        Route::get('/etiqueta/{etiqueta}', [App\Http\Controllers\PublicacionController::class, 'porEtiqueta'])->name('etiqueta');
+        Route::get('/{publicacionId}/archivo/{archivoIndex}', [App\Http\Controllers\PublicacionController::class, 'descargarArchivo'])->name('descargar-archivo');
+    });
+    
+    // Rutas de reacciones (API/AJAX)
+    Route::prefix('reacciones')->name('reacciones.')->group(function () {
+        Route::post('/{publicacionId}/toggle', [App\Http\Controllers\ReaccionController::class, 'toggle'])->name('toggle');
+        Route::delete('/{publicacionId}', [App\Http\Controllers\ReaccionController::class, 'destroy'])->name('destroy');
+        Route::get('/{publicacionId}', [App\Http\Controllers\ReaccionController::class, 'show'])->name('show');
+        Route::get('/{publicacionId}/tipo/{tipo}', [App\Http\Controllers\ReaccionController::class, 'porTipo'])->name('por-tipo');
+        Route::get('/estadisticas/mis-reacciones', [App\Http\Controllers\ReaccionController::class, 'estadisticas'])->name('estadisticas');
+    });
+    
+    // Rutas de comentarios (API/AJAX)
+    Route::prefix('comentarios')->name('comentarios.')->group(function () {
+        Route::post('/{publicacionId}', [App\Http\Controllers\ComentarioController::class, 'store'])->name('store');
+        Route::put('/{id}', [App\Http\Controllers\ComentarioController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\ComentarioController::class, 'destroy'])->name('destroy');
+        Route::get('/{publicacionId}', [App\Http\Controllers\ComentarioController::class, 'index'])->name('index');
+        Route::patch('/{id}/toggle-active', [App\Http\Controllers\ComentarioController::class, 'toggleActive'])->name('toggle-active');
+        Route::get('/mis-comentarios', [App\Http\Controllers\ComentarioController::class, 'misComentarios'])->name('mis-comentarios');
+        Route::get('/estadisticas', [App\Http\Controllers\ComentarioController::class, 'estadisticas'])->name('estadisticas');
+        Route::post('/{id}/reportar', [App\Http\Controllers\ComentarioController::class, 'reportar'])->name('reportar');
+    });
+});

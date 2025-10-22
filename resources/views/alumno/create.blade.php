@@ -2,6 +2,10 @@
 
 @section('title', 'Registrar Alumno')
 
+@section('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
 @section('content')
     <!-- Page header -->
     <div class="page-header d-print-none">

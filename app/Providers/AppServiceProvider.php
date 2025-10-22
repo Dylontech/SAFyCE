@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Models\User;
 use App\Models\Alumno;
+use App\Models\Tarea;
+use App\Models\Calificacion;
+use App\Policies\TareaPolicy;
+use App\Policies\CalificacionPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,6 +51,11 @@ class AppServiceProvider extends ServiceProvider
 
             return false;
         });
+
+        // Registrar las políticas
+        Gate::policy(Tarea::class, TareaPolicy::class);
+        Gate::policy(Calificacion::class, CalificacionPolicy::class);
+        Gate::policy(\App\Models\BibliotecaVirtual::class, \App\Policies\BibliotecaVirtualPolicy::class);
 
         // Compartir la configuración de WhatsApp en todas las vistas
        // $settings = DB::table('whatsapp_settings')->first();

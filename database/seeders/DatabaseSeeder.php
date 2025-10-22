@@ -13,6 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Ejecutar seeders en orden
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+            MaestroSeeder::class,
+            ControlEscolarSeeder::class,
+            // Otros seeders existentes pueden ir aquí
+        ]);
+
         // User::factory(10)->create();
 
         User::factory()->create([

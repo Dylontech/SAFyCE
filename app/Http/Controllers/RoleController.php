@@ -74,4 +74,34 @@ class RoleController extends Controller
                 ->with('error', 'Ocurrió un error al asignar los roles. Por favor, intenta nuevamente.');
         }
     }
+
+    /**
+     * Remover un rol de un usuario.
+     */
+    public function removeRole(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $role = Role::findOrFail($request->role_id);
+
+        // Solo administradores pueden quitar roles
+        if (!Auth::user() || !Auth::user()->hasRole('admin')) {
+            return redirect()->route('roles.index')->with('error', 'No tienes permisos para realizar esta acción.');
+        }
+
+        try {
+            if ($user->hasRole($role->name)) {
+                $user->removeRole($role->name);
+                return redirect()->route('roles.index')->with('success', "Se ha quitado el rol {$role->name} al usuario {$user->name}.");
+            }
+
+            return redirect()->route('roles.index')->with('info', 'El usuario no tenía este rol.');
+        } catch (\Exception $e) {
+            return redirect()->route('roles.index')->with('error', 'Ocurrió un error al remover el rol.');
+        }
+    }
 }

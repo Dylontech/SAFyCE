@@ -64,3 +64,46 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Notas del proyecto: seeders relevantes
+
+Se añadieron y modificaron seeders relacionados con alumnos, especialidades y materias. Pequeña guía:
+
+- AlumnosSeeder:
+  - `numero_control` ahora tiene 8 caracteres en formato `YYxxxxxx` (año de 2 dígitos + 6 dígitos de secuencia).
+  - El seeder toma las `especialidades` desde la tabla `especialidades` (modelo `Especialidade`). Si la tabla está vacía usa un fallback: `['diseno grafico digital', 'ventas', 'produccion industrial de alimentos', 'NA']`.
+  - Para ejecutarlo:
+
+```bash
+php artisan db:seed --class=AlumnosSeeder
+```
+
+- EspecialidadesSeeder:
+  - Inserta especialidades comunes (diseno grafico digital, ventas, produccion industrial de alimentos, mantenimiento, informatica, administracion, NA).
+  - Ejecutar antes de `AlumnosSeeder` en entornos nuevos para asegurar que las especialidades estén disponibles:
+
+```bash
+php artisan db:seed --class=EspecialidadesSeeder
+```
+
+- MateriasSeeder:
+  - Inserta materias comunes por semestre y algunas materias específicas por especialidad.
+  - Ejecutar con:
+
+```bash
+php artisan db:seed --class=MateriasSeeder
+```
+
+- RevertAlumnosSeeder:
+  - Si necesitas revertir los cambios masivos de `AlumnosSeeder`, ejecuta:
+
+```bash
+php artisan db:seed --class=RevertAlumnosSeeder
+```
+
+  - Este seeder trunca la tabla `alumnos` y, si existe, vuelve a ejecutar `AlumnosTableSeeder` para restaurar un conjunto controlado de registros.
+
+Notas:
+- Si quieres que los `numero_control` garanticen unicidad absoluta, puedo añadir una verificación y reintento en el seeder.
+- Ajustes adicionales (acentos, nombres exactos de especialidades) pueden aplicarse si lo prefieres.
+

@@ -142,8 +142,13 @@
             <div class="row row-deck row-cards">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title">Solicitudes</h3>
+                            <div>
+                                <a href="{{ route('control_documentos.index') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="ti ti-files"></i> Revisar Documentos
+                                </a>
+                            </div>
                         </div>
                         
                         <!-- Filtros para desktop -->

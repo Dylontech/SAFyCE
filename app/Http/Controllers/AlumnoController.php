@@ -267,4 +267,114 @@ class AlumnoController extends Controller
                 ->with('error', 'Error al eliminar el alumno: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Incrementa un semestre a todos los alumnos
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function incrementarSemestre()
+    {
+        verificarAutenticacion();
+        
+        try {
+            $alumnosActualizados = Alumno::where('semestre', '<', 12)->increment('semestre');
+            
+            if ($alumnosActualizados > 0) {
+                return redirect()->route('alumnos.index')
+                    ->with('success', "Se incrementó el semestre de {$alumnosActualizados} alumnos exitosamente.");
+            } else {
+                return redirect()->route('alumnos.index')
+                    ->with('warning', 'No hay alumnos para actualizar o todos están en el semestre máximo (12).');
+            }
+                
+        } catch (\Exception $e) {
+            return redirect()->route('alumnos.index')
+                ->with('error', 'Error al incrementar semestre: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Actualiza grupo o especialidad de alumnos específicamente seleccionados
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function actualizacionSelectiva(Request $request)
+    {
+        verificarAutenticacion();
+        
+        $request->validate([
+            'tipo_actualizacion_selectiva' => 'required|in:grupo,especialidad',
+            'alumnos_seleccionados' => 'required|string',
+        ], [
+            'tipo_actualizacion_selectiva.required' => 'Debe seleccionar el tipo de actualización',
+            'tipo_actualizacion_selectiva.in' => 'Tipo de actualización no válido',
+            'alumnos_seleccionados.required' => 'Debe seleccionar al menos un alumno'
+        ]);
+
+        // Validar campos específicos según el tipo
+        if ($request->tipo_actualizacion_selectiva === 'grupo') {
+            // Si seleccionó "crear nuevo grupo", validar el campo personalizado
+            if ($request->nuevo_grupo === '_nuevo_') {
+                $request->validate([
+                    'grupo_personalizado' => 'required|string|max:10'
+                ], [
+                    'grupo_personalizado.required' => 'Debe ingresar el nombre del nuevo grupo'
+                ]);
+            } else {
+                $request->validate([
+                    'nuevo_grupo' => 'required|string|max:10'
+                ], [
+                    'nuevo_grupo.required' => 'Debe seleccionar el nuevo grupo'
+                ]);
+            }
+        } else {
+            $request->validate([
+                'nueva_especialidad' => 'required|string'
+            ], [
+                'nueva_especialidad.required' => 'Debe seleccionar la nueva especialidad'
+            ]);
+        }
+
+        try {
+            // Obtener IDs de alumnos seleccionados
+            $alumnosIds = explode(',', $request->alumnos_seleccionados);
+            $alumnosIds = array_filter($alumnosIds); // Remover valores vacíos
+            
+            if (empty($alumnosIds)) {
+                return redirect()->route('alumnos.index')
+                    ->with('error', 'No se seleccionaron alumnos válidos.');
+            }
+
+            // Preparar datos para actualización
+            $campo = $request->tipo_actualizacion_selectiva === 'grupo' ? 'Grupo' : 'especialidad';
+            
+            if ($request->tipo_actualizacion_selectiva === 'grupo') {
+                // Si seleccionó crear nuevo grupo, usar el campo personalizado
+                $nuevoValor = $request->nuevo_grupo === '_nuevo_' 
+                    ? $request->grupo_personalizado 
+                    : $request->nuevo_grupo;
+            } else {
+                $nuevoValor = $request->nueva_especialidad;
+            }
+            
+            // Realizar actualización
+            $alumnosActualizados = Alumno::whereIn('id', $alumnosIds)
+                ->update([$campo => $nuevoValor]);
+            
+            if ($alumnosActualizados > 0) {
+                $tipoCampo = $request->tipo_actualizacion_selectiva === 'grupo' ? 'grupo' : 'especialidad';
+                return redirect()->route('alumnos.index')
+                    ->with('success', "Se actualizó el {$tipoCampo} de {$alumnosActualizados} alumnos seleccionados a '{$nuevoValor}' exitosamente.");
+            } else {
+                return redirect()->route('alumnos.index')
+                    ->with('warning', 'No se encontraron alumnos válidos para actualizar.');
+            }
+                
+        } catch (\Exception $e) {
+            return redirect()->route('alumnos.index')
+                ->with('error', 'Error al realizar la actualización selectiva: ' . $e->getMessage());
+        }
+    }
 }
