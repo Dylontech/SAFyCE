@@ -29,6 +29,7 @@ use App\Http\Controllers\PublicacionController;
 use App\Http\Controllers\ReaccionController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\ModeracionController;
+use App\Http\Controllers\AsistenciaController;
 
 
 
@@ -114,6 +115,7 @@ Route::middleware(['auth:web'])->group(function () {
     
     Route::get('/configuracion', [RoleController::class, 'index'])->name('roles.index');
     Route::post('/configuracion/asignar', [RoleController::class, 'assignRoles'])->name('roles.assign');
+    Route::post('/configuracion/remover', [RoleController::class, 'removeRole'])->name('roles.remove');
     Route::resource('users', UserController::class);
 
     // Ruta para búsqueda de alumnos
@@ -152,6 +154,13 @@ Route::middleware(['multi.auth'])->group(function () {
 // Rutas para alumnos autenticados
 Route::middleware(['auth:alumno'])->group(function () {
     Route::get('/alumnos_user', [App\Http\Controllers\alumnos_userController::class, 'index'])->name('alumnos_user.index');
+
+    // Ruta para que el alumno vea su propio historial de asistencias
+    Route::get('/asistencias/mis', [AsistenciaController::class, 'miHistorial'])->name('asistencias.mis');
+
+    // Asistencias - historial y subir comprobante
+    Route::get('/asistencias/historial/{alumno}', [AsistenciaController::class, 'historialAlumno'])->name('asistencias.historial');
+    Route::post('/asistencias/comprobantes/subir', [AsistenciaController::class, 'subirComprobante'])->name('asistencias.comprobantes.subir');
 
     // NUEVA RUTA: Descargar liga de pago desde tabla formularios
 Route::get('/formularios/download-liga-pago-formularios/{id}', [FormularioController::class, 'downloadLigaPagoFormularios'])->name('formularios.downloadLigaPagoFormularios');
@@ -254,6 +263,9 @@ Route::get('gestions/downloadComprobante/{id}', [App\Http\Controllers\GestionSCo
 
 Route::resource('/materias', App\Http\Controllers\MateriaController::class);
 
+// Rutas públicas/externas para asistencias (registro en entrada por código de barras)
+Route::post('/asistencias/entrada', [AsistenciaController::class, 'registrarPlantel'])->name('asistencias.entrada');
+
 // Rutas para el CRUD de Grupos
 Route::resource('/grupos', App\Http\Controllers\GrupoController::class);
 
@@ -339,6 +351,11 @@ Route::prefix('maestros')->name('maestros.')->middleware(['auth', 'role:maestro'
     Route::delete('/calificaciones/{calificacion}', [App\Http\Controllers\Maestros\CalificacionController::class, 'destroy'])->name('calificaciones.destroy');
     Route::get('/calificaciones/reportes', [App\Http\Controllers\Maestros\CalificacionController::class, 'reportes'])->name('calificaciones.reportes');
     Route::get('/ajax/tareas-by-materia', [App\Http\Controllers\Maestros\CalificacionController::class, 'getTareasByMateria'])->name('ajax.tareas-by-materia');
+    
+    // Rutas de asistencias para maestros
+    Route::get('/asistencias/salon', [AsistenciaController::class, 'listaSalon'])->name('asistencias.salon');
+    Route::post('/asistencias/salon/registrar', [AsistenciaController::class, 'registrarSalon'])->name('asistencias.salon.registrar');
+    Route::post('/asistencias/comprobantes/{id}/revisar', [AsistenciaController::class, 'revisarComprobante'])->name('asistencias.comprobantes.revisar');
 });
 
 // Rutas de moderación (accesibles para maestros y control escolar)

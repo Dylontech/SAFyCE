@@ -1,43 +1,52 @@
 <?php
 
-return [
+/*
+ |--------------------------------------------------------------------------
+ | Configuración organizada de Tablar
+ |--------------------------------------------------------------------------
+ | Se han introducido agrupaciones lógicas (brand, layout, urls, navigation,
+ | integrations) para mejorar la mantenibilidad. Las claves planas originales
+        ['text' => 'Alumnos', 'icon' => 'ti ti-users', 'route' => 'alumnos.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Solicitudes de Exámenes', 'icon' => 'ti ti-file-text', 'route' => 'control_user.index', 'roles' => ['control_escolar']],
+        ['text' => 'Solicitudes de Servicios', 'icon' => 'ti ti-file-text', 'route' => 'gestions.index', 'roles' => ['control_escolar']],
+        ['text' => 'Materias', 'icon' => 'ti ti-book', 'route' => 'materias.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Grupos', 'icon' => 'ti ti-users-group', 'route' => 'grupos.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Especialidades', 'icon' => 'ti ti-tag', 'route' => 'especialidades.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Salas', 'icon' => 'ti ti-door', 'route' => 'salas.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Horarios', 'icon' => 'ti ti-calendar-time', 'route' => 'horarios.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Tareas', 'icon' => 'ti ti-clipboard-list', 'route' => 'tareas.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Calificaciones', 'icon' => 'ti ti-certificate', 'route' => 'calificaciones.index', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Biblioteca Virtual', 'icon' => 'ti ti-book-2', 'route' => 'biblioteca-virtual', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Revisión de Documentos', 'icon' => 'ti ti-files', 'route' => 'control_documentos.index', 'roles' => ['control_escolar', 'controlescolar', 'admin']],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Título
-    |--------------------------------------------------------------------------
-    | Aquí puedes cambiar el título predeterminado de tu panel de administración.
-    |
-    */
+        // SERVICIO FINANCIERO
+        ['header' => 'SERVICIO FINANCIERO', 'roles' => ['servicio_financiero']],
+        ['text' => 'Ver Solicitudes de Exámenes', 'icon' => 'ti ti-file-text', 'route' => 'solicitudes-servicios-s.index', 'roles' => ['servicio_financiero']],
+        ['text' => 'Solicitudes de Servicios Financieros', 'icon' => 'ti ti-currency-dollar', 'route' => 'finanzas.index', 'roles' => ['servicio_financiero']],
 
+        // GENERAL
+        ['header' => 'GENERAL', 'roles' => ['control_escolar', 'admin', 'servicio_financiero']],
+        ['text' => 'Novedades', 'icon' => 'ti ti-photo', 'route' => 'carrusel.index', 'roles' => ['control_escolar', 'admin', 'servicio_financiero']],
+
+        // MAESTROS
+        ['header' => 'MAESTROS', 'roles' => ['maestro']],
+        ['text' => 'Mis Horarios', 'icon' => 'ti ti-calendar-time', 'route' => 'maestros.horarios', 'roles' => ['maestro']],
+        ['text' => 'Mis Tareas', 'icon' => 'ti ti-clipboard-list', 'route' => 'maestros.tareas.index', 'roles' => ['maestro']],
+        ['text' => 'Mis Calificaciones', 'icon' => 'ti ti-certificate', 'route' => 'maestros.calificaciones.index', 'roles' => ['maestro']],
+        ['text' => 'Salas', 'icon' => 'ti ti-door', 'route' => 'salas.index', 'roles' => ['maestro']],
+        ['text' => 'Biblioteca Virtual', 'icon' => 'ti ti-book-2', 'route' => 'biblioteca-virtual', 'roles' => ['maestro']],
+ | se mantienen para compatibilidad hacia atrás.
+ */
+
+
+$brand = [
     'title' => 'Datos',
     'title_prefix' => '',
     'title_postfix' => '',
     'bottom_title' => 'Tablar',
     'current_version' => 'v4.8',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logo del Panel de Administración
-    |--------------------------------------------------------------------------
-    |
-    | Aquí puedes cambiar el logo de tu panel de administración.
-    |
-    */
-
     'logo' => '<b>Tab</b>LAR',
     'logo_img_alt' => 'Logo de Administración',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logo de Autenticación
-    |--------------------------------------------------------------------------
-    |
-    | Aquí puedes configurar un logo alternativo para usar en tus pantallas de login y registro.
-    | Cuando está deshabilitado, se usará el logo del panel de administración.
-    |
-    */
-
     'auth_logo' => [
         'enabled' => false,
         'img' => [
@@ -48,68 +57,19 @@ return [
             'height' => 50,
         ],
     ],
+];
 
-    /*
-     *
-     * La ruta predeterminada es 'resources/views/vendor/tablar' como null. Establece tu ruta personalizada aquí si es necesario.
-     */
-
+$layout = [
     'views_path' => null,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Diseño
-    |--------------------------------------------------------------------------
-    | Aquí cambiamos el diseño de tu panel de administración.
-    |
-    | Para instrucciones detalladas puedes mirar la sección de diseño aquí:
-    |
-    */
-
-    'layout' => 'combo',
-    //boxed, combo, condensed, fluid, fluid-vertical, horizontal, navbar-overlap, navbar-sticky, rtl, vertical, vertical-right, vertical-transparent
-
+    'layout' => 'combo', // boxed, combo, condensed, fluid, fluid-vertical, horizontal, navbar-overlap, navbar-sticky, rtl, vertical, vertical-right, vertical-transparent
     'layout_light_sidebar' => null,
     'layout_light_topbar' => true,
     'layout_enable_top_header' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Barra de Navegación Superior Fija
-    |--------------------------------------------------------------------------
-    |
-    | Aquí puedes habilitar/deshabilitar la funcionalidad fija de la Barra de Navegación Superior.
-    |
-    | Para instrucciones detalladas, puedes mirar las clases de la Barra de Navegación Superior aquí:
-    |
-    */
-
     'sticky_top_nav_bar' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Clases del Panel de Administración
-    |--------------------------------------------------------------------------
-    |
-    | Aquí puedes cambiar la apariencia y comportamiento del panel de administración.
-    |
-    | Para instrucciones detalladas, puedes mirar las clases del panel de administración aquí:
-    |
-    */
-
     'classes_body' => '',
+];
 
-    /*
-    |--------------------------------------------------------------------------
-    | URLs
-    |--------------------------------------------------------------------------
-    |
-    | Aquí podemos modificar la configuración de URLs del panel de administración.
-    |
-    | Para instrucciones detalladas, puedes mirar la sección de URLs aquí:
-    |
-    */
-
+$urls = [
     'use_route_url' => true,
     'dashboard_url' => 'home',
     'logout_url' => 'logout',
@@ -119,192 +79,66 @@ return [
     'password_email_url' => 'password.email',
     'profile_url' => false,
     'setting_url' => false,
+];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Mostrar Alerta
-    |--------------------------------------------------------------------------
-    |
-    | Visibilidad de Mostrar Alerta.
-    |
-    */
+$display = [
     'display_alert' => false,
+];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Elementos del Menú
-    |--------------------------------------------------------------------------
-    |
-    | Aquí podemos modificar la barra lateral/navegación superior del panel de administración.
-    |
-    | Para instrucciones detalladas puedes mirar aquí:
-    |
-    */
-
+$navigation = [
     'menu' => [
-        // INICIOS POR ROL
+        // INICIO
         [
             'text' => 'Inicio',
             'icon' => 'ti ti-home',
-            'url' => 'home',
+            // ruta nombrada: 'home' -> routes/web.php name('home')
+            'route' => 'home',
             'roles' => ['admin', 'control_escolar', 'servicio_financiero', 'tester']
         ],
         [
             'text' => 'Inicio Alumno',
-            'url' => 'alumnos_user',
             'icon' => 'ti ti-home',
+            // ruta nombrada: 'alumnos_user.index'
+            'route' => 'alumnos_user.index',
             'roles' => ['alumno']
         ],
         [
             'text' => 'Inicio Maestro',
-            'url' => 'dashboard',
             'icon' => 'ti ti-home',
+            // dentro del prefix 'maestros' hay name('dashboard')
+            'route' => 'maestros.dashboard',
             'roles' => ['maestro']
         ],
 
-        // SECCIÓN: ACCESOS EXCLUSIVOS TESTER
-        [
-            'header' => '🧪 ACCESOS TESTER',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Control Escolar - Alumnos',
-            'url' => 'alumnos',
-            'icon' => 'ti ti-users',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Control Escolar - Solicitudes Exámenes',
-            'url' => 'control_user',
-            'icon' => 'ti ti-file-text',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Control Escolar - Solicitudes Servicios',
-            'url' => 'gestions',
-            'icon' => 'ti ti-file-text',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Control Escolar - Materias',
-            'url' => 'materias',
-            'icon' => 'ti ti-book',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Control Escolar - Grupos',
-            'url' => 'grupos',
-            'icon' => 'ti ti-users-group',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Finanzas - Solicitudes Exámenes',
-            'url' => 'solicitudes-servicios-s',
-            'icon' => 'ti ti-file-text',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Finanzas - Solicitudes Servicios',
-            'url' => 'finanzas',
-            'icon' => 'ti ti-currency-dollar',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 General - Novedades',
-            'url' => 'carrusel',
-            'icon' => 'ti ti-photo',
-            'roles' => ['tester']
-        ],
-        [
-            'text' => '🧪 Especialidades',
-            'url' => 'especialidades',
-            'icon' => 'ti ti-tag',
-            'roles' => ['tester']
-        ],
+        // TESTER (accesos exclusivos)
+        ['header' => '🧪 ACCESOS TESTER', 'roles' => ['tester']],
+        ['text' => 'Control Escolar - Alumnos', 'icon' => 'ti ti-users', 'route' => 'alumnos.index', 'roles' => ['tester']],
+        ['text' => 'Control Escolar - Solicitudes Exámenes', 'icon' => 'ti ti-file-text', 'route' => 'control_user.index', 'roles' => ['tester']],
+        ['text' => 'Control Escolar - Solicitudes Servicios', 'icon' => 'ti ti-file-text', 'route' => 'gestions.index', 'roles' => ['tester']],
+        ['text' => 'Control Escolar - Materias', 'icon' => 'ti ti-book', 'route' => 'materias.index', 'roles' => ['tester']],
+        ['text' => 'Control Escolar - Grupos', 'icon' => 'ti ti-users-group', 'route' => 'grupos.index', 'roles' => ['tester']],
+        ['text' => 'Finanzas - Solicitudes Exámenes', 'icon' => 'ti ti-file-text', 'route' => 'solicitudes-servicios-s.index', 'roles' => ['tester']],
+        ['text' => 'Finanzas - Solicitudes Servicios', 'icon' => 'ti ti-currency-dollar', 'route' => 'finanzas.index', 'roles' => ['tester']],
+        ['text' => 'General - Novedades', 'icon' => 'ti ti-photo', 'route' => 'carrusel.index', 'roles' => ['tester']],
+        ['text' => 'Especialidades', 'icon' => 'ti ti-tag', 'route' => 'especialidades.index', 'roles' => ['tester']],
 
-        // SECCIÓN: ALUMNO (SOLO ALUMNOS)
-        [
-            'header' => 'FUNCIONALIDADES ALUMNO',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Nueva solicitud de pago de exámenes',
-            'url' => 'formulario',
-            'icon' => 'ti ti-file-plus',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Nueva solicitud de servicios',
-            'url' => 'servicios',
-            'icon' => 'ti ti-file-plus',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Ver Solicitudes de Exámenes',
-            'url' => 'solicitudesE',
-            'icon' => 'ti ti-list',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Ver Solicitudes de Servicios',
-            'url' => 'formularios',
-            'icon' => 'ti ti-list',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Mis Tareas',
-            'url' => 'estudiantes/tareas',
-            'icon' => 'ti ti-checklist',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Mis Horarios',
-            'url' => 'estudiantes/horarios',
-            'icon' => 'ti ti-calendar',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Mi Kardex Académico',
-            'url' => 'kardex',
-            'icon' => 'ti ti-school',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Salas Disponibles',
-            'url' => 'estudiantes/salas',
-            'icon' => 'ti ti-building',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Reuniones Virtuales',
-            'url' => 'alumnos/reuniones',
-            'icon' => 'ti ti-video',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Biblioteca Virtual',
-            'url' => 'biblioteca-virtual',
-            'icon' => 'ti ti-book-2',
-            'roles' => ['alumno']
-        ],
-        [
-            'text' => 'Documentación',
-            'url' => 'documentos/subir',
-            'icon' => 'ti ti-file-text',
-            'roles' => ['alumno']
-        ],
+        // ALUMNO
+        ['header' => 'FUNCIONALIDADES ALUMNO', 'roles' => ['alumno']],
+        ['text' => 'Nueva solicitud de pago de exámenes', 'icon' => 'ti ti-file-plus', 'route' => 'formulario', 'roles' => ['alumno']],
+        ['text' => 'Nueva solicitud de servicios', 'icon' => 'ti ti-file-plus', 'route' => 'servicios', 'roles' => ['alumno']],
+        ['text' => 'Ver Solicitudes de Exámenes', 'icon' => 'ti ti-list', 'route' => 'solicitudesE.index', 'roles' => ['alumno']],
+        ['text' => 'Ver Solicitudes de Servicios', 'icon' => 'ti ti-list', 'route' => 'formularios.index', 'roles' => ['alumno']],
+        ['text' => 'Mis Tareas', 'icon' => 'ti ti-checklist', 'route' => 'estudiantes.tareas', 'roles' => ['alumno']],
+        ['text' => 'Mis Horarios', 'icon' => 'ti ti-calendar', 'route' => 'estudiantes.horarios', 'roles' => ['alumno']],
+        ['text' => 'Mi Kardex Académico', 'icon' => 'ti ti-school', 'route' => 'calificaciones.kardex', 'roles' => ['alumno']],
+        ['text' => 'Salas Disponibles', 'icon' => 'ti ti-building', 'route' => 'estudiantes.salas', 'roles' => ['alumno']],
+        ['text' => 'Reuniones Virtuales', 'icon' => 'ti ti-video', 'route' => 'alumnos.reuniones.index', 'roles' => ['alumno']],
+        ['text' => 'Biblioteca Virtual', 'icon' => 'ti ti-book-2', 'route' => 'biblioteca-virtual.estudiantes', 'roles' => ['alumno']],
+        ['text' => 'Documentación', 'icon' => 'ti ti-file-text', 'route' => 'documentos.create', 'roles' => ['alumno']],
 
-        // SECCIÓN: CONTROL ESCOLAR (SIN TESTER)
-        [
-            'header' => 'CONTROL ESCOLAR',
-            'roles' => ['control_escolar', 'admin']
-        ],
-        [
-            'text' => 'Alumnos',
-            'url' => 'alumnos',
-            'icon' => 'ti ti-users',
-            'roles' => ['control_escolar', 'admin']
-        ],
+        // CONTROL ESCOLAR
+        ['header' => 'CONTROL ESCOLAR', 'roles' => ['control_escolar', 'admin']],
+        ['text' => 'Alumnos', 'icon' => 'ti ti-users', 'route' => 'alumnos.index', 'roles' => ['control_escolar', 'admin']],
         [
             'text' => 'Solicitudes de Exámenes',
             'url' => 'control_user',
@@ -439,17 +273,6 @@ return [
         ]
     ],
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Filtros del Menú
-    |--------------------------------------------------------------------------
-    |
-    | Aquí podemos modificar los filtros del menú del panel de administración.
-    |
-    | Para instrucciones detalladas puedes mirar la sección de filtros del menú aquí:
-    |
-    */
     'filters' => [
         TakiElias\Tablar\Menu\Filters\GateFilter::class,
         TakiElias\Tablar\Menu\Filters\HrefFilter::class,
@@ -460,32 +283,58 @@ return [
         TakiElias\Tablar\Menu\Filters\DataFilter::class,
         App\Filter\RolePermissionMenuFilter::class,
     ],
+];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Vite
-    |--------------------------------------------------------------------------
-    |
-    | Aquí podemos habilitar el soporte de Vite.
-    |
-    | Para instrucciones detalladas puedes mirar Vite aquí:
-    | https://laravel-vite.dev
-    |
-    */
-
+$integrations = [
     'vite' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Livewire
-    |--------------------------------------------------------------------------
-    |
-    | Aquí podemos habilitar el soporte de Livewire.
-    |
-    | Para instrucciones detalladas puedes mirar livewire aquí:
-    | https://livewire.laravel.com
-    |
-    */
-
     'livewire' => false,
+];
+
+// Retornamos estructura agrupada + claves planas legacy para compatibilidad
+return [
+    // Agrupaciones
+    'brand' => $brand,
+    'layout_settings' => $layout,
+    'urls' => $urls,
+    'display' => $display,
+    'navigation' => $navigation,
+    'integrations' => $integrations,
+
+    // Claves planas (compatibilidad hacia atrás)
+    'title' => $brand['title'],
+    'title_prefix' => $brand['title_prefix'],
+    'title_postfix' => $brand['title_postfix'],
+    'bottom_title' => $brand['bottom_title'],
+    'current_version' => $brand['current_version'],
+    'logo' => $brand['logo'],
+    'logo_img_alt' => $brand['logo_img_alt'],
+    'auth_logo' => $brand['auth_logo'],
+
+    'views_path' => $layout['views_path'],
+    'layout' => $layout['layout'],
+    'layout_light_sidebar' => $layout['layout_light_sidebar'],
+    'layout_light_topbar' => $layout['layout_light_topbar'],
+    'layout_enable_top_header' => $layout['layout_enable_top_header'],
+    'sticky_top_nav_bar' => $layout['sticky_top_nav_bar'],
+    'classes_body' => $layout['classes_body'],
+
+    'use_route_url' => $urls['use_route_url'],
+    'dashboard_url' => $urls['dashboard_url'],
+    'logout_url' => $urls['logout_url'],
+    'login_url' => $urls['login_url'],
+    'register_url' => $urls['register_url'],
+    'password_reset_url' => $urls['password_reset_url'],
+    'password_email_url' => $urls['password_email_url'],
+    'profile_url' => $urls['profile_url'],
+    'setting_url' => $urls['setting_url'],
+
+    'display_alert' => $display['display_alert'],
+
+    // Navegación y filtros (mantener nombres originales también)
+    'menu' => $navigation['menu'],
+    'filters' => $navigation['filters'],
+
+    // Integraciones
+    'vite' => $integrations['vite'],
+    'livewire' => $integrations['livewire'],
 ];

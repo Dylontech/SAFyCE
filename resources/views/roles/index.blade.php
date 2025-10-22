@@ -50,7 +50,8 @@
                                             <select name="role_id" class="form-control" required id="roleSelect">
                                                 <option value="">Selecciona un rol</option>
                                                 @foreach($roles as $role)
-                                                    @if(in_array($role->name, ['admin', 'control_escolar', 'servicio_financiero', 'tester']))
+                                                    {{-- Mostrar roles administrables incluyendo maestros --}}
+                                                    @if(in_array($role->name, ['admin', 'control_escolar', 'servicio_financiero', 'tester', 'maestros', 'maestro']))
                                                         <option value="{{ $role->id }}" data-role-name="{{ $role->name }}">
                                                             @switch($role->name)
                                                                 @case('admin')
@@ -64,6 +65,12 @@
                                                                     @break
                                                                 @case('tester')
                                                                     🧪 Tester (Acceso Completo)
+                                                                    @break
+                                                                    @case('maestros')
+                                                                    👩‍🏫 Maestros
+                                                                    @break
+                                                                    @case('maestro')
+                                                                    👩‍🏫 Maestros
                                                                     @break
                                                             @endswitch
                                                         </option>
@@ -156,6 +163,7 @@
                                                                                     @elseif($role->name == 'tester') bg-warning
                                                                                     @elseif($role->name == 'control_escolar') bg-info
                                                                                     @elseif($role->name == 'servicio_financiero') bg-success
+                                                                                    @elseif($role->name == 'maestros') bg-primary
                                                                                     @else bg-secondary @endif 
                                                                                     small text-white">
                                                                                     {{ $role->name }}
@@ -208,7 +216,7 @@
                         <div class="card-body p-0">
                             <div class="row g-3 p-3">
                                 @foreach($roles as $role)
-                                    @if(in_array($role->name, ['admin', 'control_escolar', 'servicio_financiero', 'tester']))
+                                    @if(in_array($role->name, ['admin', 'control_escolar', 'servicio_financiero', 'tester', 'maestros', 'maestro']))
                                         <div class="col-12 col-xl-6">
                                             <div class="card card-sm shadow-sm border-0">
                                                 <div class="card-header 
@@ -216,6 +224,7 @@
                                                     @elseif($role->name == 'tester') bg-warning-lt
                                                     @elseif($role->name == 'control_escolar') bg-info-lt
                                                     @elseif($role->name == 'servicio_financiero') bg-success-lt
+                                                    @elseif($role->name == 'maestros' || $role->name == 'maestro') bg-primary-lt
                                                     @endif py-3">
                                                     <div class="d-flex align-items-center">
                                                         <div class="me-3">
@@ -227,6 +236,8 @@
                                                                 <span class="avatar avatar-md bg-info text-white">📚</span>
                                                             @elseif($role->name == 'servicio_financiero')
                                                                 <span class="avatar avatar-md bg-success text-white">💰</span>
+                                                            @elseif($role->name == 'maestros' || $role->name == 'maestro')
+                                                                <span class="avatar avatar-md bg-primary text-white">👩‍🏫</span>
                                                             @endif
                                                         </div>
                                                         <div class="flex-fill">
@@ -236,6 +247,8 @@
                                                                     @case('tester') Tester @break
                                                                     @case('control_escolar') Control Escolar @break
                                                                     @case('servicio_financiero') Servicio Financiero @break
+                                                                    @case('maestros') Maestros @break
+                                                                    @case('maestro') Maestros @break
                                                                 @endswitch
                                                             </h4>
                                                             <div class="text-muted small">
@@ -244,6 +257,8 @@
                                                                     @case('tester') Acceso completo para pruebas @break
                                                                     @case('control_escolar') Gestión académica @break
                                                                     @case('servicio_financiero') Gestión financiera @break
+                                                                    @case('maestros') Gestión de docentes @break
+                                                                    @case('maestro') Gestión de docentes @break
                                                                 @endswitch
                                                             </div>
                                                         </div>
@@ -253,6 +268,7 @@
                                                                 @elseif($role->name == 'tester') bg-warning
                                                                 @elseif($role->name == 'control_escolar') bg-info
                                                                 @elseif($role->name == 'servicio_financiero') bg-success
+                                                                @elseif($role->name == 'maestros' || $role->name == 'maestro') bg-primary
                                                                 @endif text-white">
                                                                 {{ $role->users->count() }} usuarios
                                                             </span>
@@ -286,18 +302,16 @@
                                                                                             <i class="ti ti-eye me-2"></i>Ver perfil
                                                                                         </a>
                                                                                     </li>
-                                                                                    @if(auth()->user()->hasRole('admin') && $role->name == 'tester')
+                                                                                    @if(auth()->user()->hasRole('admin'))
                                                                                         <li>
-                                                                                            <a class="dropdown-item text-danger" href="#" 
-                                                                                               onclick="confirmTesterRemoval({{ $user->id }}, '{{ $user->name }}')">
-                                                                                                <i class="ti ti-user-off me-2"></i>Remover rol Tester
-                                                                                            </a>
-                                                                                        </li>
-                                                                                        <li>
-                                                                                            <a class="dropdown-item text-warning" href="#" 
-                                                                                               onclick="toggleTesterStatus({{ $user->id }}, '{{ $user->name }}')">
-                                                                                                <i class="ti ti-toggle-left me-2"></i>Deshabilitar Tester
-                                                                                            </a>
+                                                                                            <form action="{{ route('roles.remove') }}" method="POST" id="remove-role-{{ $user->id }}-{{ $role->id }}">
+                                                                                                @csrf
+                                                                                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                                                                                <input type="hidden" name="role_id" value="{{ $role->id }}">
+                                                                                                <button type="button" class="dropdown-item text-danger" onclick="confirmRemoveRole({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $role->id }}, '{{ $role->name }}')">
+                                                                                                    <i class="ti ti-user-off me-2"></i>Quitar rol {{ ucfirst($role->name) }}
+                                                                                                </button>
+                                                                                            </form>
                                                                                         </li>
                                                                                     @endif
                                                                                 </ul>
@@ -590,6 +604,35 @@
                         text: "El acceso Tester está a salvo :)",
                         icon: "error"
                     });
+                }
+            });
+        }
+
+        // Función genérica para confirmar y enviar el formulario de remoción de rol
+        function confirmRemoveRole(userId, userName, roleId, roleName) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-danger",
+                    cancelButton: "btn btn-secondary"
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: `Quitar rol ${roleName}`,
+                text: `¿Deseas quitar el rol ${roleName} al usuario ${userName}? Esta acción se puede revertir asignando el rol nuevamente.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, quitar",
+                cancelButtonText: "No, cancelar",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formId = `remove-role-${userId}-${roleId}`;
+                    const form = document.getElementById(formId);
+                    if (form) {
+                        form.submit();
+                    }
                 }
             });
         }

@@ -93,22 +93,12 @@ class ControlEscolarSeeder extends Seeder
         $materiasDisponibles = Materia::all();
 
         if ($maestros->count() > 0 && $salasDisponibles->count() > 0 && $materiasDisponibles->count() > 0) {
-            // Crear algunos horarios de ejemplo
+            // Crear algunos horarios de ejemplo (usamos claves únicas simples para evitar duplicados)
             $horariosEjemplo = [
                 [
                     'materia_id' => $materiasDisponibles->where('materia', 'Programación I')->first()->id ?? $materiasDisponibles->first()->id,
-                    'maestro_id' => $maestros->first()->id,
+                    'user_id' => $maestros->first()->id,
                     'sala_id' => $salasDisponibles->where('codigo', 'LAB-COMP')->first()->id ?? $salasDisponibles->first()->id,
-                    'grupo' => '1A',
-                    'dia_semana' => 'lunes',
-                    'hora_inicio' => '08:00',
-                    'hora_fin' => '10:00',
-                    'semestre' => '1',
-                    'periodo_escolar' => '2024-2025-1',
-                    'estado' => 'activo'
-                ],
-                'user_id' => $maestros->first()->id,
-                    'sala_id' => $salasDisponibles->where('codigo', 'LAB001')->first()->id ?? $salasDisponibles->first()->id,
                     'dia_semana' => 'lunes',
                     'hora_inicio' => '08:00',
                     'hora_fin' => '10:00',
@@ -117,7 +107,7 @@ class ControlEscolarSeeder extends Seeder
                     'observaciones' => 'Horario de programación básica'
                 ],
                 [
-                    'materia_id' => $materiasDisponibles->where('materia', 'Matemáticas I')->first()->id ?? $materiasDisponibles->skip(1)->first()->id,
+                    'materia_id' => $materiasDisponibles->where('materia', 'Programación II')->first()->id ?? $materiasDisponibles->skip(1)->first()->id,
                     'user_id' => $maestros->count() > 1 ? $maestros->skip(1)->first()->id : $maestros->first()->id,
                     'sala_id' => $salasDisponibles->where('codigo', 'A101')->first()->id ?? $salasDisponibles->skip(1)->first()->id,
                     'dia_semana' => 'martes',
@@ -130,13 +120,16 @@ class ControlEscolarSeeder extends Seeder
             ];
 
             foreach ($horariosEjemplo as $horarioData) {
-                if (!Horario::where('dia_semana', $horarioData['dia_semana'])
-                           ->where('hora_inicio', $horarioData['hora_inicio'])
-                           ->where('sala_id', $horarioData['sala_id'])
-                           ->exists()) {
-                    Horario::create($horarioData);
-                    $this->command->info("Horario creado: {$horarioData['dia_semana']} {$horarioData['hora_inicio']}-{$horarioData['hora_fin']}");
-                }
+                // Usar updateOrCreate con una clave única compuesta para idempotencia
+                $unique = [
+                    'user_id' => $horarioData['user_id'],
+                    'dia_semana' => $horarioData['dia_semana'],
+                    'hora_inicio' => $horarioData['hora_inicio'],
+                    'sala_id' => $horarioData['sala_id']
+                ];
+
+                Horario::updateOrCreate($unique, $horarioData);
+                $this->command->info("Horario asegurado: {$horarioData['dia_semana']} {$horarioData['hora_inicio']}-{$horarioData['hora_fin']}");
             }
 
             // Crear algunas tareas de ejemplo
@@ -171,11 +164,57 @@ class ControlEscolarSeeder extends Seeder
                 ];
 
                 foreach ($tareasEjemplo as $tareaData) {
-                    if (!Tarea::where('titulo', $tareaData['titulo'])->exists()) {
-                        Tarea::create($tareaData);
-                        $this->command->info("Tarea creada: {$tareaData['titulo']}");
+                    Tarea::updateOrCreate(['titulo' => $tareaData['titulo']], $tareaData);
+                    $this->command->info("Tarea asegurada: {$tareaData['titulo']}");
+                }
+
+                // Generar horario semanal completo: lunes-sabado, 3 franjas por día
+                $dias = ['lunes','martes','miercoles','jueves','viernes','sabado'];
+                $franjas = [
+                    ['hora_inicio' => '08:00', 'hora_fin' => '10:00'],
+                    ['hora_inicio' => '10:00', 'hora_fin' => '12:00'],
+                    ['hora_inicio' => '13:00', 'hora_fin' => '15:00']
+                ];
+
+                $materiasArray = $materiasDisponibles->values()->all();
+                $maestrosArray = $maestros->values()->all();
+                $salasArray = $salasDisponibles->values()->all();
+
+                $mIndex = 0; $uIndex = 0; $sIndex = 0;
+
+                foreach ($dias as $dia) {
+                    foreach ($franjas as $franja) {
+                        // Rotación simple: tomar siguiente materia/maestro/sala
+                        $materia = $materiasArray[$mIndex % count($materiasArray)];
+                        $maestro = $maestrosArray[$uIndex % count($maestrosArray)];
+                        $sala = $salasArray[$sIndex % count($salasArray)];
+
+                        $horarioData = [
+                            'materia_id' => $materia->id,
+                            'user_id' => $maestro->id,
+                            'sala_id' => $sala->id,
+                            'dia_semana' => $dia,
+                            'hora_inicio' => $franja['hora_inicio'],
+                            'hora_fin' => $franja['hora_fin'],
+                            'fecha_inicio' => '2025-01-15',
+                            'fecha_fin' => '2025-12-15',
+                            'observaciones' => "Horario automático: {$dia} {$franja['hora_inicio']}-{$franja['hora_fin']}"
+                        ];
+
+                        $unique = [
+                            'user_id' => $horarioData['user_id'],
+                            'dia_semana' => $horarioData['dia_semana'],
+                            'hora_inicio' => $horarioData['hora_inicio'],
+                            'sala_id' => $horarioData['sala_id']
+                        ];
+
+                        Horario::updateOrCreate($unique, $horarioData);
+
+                        $mIndex++; $uIndex++; $sIndex++;
                     }
                 }
+
+                $this->command->info('Horario semanal completo asegurado (3 clases por día, lunes-sábado).');
             }
         }
 

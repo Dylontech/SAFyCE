@@ -376,6 +376,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-12 mt-4 text-center">
+                    <a href="{{ route('asistencias.mis') }}" class="btn btn-lg btn-primary">
+                        <i class="ti ti-checks me-2"></i>
+                        Mi historial de asistencias
+                    </a>
+                </div>
             </div>
         </div>
     </div>
